@@ -3,11 +3,11 @@
 //
 
 #include "Edge.h"
-Edge::Edge(Node* destination, char startAlphabte , char endAlphabte) {
+Edge::Edge(Node* destination, char startAlphabet , char endAlphabet) {
     this->destination = destination;
-    this->startAlphabte = startAlphabte;
-    this->endAlphabte = endAlphabte;
-    this->sizeOfAlphabte = endAlphabte - startAlphabte + 1;
+    this->startAlphabet = startAlphabet;
+    this->endAlphabet = endAlphabet;
+    this->sizeOfAlphabet = endAlphabet - startAlphabet + 1;
 }
 
 Edge::~Edge() {
@@ -24,28 +24,28 @@ void Edge::setDestination(Node *destination) {
     Edge::destination = destination;
 }
 
-char Edge::getStartAlphabte() const {
-    return startAlphabte;
+char Edge::getStartAlphabet() const {
+    return startAlphabet;
 }
 
-void Edge::setStartAlphabte(char startAlphabte) {
-    Edge::startAlphabte = startAlphabte;
+void Edge::setStartAlphabet(char startAlphabet) {
+    Edge::startAlphabet = startAlphabet;
 }
 
-char Edge::getEndAlphabte() const {
-    return endAlphabte;
+char Edge::getEndAlphabet() const {
+    return this->endAlphabet;
 }
 
-void Edge::setEndAlphabte(char endAlphabte) {
-    Edge::endAlphabte = endAlphabte;
+void Edge::setEndAlphabet(char endAlphabet) {
+    Edge::endAlphabet = endAlphabet;
 }
 
-int Edge::getSizeOfAlphabte() const {
-    return sizeOfAlphabte;
+int Edge::getSizeOfAlphabet() const {
+    return sizeOfAlphabet;
 }
 
-void Edge::setSizeOfAlphabte(int sizeOfAlphabte) {
-    Edge::sizeOfAlphabte = sizeOfAlphabte;
+void Edge::setSizeOfAlphabet(int sizeOfAlphabet) {
+    Edge::sizeOfAlphabet = sizeOfAlphabet;
 }
 
 const unordered_set<char> &Edge::getDisallowedAlphabet() const {
@@ -58,8 +58,8 @@ void Edge::setDisallowedAlphabet(const unordered_set<char> &disallowedAlphabet) 
 
 void Edge::addDisallowedSymbol(const char symbol) {
     this->disallowedAlphabet.insert(symbol);
-    if(symbol >= this->startAlphabte && symbol <= this->endAlphabte){
-        this->sizeOfAlphabte--;
+    if(symbol >= this->startAlphabet && symbol <= this->endAlphabet){
+        this->sizeOfAlphabet--;
     }
 }
 
@@ -68,7 +68,7 @@ bool Edge::isAcceptSymbol(const char symbol) {
     if(this->disallowedAlphabet.find(symbol) != this->disallowedAlphabet.end()){
         return false;
     }
-    return symbol >= this->startAlphabte && symbol <= this->endAlphabte;
+    return symbol >= this->startAlphabet && symbol <= this->endAlphabet;
 }
 
 Node *Edge::doTransition(const char symbol) {
@@ -80,5 +80,5 @@ Node *Edge::doTransition(const char symbol) {
 }
 
 bool Edge::isEPSTransition() const {
-    return this->startAlphabte == EPS && this->endAlphabte == EPS;
+    return this->startAlphabet == EPS && this->endAlphabet == EPS;
 }

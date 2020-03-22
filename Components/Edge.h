@@ -21,17 +21,17 @@ public:
 
     void setDestination(Node *destination);
 
-    char getStartAlphabte() const;
+    char getStartAlphabet() const;
 
-    void setStartAlphabte(char startAlphabte);
+    void setStartAlphabet(char startAlphabet);
 
-    char getEndAlphabte() const;
+    char getEndAlphabet() const;
 
-    void setEndAlphabte(char endAlphabte);
+    void setEndAlphabet(char endAlphabet);
 
-    int getSizeOfAlphabte() const;
+    int getSizeOfAlphabet() const;
 
-    void setSizeOfAlphabte(int sizeOfAlphabte);
+    void setSizeOfAlphabet(int sizeOfAlphabet);
 
     const unordered_set<char> &getDisallowedAlphabet() const;
 
@@ -48,9 +48,9 @@ public:
 private:
 
     Node* destination;
-    char startAlphabte;
-    char endAlphabte;
-    int sizeOfAlphabte;
+    char startAlphabet;
+    char endAlphabet;
+    int sizeOfAlphabet;
     unordered_set<char> disallowedAlphabet;
 
 };
