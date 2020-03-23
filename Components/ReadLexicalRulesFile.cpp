@@ -6,14 +6,12 @@
 
 #include <utility>
 
+const regex regular_definition_regex("(\\w+) *= *((\\S|\\s)+)");
+const regex regular_expression_regex("(\\w+) *: *((\\S|\\s)+)");
+const regex keywords_regex("{ *((\\w+ *)+) *}");
+const regex punctuations_regex("\\[ *((\\p{P} *)+) *]");
 
-
-ReadLexicalRulesFile::ReadLexicalRulesFile(){
-    this->regular_definition_regex = ("(\\w+) *= *((\\S|\\s)+)");
-    this->regular_expression_regex = ("(\\w+) *: *((\\S|\\s)+)");
-    this->keywords_regex = "{ *((\\w+ *)+) *}";
-    this->punctuations_regex = "\\[ *((\\p{P} *)+) *]";
-}
+ReadLexicalRulesFile::ReadLexicalRulesFile(){}
 
 ReadLexicalRulesFile::~ReadLexicalRulesFile(){
     this->regular_definitions_vector.clear();
