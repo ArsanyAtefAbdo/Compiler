@@ -38,7 +38,7 @@ public:
 
     vector<string> get_keywords_vector();
 
-    vector<char> get_punctuations_vector();
+    static vector<char> get_punctuations_vector();
 
     bool is_no_errors();
 };
