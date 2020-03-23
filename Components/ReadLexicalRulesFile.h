@@ -21,6 +21,10 @@ private:
     vector <pair<string,string>> regular_expression_vector;
     vector <string> keywords_vector;
     vector <string> punctuations_vector;
+    regex regular_definition_regex;
+    regex regular_expression_regex;
+    regex keywords_regex;
+    regex punctuations_regex;
     smatch match;
     bool no_errors = true;
 
@@ -34,7 +38,7 @@ public:
 
     vector<string> get_keywords_vector();
 
-    static vector<char> get_punctuations_vector();
+    vector<char> get_punctuations_vector();
 
     bool is_no_errors();
 };
