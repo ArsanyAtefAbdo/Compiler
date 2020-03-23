@@ -17,14 +17,14 @@ public:
     virtual ~ReadLexicalRulesFile();
 
 private:
-    vector<pair<string,string>> regular_definitions_vector;
-    vector<pair<string,string>> regular_expression_vector;
-    vector<string> keywords_vector;
-    vector<char> punctuations_vector;
-    regex regular_definition_regex("(\\w+) *= *((\\S|\\s)+)");
-    regex regular_expression_regex("(\\w+) *: *((\\S|\\s)+)");
-    regex keywords_regex("{ *((\\w+ *)+) *}");
-    regex punctuations_regex("\\[ *((\\p{P} *)+) *]");
+    vector <pair<string,string>> regular_definitions_vector;
+    vector <pair<string,string>> regular_expression_vector;
+    vector <string> keywords_vector;
+    vector <string> punctuations_vector;
+    regex regular_definition_regex;
+    regex regular_expression_regex;
+    regex keywords_regex;
+    regex punctuations_regex;
     smatch match;
     bool no_errors = true;
 

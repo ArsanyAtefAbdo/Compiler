@@ -6,7 +6,13 @@
 
 #include <utility>
 
-ReadLexicalRulesFile::ReadLexicalRulesFile(){}
+ReadLexicalRulesFile::ReadLexicalRulesFile(){
+    this->regular_definition_regex = "(\\w+) *= *((\\S|\\s)+)";
+    this->regular_expression_regex = "(\\w+) *: *((\\S|\\s)+)";
+    this->keywords_regex = "{ *((\\w+ *)+) *}";
+    this->punctuations_regex = "\\[ *((\\p{P} *)+) *]";
+
+}
 
 ReadLexicalRulesFile::~ReadLexicalRulesFile(){
     this->regular_definitions_vector.clear();
@@ -73,22 +79,4 @@ void ReadLexicalRulesFile::read_from_file(string input_file) {
     }
 }
 
-vector<pair<string, string>> get_regular_definitions_vector(){
-    return regular_definitions_vector;
-}
 
-vector<pair<string,string>> get_regular_expression_vector(){
-    return regular_expression_vector;
-}
-
-vector<string> get_keywords_vector(){
-    return keywords_vector;
-}
-
-vector<char> get_punctuations_vector(){
-    return punctuations_vector;
-}
-
-bool is_no_errors(){
-    return no_errors;
-}
