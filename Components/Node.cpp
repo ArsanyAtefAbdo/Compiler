@@ -3,11 +3,13 @@
 //
 
 #include "Node.h"
+
+#include <utility>
 #include "Edge.h"
 
-Node::Node(string& name, bool isFinal) {
+Node::Node(string name, bool isFinal) {
     this->isFinal = isFinal;
-    this->name = name;
+    this->name = std::move(name);
 
 }
 Node::~Node() {
@@ -15,7 +17,6 @@ Node::~Node() {
 }
 Node::Node(bool isFinal) {
     this->isFinal = isFinal;
-    this->name = "final State";
 }
 
 const string &Node::getName() const {
@@ -26,7 +27,7 @@ void Node::setName(const string &name) {
     this->name = name;
 }
 
-bool Node::isFinal1() const {
+bool Node::isFinalState() const {
     return isFinal;
 }
 

@@ -13,7 +13,7 @@ using namespace std;
 class Node;
 class Edge {
 public:
-    Edge(Node* destination, char startAlphabte , char endAlphabte);
+    Edge(Node* destination, char startAlphabet , char endAlphabet);
     virtual ~Edge();
 
 public:

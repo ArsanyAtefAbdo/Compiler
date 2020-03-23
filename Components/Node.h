@@ -8,13 +8,13 @@
 #include <iostream>
 #include <bits/stdc++.h>
 #include "Edge.h"
-
+#define FINALSTATE true
 using namespace std;
 
 class Edge;
 class Node {
 public:
-    Node(string& name , bool isFinal);
+    Node(string name , bool isFinal);
     explicit Node(bool isFinal);
     virtual ~Node();
 
@@ -24,7 +24,7 @@ private:
     vector<Edge*>edges;
 
 public:
-    bool isFinal1() const;
+    bool isFinalState() const;
 
     void setIsFinal(bool isFinal);
 
