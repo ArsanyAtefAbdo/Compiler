@@ -10,8 +10,12 @@ class Node;
 class NFA;
 class DFA {
 public:
-    vector<vector<Node*>> NFAtoDFA(const NFA& nfa,const set<char>& alphabet);
+    vector<vector<Node*>> NFAtoDFA( NFA* nfa,const set<char>& alphabet);
+    static set<Node*> closure(set<Node *> nodes);
+    set<Node*> closure(Node * node);
+    static set<Node *> move(set<Node*> nodes, char symbol);
 
+    const vector<Node *> getDfaStates() const;
 private:
     vector <set<Node*>> nfaStates;
     vector<vector<Node*>> Dtran;
@@ -26,9 +30,6 @@ private:
          .
          .
     **/
-    static set<Node*> closure(set<Node *> nodes);
-    set<Node*> closure(Node * node);
-    static set<Node *> move(set<Node*> nodes, char symbol);
 
 };
 #endif //LEXICAL_ANALYZER_GENERATOR_DFA_H

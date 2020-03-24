@@ -6,14 +6,14 @@
 
 /// The subset construction of a DFA from an NFA.
 /// constructs a transition table Dtran, Each state of D is a set of NFA states.
-vector<vector<Node *>> DFA::NFAtoDFA(const NFA& nfa,const set<char>& alphabet) {
+vector<vector<Node *>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet) {
     vector<vector<Node *>> res;
     set<Node *> nfaState;
     Node *dfaState = nullptr;
     int i = 0;
     set<Node *> u;
     set<Edge *> y;
-    nfaState.insert(nfa.getStart());
+    nfaState.insert(nfa->getStart());
     nfaState = closure(nfaState);
     nfaStates.push_back(nfaState);
     dfaStates.push_back(dfaState);
@@ -28,7 +28,7 @@ vector<vector<Node *>> DFA::NFAtoDFA(const NFA& nfa,const set<char>& alphabet) {
             for (int k = 0; k < nfaStates.size(); k++) {
                 if (u == nfaStates.at(k)) {
                     Dtran.at(i).at(c) = dfaStates.at(k);
-                    Edge nedge = Edge(dfaStates.at(k), '-', '-'); //ttrdel
+                    Edge nedge = Edge(dfaStates.at(k), c, c);
                     dfaState->addEdge(&nedge );
                     found = true;
                 }
@@ -90,4 +90,9 @@ set<Node *> DFA::move(set<Node *> nodes, char symbol) {
     }
     return res;
 }
+
+const vector<Node *> DFA::getDfaStates() const {
+    return dfaStates;
+}
+
 
