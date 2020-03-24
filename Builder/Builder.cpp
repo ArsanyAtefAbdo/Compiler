@@ -97,3 +97,51 @@ NFA *Builder::buildCombineRecognizer(NFA *recognizer1, NFA *recognizer2) {
 
     return new NFA(start, nullptr);
 }
+
+NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
+    NFA* result = nullptr;
+    stack<NFA*> stack{};
+    for(LexicalRuleTerm* term:rule->getTerms()){
+        switch(term->getType()){
+            case Operation:{
+                if(term->getValue() == "|"){
+                    NFA* a = stack.top();stack.pop();
+                    NFA* b = stack.top();stack.pop();
+                    stack.push(buildORRecognizer(a, b));
+
+                }else if(term->getValue() == "+"){
+                    NFA* a = stack.top();stack.pop();
+                    stack.push(buildPositiveClosureRecognizer(a));
+
+                }else if(term->getValue() == "*"){
+                    NFA* a = stack.top();stack.pop();
+                    stack.push(buildClosureRecognizer(a));
+                }else{
+                    NFA* a = stack.top();stack.pop();
+                    NFA* b = stack.top();stack.pop();
+                    stack.push(buildANDRecognizer(a, b));
+                }
+            }break;
+            case CharGroup: {
+                NFA* a = buildAlphabetRecognizer(term->getValue()[0], term->getValue()[2]);
+                stack.push(a);
+            }break;
+            case WORD:{
+                NFA* a = buildEPSRecognizer();
+                for(char c: term->getValue()){
+                    NFA* a = buildANDRecognizer(result, buildLetterRecognizer(c));
+                }
+                stack.push(a);
+            }break;
+            case EPSILON:{
+                NFA* a = buildEPSRecognizer();
+                stack.push(a);
+            }break;
+            case parenthesis:
+                break;
+        }
+    }
+    result = stack.top();stack.pop();
+    result->getEnd()->setName(rule->getName());
+    return result;
+}

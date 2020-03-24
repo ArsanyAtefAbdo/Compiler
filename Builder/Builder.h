@@ -5,7 +5,7 @@
 #ifndef LEXICAL_ANALYZER_GENERATOR_BUILDER_H
 #define LEXICAL_ANALYZER_GENERATOR_BUILDER_H
 #include "../Components/NFA.h"
-
+#include "../Components/LexicalRule.h"
 class NFA;
 class Builder {
 public:
@@ -24,7 +24,7 @@ private:
     NFA* buildANDRecognizer(NFA* recognizer1, NFA* recognizer2);
     NFA* buildClosureRecognizer(NFA* recognizer);
     NFA* buildPositiveClosureRecognizer(NFA* recognizer);
-
+    NFA* buildNFAFromLexicalRule(LexicalRule* rule);
 };
 
 
