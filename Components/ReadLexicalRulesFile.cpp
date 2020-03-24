@@ -30,22 +30,47 @@ void ReadLexicalRulesFile::read_from_file(string input_file) {
         if (regex_search(str, match, regular_definition_regex)){
             pair<string, vector<string>> temp;
             temp.first = match.str(1);
-            temp.second = split_by_spaces(match.str(2));
+            string set_string = match.str(2);
+            set_string = removeSpaces(set_string);
+            temp.second = split_for_regular_definition(set_string);
             regular_definitions_vector.push_back(temp);
         } else if (regex_search(str, match, regular_expression_regex)){
             pair<string, vector<string>> temp;
             temp.first = match.str(1);
-
-            temp.second = split_by_spaces(match.str(2));
+            string set_string = match.str(2);
+            set_string = removeSpaces(set_string);
+            temp.second = split_for_regular_expression(set_string);
             regular_expression_vector.push_back(temp);
         } else if (regex_search(str, match, keywords_regex)){
             keywords_vector = split_by_spaces(match.str(1));
         } else if (regex_search(str, match, punctuations_regex)){
-            punctuations_vector = split_by_spaces(match.str(1));
+            string set_string = match.str(1);
+            set_string = removeSpaces(set_string);
+            punctuations_vector = split_each_char(set_string);
         } else {
             no_errors = false;
         }
     }
+}
+
+string ReadLexicalRulesFile::removeSpaces(string str) {
+    str.erase(remove(str.begin(), str.end(), ' '), str.end());
+    return str;
+}
+
+vector<string> ReadLexicalRulesFile::split_each_char(string str) {
+    vector<string> after_split;
+    string temp = "";
+    for (auto i : str){
+        if (i == '\\'){
+            temp += i;
+        } else {
+            temp += i;
+            after_split.push_back(temp);
+            temp = "";
+        }
+    }
+    return after_split;
 }
 
 vector<string> ReadLexicalRulesFile::split_by_spaces(string to_be_splitted) {
@@ -68,6 +93,55 @@ vector<string> ReadLexicalRulesFile::split_by_spaces(string to_be_splitted) {
     }
     return returner;
 }
+
+vector<string> ReadLexicalRulesFile::split_for_regular_definition(string str) {
+    vector<string> after_split;
+    string ans = "";
+    for (auto i : str){
+        if (ans != "" && (i == '|' || i == '+' || i == '*' || i == '?' || i == '(' || i == ')')){
+            after_split.push_back(ans);
+            ans = "";
+            ans += i;
+            after_split.push_back(ans);
+            ans = "";
+        } else {
+            ans += i;
+        }
+    }
+    if (ans != ""){
+        after_split.push_back(ans);
+    }
+    return after_split;
+}
+
+vector<string> ReadLexicalRulesFile::split_for_regular_expression(string str) {
+    vector<string> after_split;
+    string ans = "";
+    for (auto i : str){
+        if (ans == "\\"){
+            ans += i;
+            after_split.push_back(ans);
+            ans = "";
+        } else if (ans == "" && (i == '|' || i == '+' || i == '*' || i == '?' || i == '.' || i == '(' || i == ')')){
+            ans += i;
+            after_split.push_back(ans);
+            ans = "";
+        }else if (ans != "" && (i == '|' || i == '+' || i == '*' || i == '?' || i == '.' || i == '(' || i == ')')){
+            after_split.push_back(ans);
+            ans = "";
+            ans += i;
+            after_split.push_back(ans);
+            ans = "";
+        } else {
+            ans += i;
+        }
+    }
+    if (ans != ""){
+        after_split.push_back(ans);
+    }
+    return after_split;
+}
+
 vector<pair<string, vector<string>>> ReadLexicalRulesFile::get_regular_definitions_vector() {
     return regular_definitions_vector;
 }
@@ -87,8 +161,6 @@ vector<string> ReadLexicalRulesFile::get_punctuations_vector() {
 bool ReadLexicalRulesFile::is_no_errors() {
     return no_errors;
 }
-
-
 
 //            bool flag_clear_keyword_temp = false;
 //            string keyword_temp = "";
