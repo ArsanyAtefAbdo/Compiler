@@ -42,11 +42,13 @@ void ReadLexicalRulesFile::read_from_file(string input_file) {
             temp.second = split_for_regular_expression(set_string);
             regular_expression_vector.push_back(temp);
         } else if (regex_search(str, match, keywords_regex)){
-            keywords_vector = split_by_spaces(match.str(1));
+            vector<string> temp_vec = split_by_spaces(match.str(1));
+            keywords_vector.insert(keywords_vector.begin(), temp_vec.begin(), temp_vec.end());
         } else if (regex_search(str, match, punctuations_regex)){
             string set_string = match.str(1);
             set_string = removeSpaces(set_string);
-            punctuations_vector = split_each_char(set_string);
+            vector<string> temp_vec = split_each_char(set_string);
+            punctuations_vector.insert(punctuations_vector.begin(), temp_vec.begin(), temp_vec.end());
         } else {
             no_errors = false;
         }

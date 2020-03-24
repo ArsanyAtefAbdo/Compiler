@@ -29,11 +29,11 @@ private:
     smatch match;
     bool no_errors;
 
-    vector<string> split_by_spaces(string to_be_splitted);
-    string removeSpaces(string str);
-    vector<string> split_each_char(string str);
-    vector<string> split_for_regular_definition(string str);
-    vector<string> split_for_regular_expression(string str);
+    static vector<string> split_by_spaces(string to_be_splitted);
+    static string removeSpaces(string str);
+    static vector<string> split_each_char(string str);
+    static vector<string> split_for_regular_definition(string str);
+    static vector<string> split_for_regular_expression(string str);
 
 public:
     void read_from_file(string input_file);
