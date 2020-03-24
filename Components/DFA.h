@@ -4,32 +4,28 @@
 
 #ifndef LEXICAL_ANALYZER_GENERATOR_DFA_H
 #define LEXICAL_ANALYZER_GENERATOR_DFA_H
-
+#include <map>
 #include "NFA.h"
 class Node;
 class NFA;
 class DFA {
 public:
-    vector<vector<Node*>> NFAtoDFA( NFA* nfa,const set<char>& alphabet);
+    map <Node* , map<char , Node*>> NFAtoDFA( NFA* nfa,const set<char>& alphabet);
     static set<Node*> closure(set<Node *> nodes);
     set<Node*> closure(Node * node);
     static set<Node *> move(set<Node*> nodes, char symbol);
-
-    const vector<Node *> getDfaStates() const;
+    map<Node*, map<char , Node*>> getDtable() const;
 private:
-    vector <set<Node*>> nfaStates;
-    vector<vector<Node*>> Dtran;
-    vector<Node*> dfaStates;
-    vector<bool> mark;
+    map <Node* , map<char , Node*>> Dtable;
     /**
-    Sim:
-        nfaStates   dfaStates  mark              Dtran
-                                          a   b   c   d   e ...
-         <..,..>        A       1         B   -   -   E   - ...
-         .
-         .
-         .
-    **/
-
+     Sim:
+     map<   Node*        ,        map<char , Node*>    >
+            dfaStates
+                             a   b   c   d   e ...    <----- alphabet
+               A             B   -   -   E   - ...    <----- go from A to B by input a.
+               .
+               .
+               .
+     **/
 };
 #endif //LEXICAL_ANALYZER_GENERATOR_DFA_H

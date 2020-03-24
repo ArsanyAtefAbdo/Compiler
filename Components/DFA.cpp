@@ -5,42 +5,49 @@
 #include "DFA.h"
 
 /// The subset construction of a DFA from an NFA.
-/// constructs a transition table Dtran, Each state of D is a set of NFA states.
-vector<vector<Node *>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet) {
-    vector<vector<Node *>> res;
+/// constructs a transition table Dtable.
+map <Node* , map<char , Node*>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet) {
+
+    map <set<Node*>,Node*> ndStates;
+    map <Node*,bool> mark;
     set<Node *> nfaState;
-    Node *dfaState = nullptr;
     int i = 0;
-    set<Node *> u;
-    set<Edge *> y;
     nfaState.insert(nfa->getStart());
     nfaState = closure(nfaState);
-    nfaStates.push_back(nfaState);
-    dfaStates.push_back(dfaState);
-    mark.at(i) = true;
-    set<set<Node *>>::iterator itr;
-    for (int j = 0; j < nfaStates.size(); j++) {  // loop on all states we get
-        nfaState = nfaStates.at(j);
-        dfaState = dfaStates.at(j);
-        for (auto c:alphabet) {    // loop on each input symbol
-            u = closure(move(nfaState, c));
-            bool found = false;
-            for (int k = 0; k < nfaStates.size(); k++) {
-                if (u == nfaStates.at(k)) {
-                    Dtran.at(i).at(c) = dfaStates.at(k);
-                    Edge nedge = Edge(dfaStates.at(k), c, c);
-                    dfaState->addEdge(&nedge );
-                    found = true;
+    Node * dfaState = new Node("A",false);
+    ndStates.insert(pair<set<Node*>,Node*>(nfaState,dfaState));
+    mark.insert(pair<Node*,bool>(dfaState,false));
+    map <set<Node*>,Node*>::iterator itr;
+    map <set<Node*>,Node*>::iterator itr2;
+    for (itr = ndStates.begin(); (itr != ndStates.end()) ; itr++) {  // loop on all states we get
+        i++;
+        nfaState = itr->first;
+        dfaState = itr->second;
+        if (!mark.find(dfaState)->second) {
+            mark.at(dfaState) = true;
+            map <char , Node*> drow ;
+            for (auto c:alphabet) {    // loop on each input symbol
+                set<Node *> u = closure(move(nfaState, c));
+                bool found = false;
+                for (itr2 = ndStates.begin(); (itr2 != ndStates.end()) ; itr2++) {
+                    if (u == itr2->first) {
+                        drow.at(c) = itr2->second;
+                        Edge nedge = Edge(itr2->second, c, c);
+                        dfaState->addEdge(&nedge);
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    std::string s(1, 'A'+i);
+                    Node * d = new Node(s,false);
+                    ndStates.insert(pair<set<Node*>,Node*>(u,d));
+                    mark.insert(pair<Node*,bool>(d,false));
                 }
             }
-            if (!found) {
-                nfaStates.push_back(u);
-                Node *ndfaState = nullptr;
-                dfaStates.push_back(ndfaState);
-            }
+            Dtable.insert(pair<Node* , map<char , Node*>>(dfaState,drow));
         }
     }
-    return res;
+    return Dtable;
 }
 
 /// Set of Nodes "NFA states" reachable from some NFA state in nodes "NFA states" on ε-transitions alone
@@ -91,8 +98,6 @@ set<Node *> DFA::move(set<Node *> nodes, char symbol) {
     return res;
 }
 
-const vector<Node *> DFA::getDfaStates() const {
-    return dfaStates;
+map<Node *, map<char, Node *>> DFA::getDtable() const {
+    return Dtable;
 }
-
-
