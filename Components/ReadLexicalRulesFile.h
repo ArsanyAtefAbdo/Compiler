@@ -21,10 +21,10 @@ private:
     vector <pair<string,string>> regular_expression_vector;
     vector <string> keywords_vector;
     vector <string> punctuations_vector;
-    std::regex regular_definition_regex;
-    std::regex regular_expression_regex;
-    std::regex keywords_regex;
-    std::regex punctuations_regex;
+    regex regular_definition_regex;
+    regex regular_expression_regex;
+    regex keywords_regex;
+    regex punctuations_regex;
     smatch match;
     bool no_errors = true;
 
