@@ -17,8 +17,8 @@ public:
     virtual ~ReadLexicalRulesFile();
 
 private:
-    vector <pair<string,string>> regular_definitions_vector;
-    vector <pair<string,string>> regular_expression_vector;
+    vector <pair<string,vector<string>>> regular_definitions_vector;
+    vector <pair<string,vector<string>>> regular_expression_vector;
     vector <string> keywords_vector;
     vector <string> punctuations_vector;
     regex regular_definition_regex;
@@ -27,14 +27,14 @@ private:
     regex punctuations_regex;
     smatch match;
     bool no_errors;
-
+    vector<string> split_by_spaces(string to_be_splitted);
 
 public:
     void read_from_file(string input_file);
 
-    vector<pair<string, string>> get_regular_definitions_vector();
+    vector<pair<string, vector<string>>> get_regular_definitions_vector();
 
-    vector<pair<string,string>> get_regular_expression_vector();
+    vector<pair<string, vector<string>>> get_regular_expression_vector();
 
     vector<string> get_keywords_vector();
 
