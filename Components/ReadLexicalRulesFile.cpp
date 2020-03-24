@@ -9,10 +9,10 @@
 
 
 ReadLexicalRulesFile::ReadLexicalRulesFile(){
-    this->regular_definition_regex = regex("(\\w+) *= *((\\S|\\s)+)");
-    this->regular_expression_regex = regex("(\\w+) *: *((\\S|\\s)+)");
-    this->keywords_regex = regex("{ *((\\w+ *)+) *}");
-    this->punctuations_regex = regex("\\[ *((\\p{P} *)+) *]");
+    this->regular_definition_regex = regex(R"((\w+) *= *((\S|\s)+))");
+    this->regular_expression_regex = regex(R"((\w+) *: *((\S|\s)+))");
+    this->keywords_regex = regex(R"(\{ *((\w+ *)+) *})");
+    this->punctuations_regex = regex(R"(\[ *((. *)+) *\])");
 }
 
 ReadLexicalRulesFile::~ReadLexicalRulesFile(){
