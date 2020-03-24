@@ -12,7 +12,7 @@ ReadLexicalRulesFile::ReadLexicalRulesFile(){
     this->regular_definition_regex = regex(R"((\w+) *= *((\S|\s)+))");
     this->regular_expression_regex = regex(R"((\w+) *: *((\S|\s)+))");
     this->keywords_regex = regex(R"(\{ *((\w+ *)+) *})");
-    this->punctuations_regex = regex(R"(\[ *((. *)+) *\])");
+    this->punctuations_regex = regex(R"(\[ *(([^\d\w] *)+) *\])");
     this->no_errors = true;
 }
 
