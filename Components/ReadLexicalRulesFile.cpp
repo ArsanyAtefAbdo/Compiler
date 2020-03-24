@@ -13,6 +13,7 @@ ReadLexicalRulesFile::ReadLexicalRulesFile(){
     this->regular_expression_regex = regex(R"((\w+) *: *((\S|\s)+))");
     this->keywords_regex = regex(R"(\{ *((\w+ *)+) *})");
     this->punctuations_regex = regex(R"(\[ *((. *)+) *\])");
+    this->no_errors = true;
 }
 
 ReadLexicalRulesFile::~ReadLexicalRulesFile(){
@@ -30,10 +31,12 @@ void ReadLexicalRulesFile::read_from_file(string input_file) {
             pair<string, string> temp;
             temp.first = match.str(1);
             temp.second = match.str(2);
+            regular_definitions_vector.push_back(temp);
         } else if (regex_search(str, match, regular_expression_regex)){
             pair<string, string> temp;
             temp.first = match.str(1);
             temp.second = match.str(2);
+            regular_expression_vector.push_back(temp);
         } else if (regex_search(str, match, keywords_regex)){
             bool flag_clear_keyword_temp = false;
             string keyword_temp = "";
@@ -92,8 +95,8 @@ vector<string> ReadLexicalRulesFile::get_keywords_vector() {
     return keywords_vector;
 }
 
-vector<char> ReadLexicalRulesFile::get_punctuations_vector() {
-    return vector<char>();
+vector<string> ReadLexicalRulesFile::get_punctuations_vector() {
+    return punctuations_vector;
 }
 
 bool ReadLexicalRulesFile::is_no_errors() {

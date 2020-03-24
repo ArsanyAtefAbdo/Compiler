@@ -26,7 +26,7 @@ private:
     regex keywords_regex;
     regex punctuations_regex;
     smatch match;
-    bool no_errors = true;
+    bool no_errors;
 
 
 public:
@@ -38,7 +38,7 @@ public:
 
     vector<string> get_keywords_vector();
 
-    vector<char> get_punctuations_vector();
+    vector<std::string> get_punctuations_vector();
 
     bool is_no_errors();
 };
