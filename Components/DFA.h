@@ -12,11 +12,12 @@ class DFA {
 public:
     map <Node* , map<char , Node*>> NFAtoDFA( NFA* nfa,const set<char>& alphabet);
     static set<Node*> closure(set<Node *> nodes);
-    set<Node*> closure(Node * node);
-    static set<Node *> move(set<Node*> nodes, char symbol);
+//    set<Node*> closure(Node * node);
+    static set<Node *> move(const set<Node*>& nodes, char symbol);
     map<Node*, map<char , Node*>> getDtable() const;
 private:
     map <Node* , map<char , Node*>> Dtable;
+    static bool compsets(const set<Node*>&x ,set<Node*>y);
     /**
      Sim:
      map<   Node*        ,        map<char , Node*>    >
@@ -27,5 +28,6 @@ private:
                .
                .
      **/
+     Node* nullNode = new Node("null",false);
 };
 #endif //LEXICAL_ANALYZER_GENERATOR_DFA_H
