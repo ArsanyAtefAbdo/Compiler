@@ -56,6 +56,6 @@ string NFA::toString() {
         }
 
     }
-    //str += this->getEnd()->getName() + " START : s" + to_string(visited[this->start]) + "\n";
+    str += this->getEnd()->getName() + " START : s" + to_string(visited[this->start]) + "\n";
     return str;
 }

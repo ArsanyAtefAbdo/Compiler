@@ -32,6 +32,13 @@ LexicalRule *LexicalRuleBuilder::buildPostFixRule(const pair<string,vector<strin
                 stack.push(term);
             }
         } else if(term->getType() == Operation){
+            if(term->getValue() == "@" || term->getValue() == "|"){
+                while(!stack.empty() && stack.top()->getType() == Operation && !(stack.top()->getValue() == "@" && stack.top()->getValue() == "|")
+                                    && !(stack.top()->getType() == parenthesis && stack.top()->getValue() == "(")){
+                    postFixTerms.push_back(stack.top());
+                    stack.pop();
+                }
+            }
             stack.push(term);
         }else if(term->getType() == WORD && this->mapOfTerms.find(term->getValue()) != this->mapOfTerms.end()){
             vector<LexicalRuleTerm *>tempTerms = this->mapOfTerms.at(term->getValue());

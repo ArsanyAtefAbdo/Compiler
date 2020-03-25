@@ -58,8 +58,11 @@ vector<vector<Node *>> Minimizer::Minimize(vector<vector<Node *>> partitions) {
                     Node* s1 = p.at(i);
                     Node* s2 = p.at(j);
 
-                    if ((!areStatesUnique(partitions, s1, s2)) && DFAStates.at(s1) == DFAStates.at(s2)){
-                        temp.push_back(s2);
+                    if ((!areStatesUnique(partitions, s1, s2)) && DFAStates.find(s1) != DFAStates.end() && DFAStates.find(s2) != DFAStates.end()){
+
+                        if(DFAStates.at(s1) == DFAStates.at(s2)){
+                            temp.push_back(s2);
+                        }
                     }
                 }
                 res.push_back(temp);
@@ -116,7 +119,8 @@ bool Minimizer::areStatesUnique(vector<vector<Node*>> partitions, Node *state1, 
 /*
  * return true if two states are in the same partition
  */
-bool containedBySamePartition(vector<vector<Node*>> partitions, Node* State1, Node* State2) {
+bool Minimizer::containedBySamePartition(vector<vector<Node *>> partitions, Node *State1, Node *State2) {
+
     for (vector<Node*> p:partitions){
         if ((std::find(p.begin(), p.end(), State1) != p.end()) && (std::find(p.begin(), p.end(), State2) != p.end())){
             return true;
@@ -142,7 +146,7 @@ bool Minimizer::containState(vector<vector<Node*>> partitions, Node* state) {
 }
 
 const vector<Node*> Minimizer::getFinalstates() const{
-return Finalstates;
+    return Finalstates;
 }
 
 void Minimizer::setFinalstates(const vector<Node*> finalstates) {
@@ -150,7 +154,7 @@ void Minimizer::setFinalstates(const vector<Node*> finalstates) {
 }
 
 const vector<Node*> Minimizer::getNonfinalstates() const{
-return Nonfinalstates;
+    return Nonfinalstates;
 }
 
 void Minimizer::setNonfinalstates(const vector<Node*> nonfinalstates) {
@@ -158,7 +162,7 @@ void Minimizer::setNonfinalstates(const vector<Node*> nonfinalstates) {
 }
 
 const vector<vector<Node*>> Minimizer::getPartitions() const{
-return partitions;
+    return partitions;
 }
 
 void Minimizer::setPartitions(const vector<vector<Node*>> partitions) {
@@ -166,7 +170,7 @@ void Minimizer::setPartitions(const vector<vector<Node*>> partitions) {
 }
 
 const map <Node* , map<char , Node*>> Minimizer::getDfaStates() const{
-return DFAStates;
+    return DFAStates;
 }
 
 void Minimizer::setDfaStates(const map <Node* , map<char , Node*>> dfaStates) {
