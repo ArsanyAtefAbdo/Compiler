@@ -7,6 +7,8 @@
 
 #include "DFA.h"
 
+class Node;
+class NFA;
 class Minimizer {
 public:
     map <Node* , map<char , Node*>> DFAMinimize( DFA* dfa,const set<char>& alphabet);

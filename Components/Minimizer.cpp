@@ -36,6 +36,7 @@ map<Node *, map<char, Node *>> Minimizer::DFAMinimize(DFA *dfa, const set<char> 
              /*
               * inserting in map (MinStates)
               */
+             MinStates.insert(pair<Node* , map<char , Node*>>(N,N->getName()));
          }
      }
 
