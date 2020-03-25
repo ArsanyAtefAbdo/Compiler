@@ -8,6 +8,7 @@
 #include <bits/stdc++.h>
 #include <regex>
 #include <algorithm>
+#include "LexicalRuleBuilder.h"
 
 using namespace std;
 
@@ -15,13 +16,13 @@ class ReadLexicalRulesFile {
 
 public:
     ReadLexicalRulesFile();
-    virtual ~ReadLexicalRulesFile();
+    virtual ~ReadLexicalRulesFile() = default;
 
 private:
-    vector <pair<string,vector<string>>> regular_definitions_vector;
-    vector <pair<string,vector<string>>> regular_expression_vector;
-    vector <string> keywords_vector;
-    vector <string> punctuations_vector;
+//    vector <pair<string,vector<string>>> regular_definitions_vector;
+//    vector <pair<string,vector<string>>> regular_expression_vector;
+//    vector <string> keywords_vector;
+//    vector <string> punctuations_vector;
     regex regular_definition_regex;
     regex regular_expression_regex;
     regex keywords_regex;
@@ -29,22 +30,27 @@ private:
     smatch match;
     bool no_errors;
 
+    vector<LexicalRule*>rules;
+public:
+    const vector<LexicalRule *> getRules() const;
+private:
+
     static vector<string> split_by_spaces(string to_be_splitted);
     static string removeSpaces(string str);
-    static vector<string> split_each_char(string str);
-    static vector<string> split_for_regular_definition(string str);
-    static vector<string> split_for_regular_expression(string str);
+    static vector<string> split_each_char(const string& str);
+    static vector<string> split_for_regular_definition(const string& str);
+    static vector<string> split_for_regular_expression(const string& str);
 
 public:
     void read_from_file(string input_file);
 
-    vector<pair<string, vector<string>>> get_regular_definitions_vector();
-
-    vector<pair<string, vector<string>>> get_regular_expression_vector();
-
-    vector<string> get_keywords_vector();
-
-    vector<std::string> get_punctuations_vector();
+//    vector<pair<string, vector<string>>> get_regular_definitions_vector();
+//
+//    vector<pair<string, vector<string>>> get_regular_expression_vector();
+//
+//    vector<string> get_keywords_vector();
+//
+//    vector<std::string> get_punctuations_vector();
 
     bool is_no_errors();
 };

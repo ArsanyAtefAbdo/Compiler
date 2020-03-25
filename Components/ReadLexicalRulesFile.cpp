@@ -7,20 +7,12 @@
 #include <utility>
 
 
-
 ReadLexicalRulesFile::ReadLexicalRulesFile(){
     this->regular_definition_regex = regex(R"((\w+) *= *((\S|\s)+))");
     this->regular_expression_regex = regex(R"((\w+) *: *((\S|\s)+))");
     this->keywords_regex = regex(R"(\{ *((\w+ *)+) *})");
     this->punctuations_regex = regex(R"(\[ *(([^\d\w] *)+) *\])");
     this->no_errors = true;
-}
-
-ReadLexicalRulesFile::~ReadLexicalRulesFile(){
-    this->regular_definitions_vector.clear();
-    this->regular_expression_vector.clear();
-    this->keywords_vector.clear();
-    this->punctuations_vector.clear();
 }
 
 void ReadLexicalRulesFile::read_from_file(string input_file) {
@@ -33,22 +25,22 @@ void ReadLexicalRulesFile::read_from_file(string input_file) {
             string set_string = match.str(2);
             set_string = removeSpaces(set_string);
             temp.second = split_for_regular_definition(set_string);
-            regular_definitions_vector.push_back(temp);
+            this->rules.push_back(LexicalRuleBuilder::getInstance()->buildPostFixRule(temp, RegularDefinition));
         } else if (regex_search(str, match, regular_expression_regex)){
             pair<string, vector<string>> temp;
             temp.first = match.str(1);
             string set_string = match.str(2);
-            set_string = removeSpaces(set_string);
+            //set_string = removeSpaces(set_string);
             temp.second = split_for_regular_expression(set_string);
-            regular_expression_vector.push_back(temp);
+            this->rules.push_back(LexicalRuleBuilder::getInstance()->buildPostFixRule(temp, RegularExpression));
         } else if (regex_search(str, match, keywords_regex)){
-            vector<string> temp_vec = split_by_spaces(match.str(1));
-            keywords_vector.insert(keywords_vector.begin(), temp_vec.begin(), temp_vec.end());
+            vector<LexicalRule*> temp_vec = LexicalRuleBuilder::getInstance()->buildRules(split_by_spaces(match.str(1)), Keyword);
+            this->rules.insert(this->rules.end(), temp_vec.begin(), temp_vec.end());
         } else if (regex_search(str, match, punctuations_regex)){
             string set_string = match.str(1);
             set_string = removeSpaces(set_string);
-            vector<string> temp_vec = split_each_char(set_string);
-            punctuations_vector.insert(punctuations_vector.begin(), temp_vec.begin(), temp_vec.end());
+            vector<LexicalRule*> temp_vec = LexicalRuleBuilder::getInstance()->buildRules(split_each_char(set_string), Punctuation);
+            this->rules.insert(this->rules.end(), temp_vec.begin(), temp_vec.end());
         } else {
             no_errors = false;
         }
@@ -60,13 +52,11 @@ string ReadLexicalRulesFile::removeSpaces(string str) {
     return str;
 }
 
-vector<string> ReadLexicalRulesFile::split_each_char(string str) {
+vector<string> ReadLexicalRulesFile::split_each_char(const string& str) {
     vector<string> after_split;
-    string temp = "";
+    string temp;
     for (auto i : str){
-        if (i == '\\'){
-            temp += i;
-        } else {
+        if (i != '\\'){
             temp += i;
             after_split.push_back(temp);
             temp = "";
@@ -96,9 +86,9 @@ vector<string> ReadLexicalRulesFile::split_by_spaces(string to_be_splitted) {
     return returner;
 }
 
-vector<string> ReadLexicalRulesFile::split_for_regular_definition(string str) {
+vector<string> ReadLexicalRulesFile::split_for_regular_definition(const string& str) {
     vector<string> after_split;
-    string ans = "";
+    string ans;
     for (auto i : str){
         if (ans != "" && (i == '|' || i == '+' || i == '*' || i == '?' || i == '(' || i == ')')){
             after_split.push_back(ans);
@@ -116,52 +106,59 @@ vector<string> ReadLexicalRulesFile::split_for_regular_definition(string str) {
     return after_split;
 }
 
-vector<string> ReadLexicalRulesFile::split_for_regular_expression(string str) {
+vector<string> ReadLexicalRulesFile::split_for_regular_expression(const string& str) {
     vector<string> after_split;
-    string ans = "";
+    string ans;
     for (auto i : str){
         if (ans == "\\"){
             ans += i;
             after_split.push_back(ans);
             ans = "";
-        } else if (ans == "" && (i == '|' || i == '+' || i == '*' || i == '?' || i == '.' || i == '(' || i == ')')){
+        } else if (ans.empty() && (i == '|' || i == '+' || i == '*' || i == '?' || i == '.' || i == '(' || i == ')')){
             ans += i;
             after_split.push_back(ans);
             ans = "";
-        }else if (ans != "" && (i == '|' || i == '+' || i == '*' || i == '?' || i == '.' || i == '(' || i == ')')){
+        }else if (!ans.empty() && (i == '|' || i == '+' || i == '*' || i == '?' || i == '.' || i == '(' || i == ')')){
             after_split.push_back(ans);
             ans = "";
             ans += i;
             after_split.push_back(ans);
             ans = "";
-        } else {
+        }else if(i == ' '){
+            after_split.push_back(ans);
+            ans = "";
+        }else {
             ans += i;
         }
     }
-    if (ans != ""){
+    if (!ans.empty()){
         after_split.push_back(ans);
     }
     return after_split;
 }
 
-vector<pair<string, vector<string>>> ReadLexicalRulesFile::get_regular_definitions_vector() {
-    return regular_definitions_vector;
-}
-
-vector<pair<string, vector<string>>> ReadLexicalRulesFile::get_regular_expression_vector() {
-    return regular_expression_vector;
-}
-
-vector<string> ReadLexicalRulesFile::get_keywords_vector() {
-    return keywords_vector;
-}
-
-vector<string> ReadLexicalRulesFile::get_punctuations_vector() {
-    return punctuations_vector;
-}
+//vector<pair<string, vector<string>>> ReadLexicalRulesFile::get_regular_definitions_vector() {
+//    return regular_definitions_vector;
+//}
+//
+//vector<pair<string, vector<string>>> ReadLexicalRulesFile::get_regular_expression_vector() {
+//    return regular_expression_vector;
+//}
+//
+//vector<string> ReadLexicalRulesFile::get_keywords_vector() {
+//    return keywords_vector;
+//}
+//
+//vector<string> ReadLexicalRulesFile::get_punctuations_vector() {
+//    return punctuations_vector;
+//}
 
 bool ReadLexicalRulesFile::is_no_errors() {
     return no_errors;
+}
+
+const vector<LexicalRule *>ReadLexicalRulesFile::getRules() const{
+    return rules;
 }
 
 //            bool flag_clear_keyword_temp = false;

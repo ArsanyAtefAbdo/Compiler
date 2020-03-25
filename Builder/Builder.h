@@ -11,6 +11,8 @@ class Builder {
 public:
     virtual ~Builder() = default;
     static Builder* getInstance();
+    NFA* buildNFAFromLexicalRule(LexicalRule* rule);
+    NFA* buildNFAFromLexicalRules(vector<LexicalRule*> rules);
 
 private:
     Builder() = default;
@@ -24,7 +26,6 @@ private:
     NFA* buildANDRecognizer(NFA* recognizer1, NFA* recognizer2);
     NFA* buildClosureRecognizer(NFA* recognizer);
     NFA* buildPositiveClosureRecognizer(NFA* recognizer);
-    NFA* buildNFAFromLexicalRule(LexicalRule* rule);
 };
 
 

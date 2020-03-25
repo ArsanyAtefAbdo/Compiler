@@ -49,6 +49,12 @@ NFA *Builder::buildORRecognizer(NFA *recognizer1, NFA *recognizer2) {
 }
 
 NFA *Builder::buildANDRecognizer(NFA *recognizer1, NFA *recognizer2) {
+
+    if(recognizer1 == nullptr){
+        return recognizer2;
+    }else if(recognizer2 == nullptr){
+        return recognizer1;
+    }
     Node* start = recognizer1->getStart();
     Node* end = recognizer2->getEnd();
 
@@ -87,6 +93,11 @@ NFA *Builder::buildPositiveClosureRecognizer(NFA *recognizer) {
 
 NFA *Builder::buildCombineRecognizer(NFA *recognizer1, NFA *recognizer2) {
 
+    if(recognizer1 == nullptr){
+        return recognizer2;
+    }else if(recognizer2 == nullptr){
+        return recognizer1;
+    }
     Node* start = new Node(!FINALSTATE);
 
     start->addEdge(new Edge(recognizer1->getStart(), EPS, EPS));
@@ -105,8 +116,8 @@ NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
         switch(term->getType()){
             case Operation:{
                 if(term->getValue() == "|"){
-                    NFA* a = stack.top();stack.pop();
                     NFA* b = stack.top();stack.pop();
+                    NFA* a = stack.top();stack.pop();
                     stack.push(buildORRecognizer(a, b));
 
                 }else if(term->getValue() == "+"){
@@ -117,8 +128,8 @@ NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
                     NFA* a = stack.top();stack.pop();
                     stack.push(buildClosureRecognizer(a));
                 }else{
-                    NFA* a = stack.top();stack.pop();
                     NFA* b = stack.top();stack.pop();
+                    NFA* a = stack.top();stack.pop();
                     stack.push(buildANDRecognizer(a, b));
                 }
             }break;
@@ -127,9 +138,9 @@ NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
                 stack.push(a);
             }break;
             case WORD:{
-                NFA* a = buildEPSRecognizer();
+                NFA* a = nullptr;
                 for(char c: term->getValue()){
-                    NFA* a = buildANDRecognizer(result, buildLetterRecognizer(c));
+                    a = buildANDRecognizer(a, buildLetterRecognizer(c));
                 }
                 stack.push(a);
             }break;
@@ -144,4 +155,13 @@ NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
     result = stack.top();stack.pop();
     result->getEnd()->setName(rule->getName());
     return result;
+}
+
+NFA *Builder::buildNFAFromLexicalRules(vector<LexicalRule *>rules) {
+    NFA* nfa = nullptr;
+    for(LexicalRule* rule:rules){
+        NFA* a = this->buildNFAFromLexicalRule(rule);
+        nfa = buildCombineRecognizer(nfa, a);
+    }
+    return nfa;
 }

@@ -2,7 +2,7 @@
 #include "Components/ReadLexicalRulesFile.h"
 #include "Components/Node.h"
 #include "Components/DFA.h"
-
+#include "Builder/Builder.h"
 
 using namespace std;
 
@@ -10,25 +10,10 @@ using namespace std;
 int main() {
 //    auto* parser = new ReadLexicalRulesFile();
 //    parser->read_from_file("test.txt");
-//
-//    for(string s:parser->get_keywords_vector()){
-//        cout << s << " ";
-//    }
-//    for(char c:parser->get_punctuations_vector()){
-//        cout << c << " ";
-//    }
-//    for(auto p:parser->get_regular_expression_vector()){
-//        cout << p.first << " " << p.second << endl;
-//    }
-//    for(auto p:parser->get_regular_definitions_vector()){
-//        cout << p.first << " " << p.second << endl;
-//    }
-
-
-    Node* start = new Node("0");
+    Node* start = new Node("0",false);
     Node* end = new Node(true);
-    Node* one = new Node("0");
-    Node* two = new Node("0");
+    Node* one = new Node("1", false);
+    Node* two = new Node("2", false);
     Edge* e2e = new Edge(end , 'a', 'z');
     e2e->addDisallowedSymbol('t');
     two->addEdge(e2e);
@@ -41,7 +26,12 @@ int main() {
     NFA* n = new NFA(start,end);
     DFA* d = new DFA();
     set<char> alphabet = {'a','b','c','d','e','f'};
-    vector<vector<Node*>> ans = d->NFAtoDFA(n,alphabet);
-    cout << ans.size() << ans.at(0).size() << endl;
+    map<Node *, map<char, struct Node *>> ans = d->NFAtoDFA(n, alphabet);
+    cout << ans.size() << ans.size() << endl;
+
+    auto* parser = new ReadLexicalRulesFile();
+    parser->read_from_file("test.txt");
+    NFA* nfa = Builder::getInstance()->buildNFAFromLexicalRules(parser->getRules());
+    cout << nfa->toString();
     return 0;
 }

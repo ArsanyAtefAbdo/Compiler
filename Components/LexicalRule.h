@@ -9,7 +9,7 @@
 
 using namespace std;
 
-enum LexicalType{RegularExpression, Keyword, Punctuation};
+enum LexicalType{RegularExpression, Keyword, Punctuation , RegularDefinition};
 enum LexicalTermType{Operation, CharGroup, WORD, parenthesis, EPSILON};
 
 class LexicalRuleTerm{
@@ -27,6 +27,9 @@ public:
     LexicalTermType getType() const {
         return this->type;
     }
+    string toString(){
+        return value;
+    };
 
 private:
     string value;
@@ -62,6 +65,13 @@ public:
     }
     void addTerm(LexicalRuleTerm* term){
         this->terms.push_back(term);
+    }
+    string toString(){
+        string s = this->name + " ---> ";
+        for(LexicalRuleTerm* t:this->terms){
+            s += t->toString() + " ";
+        }
+        return s;
     }
 private:
     vector<LexicalRuleTerm*>terms;
