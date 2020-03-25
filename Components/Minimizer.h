@@ -16,14 +16,13 @@ public:
     bool areStatesUnique(vector<vector<Node*>> partitions, Node* state1, Node* state2);
     bool containedBySamePartition(vector<vector<Node*>> partitions, Node* State1, Node* State2);
     bool containState(vector<vector<Node*>> partitions, Node* state);
+    void updateTable(vector<Node*> temp);
 
 private:
     vector<Node*> Finalstates;
     vector<Node*> Nonfinalstates;
-   // queue<vector<Node*>> partitions;
     vector<vector<Node*>> partitions;
     map <Node* , map<char , Node*>> DFAStates;
-    map <Node* , map<char , Node*>> MinStates;
 
 public:
     const vector<Node*> getFinalstates() const;
@@ -42,11 +41,6 @@ public:
 
     void setDfaStates(const map <Node* , map<char , Node*>> dfaStates);
 
-    const map <Node* , map<char , Node*>> getMinStates() const;
-
-    void setMinStates(const map <Node* , map<char , Node*>> minStates);
-
-    bool containedBySameGroup(map<Node *, map<char, Node *>> DFAStates);
 };
 
 #endif //LEXICAL_ANALYZER_GENERATOR_MINIMIZER_H

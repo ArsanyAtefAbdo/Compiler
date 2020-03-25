@@ -28,42 +28,11 @@ map<Node *, map<char, Node *>> Minimizer::DFAMinimize(DFA *dfa, const set<char> 
     partitions.push_back(Nonfinalstates);
     partitions.push_back(Finalstates);
 
+    // minimize the table
     vector<vector<Node*>> result;
     result = Minimize(partitions);
-     int index = 0;
-     for (vector<Node*> r:result){
-         for (Node* N:r){
-             /*
-              * inserting in map (MinStates)
-              */
-             MinStates.insert(pair<Node* , map<char , Node*>>(N,N->getName()));
-         }
-     }
 
- /*   // loop inside the final and non final each alone then partition them again under the input
-    vector<Node*> NonequalStates;
-    while (!partitions.empty()){
-        vector<Node*>p = partitions.front();
-        partitions.pop();
-        for (int i = 0; i < p.size() - 1; i++){
-            vector<vector<Node*>> temp;
-            vector<Node*> equalStates;
-            for (int j = i + 1; j < p.size(); j++){
-                equalStates.push_back((p.at(i)));
-                if (DFAStates.at(p.at(i)) == DFAStates.at(p.at(j))){
-                    equalStates.push_back(p.at(j));
-                }else{
-                    NonequalStates.push_back(p.at(j));
-                }
-            }
-            temp.push_back(equalStates);
-            if (!NonequalStates.empty()){
-                partitions.push(NonequalStates);
-            }
-        }
-    }*/
-
-    return MinStates;
+    return DFAStates;
 }
 
 /*
@@ -89,11 +58,12 @@ vector<vector<Node *>> Minimizer::Minimize(vector<vector<Node *>> partitions) {
                     Node* s1 = p.at(i);
                     Node* s2 = p.at(j);
 
-                    if (!areStatesUnique(partitions, s1, s2)){
+                    if ((!areStatesUnique(partitions, s1, s2)) && DFAStates.at(s1) == DFAStates.at(s2)){
                         temp.push_back(s2);
                     }
                 }
                 res.push_back(temp);
+                updateTable(temp);
             }
         }else{
             // when group contain one state only
@@ -106,6 +76,27 @@ vector<vector<Node *>> Minimizer::Minimize(vector<vector<Node *>> partitions) {
     }
 
     return Minimize(res);
+}
+
+/*
+ * update table of the DFAStates
+ */
+void Minimizer::updateTable(vector<Node *> temp) {
+    if (temp.size() > 1){
+        Node* state = temp.at(0);
+        for (int i = 1; i < temp.size(); i++){
+            DFAStates.erase(temp.at(i));
+        }
+        for (pair<Node *, map<char, Node *>> row:DFAStates){
+            for (pair<char, Node*> c:row.second){
+                for(int i = 1; i < temp.size(); i++){
+                    if (temp.at(i) == c.second){
+                        c.second = state;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -180,12 +171,4 @@ return DFAStates;
 
 void Minimizer::setDfaStates(const map <Node* , map<char , Node*>> dfaStates) {
     DFAStates = dfaStates;
-}
-
-const map <Node* , map<char , Node*>> Minimizer::getMinStates() const{
-return MinStates;
-}
-
-void Minimizer::setMinStates(const map <Node* , map<char , Node*>> minStates) {
-    MinStates = minStates;
 }
