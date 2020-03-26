@@ -29,5 +29,6 @@ private:
                .
      **/
      Node* nullNode = new Node("null",false);
+     map <set<Node*>,Node*> ndStates;
 };
 #endif //LEXICAL_ANALYZER_GENERATOR_DFA_H

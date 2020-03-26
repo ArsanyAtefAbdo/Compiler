@@ -10,7 +10,6 @@ map <Node*, map<char, Node*>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet)
 {
     set<Node *> nfaState ;
     nfaState.clear();
-    map <set<Node*>,Node*> ndStates;
     ndStates.clear();
     map <Node*,bool> mark;
     mark.clear();
@@ -18,6 +17,9 @@ map <Node*, map<char, Node*>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet)
     nfaState.insert(nfa->getStart());
     nfaState = closure(nfaState);
     Node * dfaState = new Node("A",false);
+    if (nfaState.find(nfa->getEnd()) != nfaState.end()){
+        dfaState->setIsFinal(true);
+    }
     ndStates.insert(pair<set<Node*>,Node*>(nfaState,dfaState));
     mark.insert(pair<Node*,bool>(dfaState,false));
     int flag = 0;
@@ -71,6 +73,9 @@ map <Node*, map<char, Node*>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet)
                     }
                 }
                 Dtable.insert(pair<Node *, map<char, Node *>>(dfaState, *drow));
+            }
+            if (nfaState.find(nfa->getEnd()) != nfaState.end()){
+                dfaState->setIsFinal(true);
             }
         }
     } while (flag != 0 || bsize != ndStates.size());
