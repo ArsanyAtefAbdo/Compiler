@@ -23,6 +23,8 @@ public:
 
     string toString();
 
+    set<Node*> getFinalStates();
+
 private:
     Node* start;
     Node* end;

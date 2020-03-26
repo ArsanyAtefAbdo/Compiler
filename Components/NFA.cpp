@@ -59,3 +59,26 @@ string NFA::toString() {
     str += this->getEnd()->getName() + " START : s" + to_string(visited[this->start]) + "\n";
     return str;
 }
+
+set<Node *> NFA::getFinalStates() {
+    set<Node *> finalStates{};
+    set<Node*>visited{};
+    queue<Node*>s;
+    unsigned count = 0;
+    s.push(this->start);
+    while (!s.empty()){
+        Node* node = s.front();s.pop();
+        visited.insert(node);
+        for(Edge* e:node->getEdges()){
+            Node* targetNode = e->getDestination();
+            if(visited.find(targetNode) == visited.end()){
+                s.push(targetNode);
+            }
+        }
+        if(node->isFinalState()){
+            finalStates.insert(node);
+        }
+
+    }
+    return finalStates;
+}
