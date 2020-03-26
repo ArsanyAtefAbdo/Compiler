@@ -16,9 +16,12 @@ public:
     Node *getStartState() const;
     void setStartState(Node *startState);
     void setDTable(map <Node* , map<char , Node*>> dTable);
+    Node* move(Node* state, char symbol);
 private:
     Node* startState;
     map <Node* , map<char , Node*>> DTable;
+    Node* nullNode = new Node("null",false);
+
     /**
      Sim:
      map<   Node*        ,        map<char , Node*>    >

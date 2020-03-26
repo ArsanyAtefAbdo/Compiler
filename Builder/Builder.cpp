@@ -165,8 +165,11 @@ NFA *Builder::buildNFAFromLexicalRules(const vector<LexicalRule *>&rules) {
     NFA* nfa = nullptr;
     this->alphabet.clear();
     for(LexicalRule* rule:rules){
-        NFA* a = this->buildNFAFromLexicalRule(rule);
-        nfa = buildCombineRecognizer(nfa, a);
+        if(rule->getType() != RegularDefinition){
+
+            NFA* a = this->buildNFAFromLexicalRule(rule);
+            nfa = buildCombineRecognizer(nfa, a);
+        }
     }
     return nfa;
 }

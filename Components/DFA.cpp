@@ -27,3 +27,10 @@ void DFA::setStartState(Node *startState) {
 void DFA::setDTable(map <Node* , map<char , Node*>> dTable) {
     DTable = std::move(dTable);
 }
+
+Node *DFA::move(Node *state, char symbol) {
+    if(DTable.at(state).find(symbol) != DTable.at(state).end()){
+        return this->DTable.at(state).at(symbol);
+    }
+    return nullNode;
+}
