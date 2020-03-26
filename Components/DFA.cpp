@@ -17,8 +17,11 @@ map <Node*, map<char, Node*>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet)
     nfaState.insert(nfa->getStart());
     nfaState = closure(nfaState);
     Node * dfaState = new Node("A",false);
-    if (nfaState.find(nfa->getEnd()) != nfaState.end()){
-        dfaState->setIsFinal(true);
+    for (auto f:nfa->getFinalStates()) {
+        if (nfaState.find(f) != nfaState.end()) {
+            dfaState->setIsFinal(true);
+            break;
+        }
     }
     ndStates.insert(pair<set<Node*>,Node*>(nfaState,dfaState));
     mark.insert(pair<Node*,bool>(dfaState,false));
@@ -74,8 +77,11 @@ map <Node*, map<char, Node*>> DFA::NFAtoDFA( NFA* nfa,const set<char>& alphabet)
                 }
                 Dtable.insert(pair<Node *, map<char, Node *>>(dfaState, *drow));
             }
-            if (nfaState.find(nfa->getEnd()) != nfaState.end()){
-                dfaState->setIsFinal(true);
+            for (auto f:nfa->getFinalStates()) {
+                if (nfaState.find(f) != nfaState.end()) {
+                    dfaState->setIsFinal(true);
+                    break;
+                }
             }
         }
     } while (flag != 0 || bsize != ndStates.size());
