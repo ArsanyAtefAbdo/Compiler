@@ -24,11 +24,11 @@ DFA *Converter::convert(NFA *nfa, const set<char> &alphabet) {
     nfaState.insert(nfa->getStart());
     nfaState = closure(nfaState);
     Node * dfaState = new Node("A",false);
+    dfaState->setIsFinal(0);
     for (auto f:nfa->getFinalStates()) {
-        if (nfaState.find(f) != nfaState.end()) {
-            dfaState->setIsFinal(true);
+        if (nfaState.find(f) != nfaState.end() && (f->isFinalState() > dfaState->isFinalState())) {
+            dfaState->setIsFinal(f->isFinalState());
             dfaState->setName(f->getName());
-            break;
         }
     }
     Node* startState = dfaState;
@@ -87,10 +87,9 @@ DFA *Converter::convert(NFA *nfa, const set<char> &alphabet) {
                 Dtable.insert(pair<Node *, map<char, Node *>>(dfaState, *drow));
             }
             for (auto f:nfa->getFinalStates()) {
-                if (nfaState.find(f) != nfaState.end()) {
-                    dfaState->setIsFinal(true);
+                if (nfaState.find(f) != nfaState.end() && (f->isFinalState() > dfaState->isFinalState())) {
+                    dfaState->setIsFinal(f->isFinalState());
                     dfaState->setName(f->getName());
-                    break;
                 }
             }
         }
