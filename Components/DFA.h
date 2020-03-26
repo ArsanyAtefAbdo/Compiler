@@ -6,18 +6,19 @@
 #define LEXICAL_ANALYZER_GENERATOR_DFA_H
 #include <map>
 #include "NFA.h"
-class Node;
-class NFA;
+
+
 class DFA {
 public:
-    map <Node* , map<char , Node*>> NFAtoDFA( NFA* nfa,const set<char>& alphabet);
-    static set<Node*> closure(set<Node *> nodes);
-//    set<Node*> closure(Node * node);
-    static set<Node *> move(const set<Node*>& nodes, char symbol);
-    map<Node*, map<char , Node*>> getDtable() const;
+    DFA(Node *startState, const map<Node*, map<char , Node*>>& dTable);
+
+    map<Node*, map<char , Node*>> getDTable() const;
+    Node *getStartState() const;
+    void setStartState(Node *startState);
+    void setDTable(map <Node* , map<char , Node*>> dTable);
 private:
-    map <Node* , map<char , Node*>> Dtable;
-    static bool compsets(const set<Node*>&x ,set<Node*>y);
+    Node* startState;
+    map <Node* , map<char , Node*>> DTable;
     /**
      Sim:
      map<   Node*        ,        map<char , Node*>    >
@@ -28,7 +29,6 @@ private:
                .
                .
      **/
-     Node* nullNode = new Node("null",false);
-     map <set<Node*>,Node*> ndStates;
+
 };
 #endif //LEXICAL_ANALYZER_GENERATOR_DFA_H

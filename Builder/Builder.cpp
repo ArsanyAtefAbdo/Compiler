@@ -136,11 +136,15 @@ NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
             case CharGroup: {
                 NFA* a = buildAlphabetRecognizer(term->getValue()[0], term->getValue()[2]);
                 stack.push(a);
+                for(char c = term->getValue()[0]; c <= term->getValue()[2];c++){
+                    this->alphabet.insert(c);
+                }
             }break;
             case WORD:{
                 NFA* a = nullptr;
                 for(char c: term->getValue()){
                     a = buildANDRecognizer(a, buildLetterRecognizer(c));
+                    this->alphabet.insert(c);
                 }
                 stack.push(a);
             }break;
@@ -157,11 +161,16 @@ NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
     return result;
 }
 
-NFA *Builder::buildNFAFromLexicalRules(vector<LexicalRule *>rules) {
+NFA *Builder::buildNFAFromLexicalRules(const vector<LexicalRule *>&rules) {
     NFA* nfa = nullptr;
+    this->alphabet.clear();
     for(LexicalRule* rule:rules){
         NFA* a = this->buildNFAFromLexicalRule(rule);
         nfa = buildCombineRecognizer(nfa, a);
     }
     return nfa;
+}
+
+const set<char> &Builder::getAlphabet() const {
+    return alphabet;
 }

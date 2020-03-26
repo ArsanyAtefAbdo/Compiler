@@ -1,1 +1,3 @@
-letter : (a|b) * abb
+p1 : a
+p2 : abb
+p3 : a*b+

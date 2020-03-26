@@ -12,11 +12,13 @@ public:
     virtual ~Builder() = default;
     static Builder* getInstance();
     NFA* buildNFAFromLexicalRule(LexicalRule* rule);
-    NFA* buildNFAFromLexicalRules(vector<LexicalRule*> rules);
+    NFA* buildNFAFromLexicalRules(const vector<LexicalRule*>& rules);
+    const set<char> &getAlphabet() const;
 
 private:
     Builder() = default;
     static Builder* instance;
+    set<char>alphabet;
 
     NFA* buildLetterRecognizer(char letter);
     NFA* buildEPSRecognizer();

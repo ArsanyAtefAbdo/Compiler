@@ -35,6 +35,7 @@ public:
     vector<Edge*> getEdges() const;
 
     void addEdge(Edge* edge);
+
 };
 
 

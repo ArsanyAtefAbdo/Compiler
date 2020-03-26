@@ -3,4 +3,4 @@ project(Lexical_Analyzer_Generator)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Lexical_Analyzer_Generator main.cpp Components/Node.cpp Components/Node.h Components/Edge.cpp Components/Edge.h Components/Test_Components.cpp Components/Test_Components.h Components/NFA.cpp Components/NFA.h Builder/Builder.cpp Builder/Builder.h Components/DFA.cpp Components/DFA.h Components/ReadLexicalRulesFile.cpp  Components/ReadLexicalRulesFile.h Components/LexicalRule.h Components/Minimizer.cpp Components/Minimizer.h)
+add_executable(Lexical_Analyzer_Generator main.cpp Components/Node.cpp Components/Node.h Components/Edge.cpp Components/Edge.h Components/Test_Components.cpp Components/Test_Components.h Components/NFA.cpp Components/NFA.h Builder/Builder.cpp Builder/Builder.h Components/DFA.cpp Components/DFA.h Components/ReadLexicalRulesFile.cpp  Components/ReadLexicalRulesFile.h Components/LexicalRule.h Components/LexicalRuleBuilder.cpp Components/LexicalRuleBuilder.h Components/Minimizer.h Components/Minimizer.cpp Converter/Converter.cpp Converter/Converter.h)
