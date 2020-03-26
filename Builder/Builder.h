@@ -11,8 +11,8 @@ class Builder {
 public:
     virtual ~Builder() = default;
     static Builder* getInstance();
-    NFA* buildNFAFromLexicalRule(LexicalRule* rule);
-    NFA* buildNFAFromLexicalRules(const vector<LexicalRule*>& rules);
+    NFA* buildNFAFromLexicalRule(LexicalRule* rule, map<string, int> priorities);
+    NFA* buildNFAFromLexicalRules(const vector<LexicalRule*>& rules, const map<string, int>& priorities);
     const set<char> &getAlphabet() const;
 
 private:

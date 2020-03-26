@@ -23,7 +23,7 @@ DFA *Converter::convert(NFA *nfa, const set<char> &alphabet) {
     int i = 0;
     nfaState.insert(nfa->getStart());
     nfaState = closure(nfaState);
-    Node * dfaState = new Node("A",false);
+    Node * dfaState = new Node("A",0);
     dfaState->setIsFinal(0);
     for (auto f:nfa->getFinalStates()) {
         if (nfaState.find(f) != nfaState.end() && (f->isFinalState() > dfaState->isFinalState())) {

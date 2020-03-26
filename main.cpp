@@ -12,8 +12,12 @@ using namespace std;
 int main() {
 
  //----------------- parsing file and build -----------
-    vector<LexicalRule*>rules = ReadLexicalRulesFile::getInstance()->read_from_file("test.txt");
-    NFA* nfa = Builder::getInstance()->buildNFAFromLexicalRules(rules);
+    map<string, int> priorities{};
+    vector<LexicalRule*>rules = ReadLexicalRulesFile::getInstance()->read_from_file("test.txt", &priorities);
+    NFA* nfa = Builder::getInstance()->buildNFAFromLexicalRules(rules, priorities);
+//    for(Node* node: nfa->getFinalStates()){
+//        cout << node->getName() << " " << node->isFinalState()<<endl;
+//    }
 
     //------------------------------
 
@@ -30,9 +34,10 @@ int main() {
 
     Minimizer::getInstance()->DFAMinimize(dfa);
     ans = dfa->getDTable();
+
 //    cout << "---------after minimizing ----------------"<< endl;
 //    for(pair<Node *, map<char,  Node *>>row : ans){
-//        cout << row.first->getName() << " : ";
+//        cout << row.first->getName() << " : " << row.first->isFinalState();
 //        for(pair<char, Node *> n :row.second){
 //            cout << "(" << n.first << " , " << n.second->getName() << ")  ";
 //        }

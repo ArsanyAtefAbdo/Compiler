@@ -14,19 +14,19 @@ using namespace std;
 class Edge;
 class Node {
 public:
-    Node(string name , bool isFinal);
-    explicit Node(bool isFinal);
+    Node(string name , int isFinal);
+    explicit Node(int isFinal);
     virtual ~Node();
 
 private:
     string name;
-    bool isFinal;
+    int isFinal;
     vector<Edge*>edges;
 
 public:
-    bool isFinalState() const;
+    int isFinalState() const;
 
-    void setIsFinal(bool isFinal);
+    void setIsFinal(int isFinal);
 
     const string &getName() const;
 

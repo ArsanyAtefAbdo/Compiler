@@ -16,7 +16,7 @@ class ReadLexicalRulesFile {
 
 public:
     virtual ~ReadLexicalRulesFile() = default;
-    vector<LexicalRule*> read_from_file(const string& input_file);
+    vector<LexicalRule*> read_from_file(const string& input_file , map<string, int> *priorities);
     static ReadLexicalRulesFile *getInstance();
 private:
     regex regular_definition_regex;

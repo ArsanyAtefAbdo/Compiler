@@ -7,7 +7,7 @@
 #include <utility>
 #include "Edge.h"
 
-Node::Node(string name, bool isFinal) {
+Node::Node(string name, int isFinal) {
     this->isFinal = isFinal;
     this->name = std::move(name);
 
@@ -15,7 +15,7 @@ Node::Node(string name, bool isFinal) {
 Node::~Node() {
     this->edges.clear();
 }
-Node::Node(bool isFinal) {
+Node::Node(int isFinal) {
     this->isFinal = isFinal;
 }
 
@@ -27,11 +27,11 @@ void Node::setName(const string &name) {
     this->name = name;
 }
 
-bool Node::isFinalState() const {
+int Node::isFinalState() const {
     return isFinal;
 }
 
-void Node::setIsFinal(bool isFinal) {
+void Node::setIsFinal(int isFinal) {
     this->isFinal = isFinal;
 }
 

@@ -15,10 +15,13 @@ ReadLexicalRulesFile::ReadLexicalRulesFile(){
     this->punctuations_regex = regex(R"(\[ *(([^\d\w] *)+) *\])");
 }
 
-vector<LexicalRule*>ReadLexicalRulesFile::read_from_file(const string& input_file) {
+vector<LexicalRule*>ReadLexicalRulesFile::read_from_file(const string& input_file , map<string, int> *priorities) {
     vector<LexicalRule*>rules;
     std::ifstream file(input_file);
     std::string str;
+    vector<string>puncts;
+    vector<string>keywords;
+    vector<string>regularExps;
     while (std::getline(file, str)) {
         if (regex_search(str, match, regular_definition_regex)){
             pair<string, vector<string>> temp;
@@ -34,15 +37,33 @@ vector<LexicalRule*>ReadLexicalRulesFile::read_from_file(const string& input_fil
             //set_string = removeSpaces(set_string);
             temp.second = split_for_regular_expression(set_string);
             rules.push_back(LexicalRuleBuilder::getInstance()->buildPostFixRule(temp, RegularExpression));
+            regularExps.push_back(temp.first);
         } else if (regex_search(str, match, keywords_regex)){
-            vector<LexicalRule*> temp_vec = LexicalRuleBuilder::getInstance()->buildRules(split_by_spaces(match.str(1)), Keyword);
+            vector<string> words = split_by_spaces(match.str(1));
+            vector<LexicalRule*> temp_vec = LexicalRuleBuilder::getInstance()->buildRules(words, Keyword);
             rules.insert(rules.end(), temp_vec.begin(), temp_vec.end());
+            keywords.insert(keywords.end(), words.begin(), words.end());
         } else if (regex_search(str, match, punctuations_regex)){
             string set_string = match.str(1);
             set_string = removeSpaces(set_string);
-            vector<LexicalRule*> temp_vec = LexicalRuleBuilder::getInstance()->buildRules(split_each_char(set_string), Punctuation);
+            vector<string> words = split_each_char(set_string);
+            vector<LexicalRule*> temp_vec = LexicalRuleBuilder::getInstance()->buildRules(words, Punctuation);
             rules.insert(rules.end(), temp_vec.begin(), temp_vec.end());
+            puncts.insert(puncts.end(), words.begin(), words.end());
         }
+    }
+    int i = 1;
+    for(const string& s: regularExps){
+        priorities->insert(pair<string, int>(s, i));
+        i++;
+    }
+    for(const string& s: keywords){
+        priorities->insert(pair<string, int>(s, i));
+        i++;
+    }
+    for(const string& s: puncts){
+        priorities->insert(pair<string, int>(s, i));
+        i++;
     }
     file.close();
     return rules;

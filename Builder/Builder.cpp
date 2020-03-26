@@ -109,7 +109,7 @@ NFA *Builder::buildCombineRecognizer(NFA *recognizer1, NFA *recognizer2) {
     return new NFA(start, nullptr);
 }
 
-NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
+NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule, map<string, int> priorities) {
     NFA* result = nullptr;
     stack<NFA*> stack{};
     for(LexicalRuleTerm* term:rule->getTerms()){
@@ -158,16 +158,17 @@ NFA *Builder::buildNFAFromLexicalRule(LexicalRule *rule) {
     }
     result = stack.top();stack.pop();
     result->getEnd()->setName(rule->getName());
+    result->getEnd()->setIsFinal(priorities.at(rule->getName()));
     return result;
 }
 
-NFA *Builder::buildNFAFromLexicalRules(const vector<LexicalRule *>&rules) {
+NFA *Builder::buildNFAFromLexicalRules(const vector<LexicalRule *>&rules, const map<string, int>& priorities) {
     NFA* nfa = nullptr;
     this->alphabet.clear();
     for(LexicalRule* rule:rules){
         if(rule->getType() != RegularDefinition){
 
-            NFA* a = this->buildNFAFromLexicalRule(rule);
+            NFA* a = this->buildNFAFromLexicalRule(rule, priorities);
             nfa = buildCombineRecognizer(nfa, a);
         }
     }
