@@ -21,12 +21,10 @@ vector<pair<string, string>> Scanner::scanProgramFile(const string& fileName, DF
     string line;
     vector<string>words{};
     while(getline(file, line)){
-        cout << line << endl;
         istringstream iss(line);
         vector<string> results((istream_iterator<string>(iss)),istream_iterator<string>());
         words.insert(words.end(), results.begin(), results.end());
     }
-    cout << "---------------after compiling----------"<< endl;
     for(string s : words){
         vector<pair<string, string>>temp = scanWord(s);
         tokens.insert(tokens.end(), temp.begin(), temp.end());
@@ -49,12 +47,12 @@ vector<pair<string, string>> Scanner::scanWord(string &word) {
             finalState = currentState;
             if(i == word.size() - 1){
                 string s = word.substr(first, last - first + 1);
-                tokens.push_back(pair<string,string>(s,finalState->getName()));
+                tokens.emplace_back(s,finalState->getName());
                 break;
             }
         }else if(currentState->getName() == "null" && finalState != nullState){
             string s = word.substr(first, last - first + 1);
-            tokens.push_back(pair<string,string>(s,finalState->getName()));
+            tokens.emplace_back(s,finalState->getName());
             first = last + 1;
             i = last;
             finalState = nullState;

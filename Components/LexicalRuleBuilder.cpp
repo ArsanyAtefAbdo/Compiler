@@ -33,7 +33,7 @@ LexicalRule *LexicalRuleBuilder::buildPostFixRule(const pair<string,vector<strin
             }
         } else if(term->getType() == Operation){
             if(term->getValue() == "@" || term->getValue() == "|"){
-                while(!stack.empty() && stack.top()->getType() == Operation && !(stack.top()->getValue() == "@" && stack.top()->getValue() == "|")
+                while(!stack.empty() && (stack.top()->getType() == Operation && !(stack.top()->getValue() == "|"))
                                     && !(stack.top()->getType() == parenthesis && stack.top()->getValue() == "(")){
                     postFixTerms.push_back(stack.top());
                     stack.pop();
