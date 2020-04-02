@@ -15,11 +15,7 @@ public:
 public:
     Node *getStart() const;
 
-    void setStart(Node *start);
-
     Node *getEnd() const;
-
-    void setEnd(Node *end);
 
     string toString();
 

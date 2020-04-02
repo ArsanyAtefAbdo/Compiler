@@ -13,16 +13,8 @@ Node *NFA::getStart() const {
     return start;
 }
 
-void NFA::setStart(Node *start) {
-    NFA::start = start;
-}
-
 Node *NFA::getEnd() const {
     return end;
-}
-
-void NFA::setEnd(Node *end) {
-    NFA::end = end;
 }
 
 NFA::~NFA() {

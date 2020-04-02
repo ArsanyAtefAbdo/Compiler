@@ -165,3 +165,24 @@ ReadLexicalRulesFile *ReadLexicalRulesFile::getInstance() {
     }
     return instance;
 }
+
+void ReadLexicalRulesFile::printTable(const string &fileName, const map<Node *, map<char, Node *>> &table,
+                                      const set<char> &alphabet) {
+    ofstream of;
+    of.open(fileName + ".trnstb");
+    streambuf * buf = of.rdbuf();
+    std::ostream stream(buf);
+    stream << left << setw(20) << "states\\input";
+    for(char c : alphabet){
+        stream << setw(12) << c;
+    }
+    stream << endl;
+    for(pair<Node *, map<char,  Node *>>row : table){
+        stream << left << setw(20) <<row.first->getName();
+        for(char c : alphabet){
+            stream << setw(12) << row.second.at(c)->getName();
+        }
+        stream << endl;
+    }
+
+}

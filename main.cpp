@@ -8,7 +8,6 @@
 #include "Components/Scanner.h"
 using namespace std;
 
-
 int main() {
 
  //----------------- parsing file and build -----------
@@ -35,6 +34,8 @@ int main() {
     Minimizer::getInstance()->DFAMinimize(dfa);
     ans = dfa->getDTable();
 
+    ReadLexicalRulesFile::getInstance()->printTable("table", ans, Builder::getInstance()->getAlphabet());
+
 //    cout << "---------after minimizing ----------------"<< endl;
 //    for(pair<Node *, map<char,  Node *>>row : ans){
 //        cout << row.first->getName() << " : " << row.first->isFinalState();
@@ -47,5 +48,6 @@ int main() {
     for(const pair<string, string>&token : tokens){
         cout << token.second << endl;
     }
+
     return 0;
 }

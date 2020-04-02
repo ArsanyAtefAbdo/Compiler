@@ -20,10 +20,6 @@ Node *DFA::getStartState() const {
     return startState;
 }
 
-void DFA::setStartState(Node *startState) {
-    DFA::startState = startState;
-}
-
 void DFA::setDTable(map <Node* , map<char , Node*>> dTable) {
     DTable = std::move(dTable);
 }

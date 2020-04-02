@@ -9,7 +9,7 @@
 #include <regex>
 #include <algorithm>
 #include "LexicalRuleBuilder.h"
-
+#include "DFA.h"
 using namespace std;
 
 class ReadLexicalRulesFile {
@@ -17,6 +17,7 @@ class ReadLexicalRulesFile {
 public:
     virtual ~ReadLexicalRulesFile() = default;
     vector<LexicalRule*> read_from_file(const string& input_file , map<string, int> *priorities);
+    void printTable(const string& fileName, const map<Node *, map<char, Node *>>& table, const set<char>&alphabet);
     static ReadLexicalRulesFile *getInstance();
 private:
     regex regular_definition_regex;

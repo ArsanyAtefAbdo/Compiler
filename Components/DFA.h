@@ -14,7 +14,6 @@ public:
 
     map<Node*, map<char , Node*>> getDTable() const;
     Node *getStartState() const;
-    void setStartState(Node *startState);
     void setDTable(map <Node* , map<char , Node*>> dTable);
     Node* move(Node* state, char symbol);
 private:
