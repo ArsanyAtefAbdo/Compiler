@@ -6,10 +6,13 @@
 #define LEXICAL_ANALYZER_GENERATOR_PRODUCTIONTERM_H
 #include <iostream>
 #include <bits/stdc++.h>
-
 using namespace std;
-enum ProductionTermType{Terminal, NonTerminal};
 
+/*
+ * This class represents the term of productions.
+ * Any term can be Terminal as (id, +, ...) or non-Terminal.
+ */
+enum ProductionTermType{Terminal, NonTerminal};
 class ProductionTerm {
 public:
     ProductionTerm(const string& name, ProductionTermType type){
@@ -18,7 +21,20 @@ public:
     }
     ~ProductionTerm() = default;
 
-protected:
+    const string &getName() const {
+        return name;
+    }
+
+    ProductionTermType getType() const {
+        return type;
+    }
+    /*
+     * return true if term is epsilon (empty string).
+     */
+    bool isEpsilon(){
+        return name.empty() && type == Terminal;
+    }
+private:
     string name;
     ProductionTermType type;
 };
