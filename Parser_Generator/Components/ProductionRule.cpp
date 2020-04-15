@@ -51,6 +51,9 @@ bool ProductionRule::isStartWith(ProductionTerm *term) {
 
 void ProductionRule::removeFirstTerm() {
     this->terms.erase(this->terms.begin());
+    if(this->terms.empty()){
+        this->terms.push_back(new ProductionTerm("", Terminal));
+    }
 }
 
 void ProductionRule::setTerms(const vector<ProductionTerm*>& newTerms) {

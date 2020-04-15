@@ -58,10 +58,6 @@ string SyntacticTerm::toString() {
     return s;
 }
 
-void SyntacticTerm::addProductions(const vector<ProductionRule *>& newProductions) {
-    this->productions.insert(this->productions.end(), newProductions.begin(), newProductions.end());
-}
-
 void SyntacticTerm::setProductions(const vector<ProductionRule*>& newProductions) {
     this->productions.clear();
     this->productions = newProductions;

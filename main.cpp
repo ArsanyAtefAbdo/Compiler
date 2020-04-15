@@ -7,6 +7,8 @@
 #include "Components/Minimizer.h"
 #include "Components/Scanner.h"
 #include "Parser_Generator/Components/ProductionRule.h"
+#include "Parser_Generator/LL(1) Converter/LL1Converter.h"
+
 using namespace std;
 
 int main() {
@@ -34,55 +36,79 @@ int main() {
 //        cout << token.second << endl;
 //    }
 
+
+//  testing LL1 converter problem 2)a sheet 4 :D
+
+    auto* P = new SyntacticTerm("P");
+    auto* Def = new SyntacticTerm("Def");
     auto* E = new SyntacticTerm("E");
 
     auto* id = new ProductionTerm("id", Terminal);
+    auto* num = new ProductionTerm("num", Terminal);
     auto* close = new ProductionTerm(")", Terminal);
     auto* open = new ProductionTerm("(", Terminal);
     auto* plus = new ProductionTerm("+", Terminal);
-    auto* mins = new ProductionTerm("-", Terminal);
-    auto* times = new ProductionTerm("*", Terminal);
-    auto* div = new ProductionTerm("/", Terminal);
-    auto* Eps = new ProductionTerm("", Terminal);
+    auto* comma = new ProductionTerm(",", Terminal);
+    auto* openS = new ProductionTerm("[", Terminal);
+    auto* closeS = new ProductionTerm("]", Terminal);
+    auto* semi = new ProductionTerm(";", Terminal);
+    auto* equal = new ProductionTerm("=", Terminal);
+    //auto* Eps = new ProductionTerm("", Terminal);
+
+
+    auto* prS1 = new ProductionRule(P);
+    prS1->addProductionTerm(P);
+    prS1->addProductionTerm(semi);
+    prS1->addProductionTerm(Def);
+    auto* prS2 = new ProductionRule(P);
+    prS2->addProductionTerm(Def);
+
+
+    auto* prA1 = new ProductionRule(Def);
+    prA1->addProductionTerm(id);
+    prA1->addProductionTerm(open);
+    prA1->addProductionTerm(id);
+    prA1->addProductionTerm(close);
+    prA1->addProductionTerm(equal);
+    prA1->addProductionTerm(E);
+
 
     auto* production1 = new ProductionRule(E);
-    production1->addProductionTerm(E);
-    production1->addProductionTerm(plus);
-    production1->addProductionTerm(E);
+    production1->addProductionTerm(id);
+
     auto* production2 = new ProductionRule(E);
-    production2->addProductionTerm(E);
-    production2->addProductionTerm(mins);
-    production2->addProductionTerm(E);
+    production2->addProductionTerm(num);
+
     auto* production3 = new ProductionRule(E);
+    production3->addProductionTerm(open);
     production3->addProductionTerm(E);
-    production3->addProductionTerm(times);
     production3->addProductionTerm(E);
+    production3->addProductionTerm(close);
+
     auto* production4 = new ProductionRule(E);
+    production4->addProductionTerm(open);
     production4->addProductionTerm(E);
-    production4->addProductionTerm(div);
+    production4->addProductionTerm(plus);
     production4->addProductionTerm(E);
+    production4->addProductionTerm(close);
+
     auto* production5 = new ProductionRule(E);
-    production5->addProductionTerm(open);
+    production5->addProductionTerm(openS);
     production5->addProductionTerm(E);
-    production5->addProductionTerm(close);
-    auto* production6 = new ProductionRule(E);
-    production6->addProductionTerm(mins);
-    production6->addProductionTerm(E);
-    auto* production7 = new ProductionRule(E);
-    production7->addProductionTerm(id);
-    auto* production8 = new ProductionRule(E);
-    production8->addProductionTerm(Eps);
+    production5->addProductionTerm(comma);
+    production5->addProductionTerm(E);
+    production5->addProductionTerm(closeS);
 
-    E->addProduction(production1);
-    E->addProduction(production2);
-    E->addProduction(production3);
-    E->addProduction(production4);
-    E->addProduction(production5);
-    E->addProduction(production6);
-    E->addProduction(production7);
-    E->addProduction(production8);
+    cout << P->toString() << endl;
+    cout << Def->toString() << endl;
+    cout << E->toString() << endl;
+    cout << "-------- after converting -------" << endl;
+    vector<SyntacticTerm*>v{P,Def, E};
 
-    cout << E->toString();
+    for(SyntacticTerm* t : LL1Converter::getInstance()->convertToLL1(v)){
+        cout << t->toString() << endl;
+    }
+
 
     return 0;
 }
