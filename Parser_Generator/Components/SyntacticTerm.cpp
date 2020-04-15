@@ -58,3 +58,30 @@ string SyntacticTerm::toString() {
     return s;
 }
 
+void SyntacticTerm::addProductions(const vector<ProductionRule *>& newProductions) {
+    this->productions.insert(this->productions.end(), newProductions.begin(), newProductions.end());
+}
+
+void SyntacticTerm::setProductions(const vector<ProductionRule*>& newProductions) {
+    this->productions.clear();
+    this->productions = newProductions;
+}
+
+void SyntacticTerm::replaceProductionWith(SyntacticTerm *E) {
+    vector<ProductionRule *>temp = this->productions;
+    this->productions.clear();
+    for(ProductionRule* p : temp){
+        if(p->isStartWith(E)){
+            p->removeFirstTerm();
+            for(ProductionRule* pr : E->getProductions()){
+                auto* newP = new ProductionRule(this);
+                newP->addProductionTerms(pr->getTerms());
+                newP->addProductionTerms(p->getTerms());
+            }
+            delete p;
+        }else{
+            this->productions.push_back(p);
+        }
+    }
+}
+

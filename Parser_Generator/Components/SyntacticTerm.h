@@ -23,6 +23,7 @@ public:
     ~SyntacticTerm();
     vector<ProductionRule *> getProductions() const;
     void addProduction(ProductionRule* p);
+    void setProductions(const vector<ProductionRule*>& newProductions);
     const unordered_set<string> &getFirst() const;
     void setFirst(const unordered_set<string> &firstSet);
     const unordered_set<string> &getFollow() const;
@@ -32,6 +33,7 @@ public:
      * return true if there is epsilon production.
      */
     bool isDerivingToEpsilon();
+    void replaceProductionWith(SyntacticTerm* E);
 
 private:
 
