@@ -4,20 +4,8 @@
 
 #include "Scanner.h"
 
-Scanner *Scanner::instance = nullptr;
-
-Scanner *Scanner::getInstance() {
-
-    if(instance == nullptr){
-        instance = new Scanner();
-    }
-    return instance;
-}
-
-vector<pair<string, string>> Scanner::scanProgramFile(const string& fileName, DFA *newRecognizer) {
-    vector<pair<string, string>>tokens{};
-    this->recognizer = newRecognizer;
-    ifstream file(fileName);
+void Scanner::scanProgramFile(const string& fileName) {
+    ifstream file(fileName + ".txt");
     string line;
     vector<string>words{};
     while(getline(file, line)){
@@ -26,14 +14,12 @@ vector<pair<string, string>> Scanner::scanProgramFile(const string& fileName, DF
         words.insert(words.end(), results.begin(), results.end());
     }
     for(string s : words){
-        vector<pair<string, string>>temp = scanWord(s);
-        tokens.insert(tokens.end(), temp.begin(), temp.end());
+       scanWord(s);
     }
-    return tokens;
 }
 
-vector<pair<string, string>> Scanner::scanWord(string &word) {
-    vector<pair<string, string>>tokens{};
+void Scanner::scanWord(string &word) {
+
     Node* startState = this->recognizer->getStartState();
     Node* currentState = startState;
     Node* nullState = new Node("null", false);
@@ -47,17 +33,48 @@ vector<pair<string, string>> Scanner::scanWord(string &word) {
             finalState = currentState;
             if(i == word.size() - 1){
                 string s = word.substr(first, last - first + 1);
-                tokens.emplace_back(s,finalState->getName());
+                tokens.push(new Token(finalState->getName(), s));
                 break;
             }
         }else if(currentState->getName() == "null" && finalState != nullState){
             string s = word.substr(first, last - first + 1);
-            tokens.emplace_back(s,finalState->getName());
+            tokens.push(new Token(finalState->getName(), s));
             first = last + 1;
             i = last;
             finalState = nullState;
             currentState = startState;
         }
     }
-    return tokens;
+}
+
+Scanner::Scanner(DFA *recognizer) {
+    this->recognizer = recognizer;
+}
+
+bool Scanner::hasNextToken() {
+    return !tokens.empty();
+}
+
+Token *Scanner::getNextToken() {
+    Token * token = tokens.front();
+    tokens.pop();
+    return token;
+}
+
+Scanner::Scanner(const string& lexical_file, bool printTable) {
+    //----------------- parsing file and build -----------
+    map<string, int> priorities{};
+    vector<LexicalRule*> rules = ReadLexicalRulesFile::getInstance()->read_from_file(lexical_file + ".txt", &priorities);
+    NFA* nfa = Builder::getInstance()->buildNFAFromLexicalRules(rules, priorities);
+
+    //--------------convert NFA to DFA----------------
+
+    this->recognizer = Converter::getInstance()->convert(nfa, Builder::getInstance()->getAlphabet());
+    //--------------Minimize the DFA Table and save it----------------
+    Minimizer::getInstance()->DFAMinimize(this->recognizer);
+
+    if(printTable){
+        ReadLexicalRulesFile::getInstance()->printTable(lexical_file + "table", this->recognizer->getDTable(), Builder::getInstance()->getAlphabet());
+    }
+
 }

@@ -4,18 +4,25 @@
 
 #ifndef LEXICAL_ANALYZER_GENERATOR_SCANNER_H
 #define LEXICAL_ANALYZER_GENERATOR_SCANNER_H
-#include "DFA.h"
+#include "Token.h"
+#include "LexicalRuleBuilder.h"
+#include "ReadLexicalRulesFile.h"
+#include "../Builder/Builder.h"
+#include "../Converter/Converter.h"
+#include "../Components/Minimizer.h"
 
 class Scanner {
 public:
-    static Scanner *getInstance();
-    vector<pair<string, string>>scanProgramFile(const string& fileName, DFA* recognizer);
+    explicit Scanner(DFA* recognizer);
+    Scanner(const string& lexical_file, bool printTable);
+    void scanProgramFile(const string& fileName);
+    bool hasNextToken();
+    Token* getNextToken();
 
 private:
-    Scanner()= default;
-    static Scanner* instance;
-    vector<pair<string, string>>scanWord(string& word);
+    void scanWord(string& word);
     DFA* recognizer;
+    queue<Token*>tokens;
 
 };
 
