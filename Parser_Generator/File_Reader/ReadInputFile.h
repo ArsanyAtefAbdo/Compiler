@@ -23,15 +23,15 @@ private:
     regex complete_line;
     smatch match;
     vector<pair<string,vector<string>>> input_lines;
-    static set<string> terminals;
-    static set<string> non_terminals;
+    set<string> terminals;
+    set<string> non_terminals;
 
 private:
     ReadInputFile();
     static ReadInputFile* instance;
-    static vector<string> split_by_spaces(string to_be_splitted);
-    static string removeQuotes(string str);
-    static vector<pair<string,vector<string>>> handle_input_lines(vector<pair<string,string>> my_lines);
+    vector<string> split_by_spaces(string to_be_splitted);
+    string removeQuotes(string str);
+    vector<pair<string,vector<string>>> handle_input_lines(vector<pair<string,string>> my_lines);
 
 };
 
