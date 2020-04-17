@@ -6,6 +6,74 @@
 
 #IncludeRegexTransform: 
 
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Builder/Builder.h
+../Components/NFA.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/NFA.h
+../Components/LexicalRule.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/LexicalRule.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/DFA.h
+map
+-
+NFA.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/NFA.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Edge.h
+iostream
+-
+bits/stdc++.h
+-
+Node.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Node.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/LexicalRule.h
+iostream
+-
+bits/stdc++.h
+-
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/LexicalRuleBuilder.h
+LexicalRule.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/LexicalRule.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Minimizer.h
+DFA.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/DFA.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/NFA.h
+Node.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Node.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Node.h
+iostream
+-
+bits/stdc++.h
+-
+Edge.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Edge.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/ReadLexicalRulesFile.h
+iostream
+-
+bits/stdc++.h
+-
+regex
+-
+algorithm
+-
+LexicalRuleBuilder.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/LexicalRuleBuilder.h
+DFA.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/DFA.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Scanner.h
+DFA.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/DFA.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Converter/Converter.h
+../Components/DFA.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/DFA.h
+
 C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionRule.h
 ProductionTerm.h
 C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionTerm.h
@@ -24,13 +92,49 @@ C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Componen
 ProductionRule.h
 C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionRule.h
 
-C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Parsing Table Constructor/ParsingTable.cpp
-ParsingTable.h
-C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Parsing Table Constructor/ParsingTable.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/File_Reader/ReadInputFile.h
+iostream
+-
+bits/stdc++.h
+-
+regex
+-
+algorithm
+-
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/LL(1) Converter/LL1Converter.h
+../Components/ProductionRule.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionRule.h
 
 C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Parsing Table Constructor/ParsingTable.h
 ../Components/ProductionTerm.h
 C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionTerm.h
 ../Components/ProductionRule.h
 C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionRule.h
+
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/main.cpp
+iostream
+-
+Components/ReadLexicalRulesFile.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/ReadLexicalRulesFile.h
+Components/Node.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Node.h
+Components/DFA.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/DFA.h
+Builder/Builder.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Builder/Builder.h
+Converter/Converter.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Converter/Converter.h
+Components/Minimizer.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Minimizer.h
+Components/Scanner.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Components/Scanner.h
+Parser_Generator/Components/ProductionRule.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionRule.h
+Parser_Generator/LL(1) Converter/LL1Converter.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/LL(1) Converter/LL1Converter.h
+Parser_Generator/Parsing Table Constructor/ParsingTable.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Parsing Table Constructor/ParsingTable.h
+Parser_Generator/File_Reader/ReadInputFile.h
+C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/File_Reader/ReadInputFile.h
 

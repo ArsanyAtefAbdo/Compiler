@@ -9,6 +9,7 @@
 #include "Parser_Generator/Components/ProductionRule.h"
 #include "Parser_Generator/LL(1) Converter/LL1Converter.h"
 #include "Parser_Generator/Parsing Table Constructor/ParsingTable.h"
+#include "Parser_Generator/File_Reader/ReadInputFile.h"
 
 using namespace std;
 
@@ -109,18 +110,22 @@ int main() {
     for(SyntacticTerm* t :answer ){
         cout << t->toString() << endl;
     }
-    ParsingTable* ptable = new ParsingTable();
-    cout << "-------- table -------" << endl;
-    map<SyntacticTerm*, map<string, ProductionRule>> table = ptable->getTable(answer);
-    for (auto i:table){
-        cout << " non-terminal " << i.first->toString().at(0) << i.first->toString().at(1) << endl;
-        for (auto j:i.second){
-            if (j.second.isSync()) {
-                cout << j.first << " rule: " << "synch" << endl;
-            } else {
-                cout << j.first << " rule: " << j.second.toString() << endl;
-            }
+//    cout << "# of productions" <<answer.size() << endl;
+//    ParsingTable* ptable = new ParsingTable();
+//    cout << "-------- table -------" << endl;
+//    map<SyntacticTerm*, map<string, ProductionRule>> table = ptable->getTable(answer);
+//    for (auto i:table){
+//        cout << " first element " << i.first->toString()<< " end " << endl;
+//        for (auto j:i.second){
+//            cout << "char "<<j.first << " rule: " << j.second.toString() << endl;
+//        }
+//    }
+    for(const auto& l : ReadInputFile::getInstance()->read_from_file("test_input_file_phase_2.txt")){
+        cout << l.first << ":\n{";
+        for(string s : l.second){
+            cout << s << ",";
         }
+        cout << " }\n";
     }
     return 0;
 }

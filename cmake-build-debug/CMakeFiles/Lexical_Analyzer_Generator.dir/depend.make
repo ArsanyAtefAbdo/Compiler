@@ -102,5 +102,6 @@ CMakeFiles/Lexical_Analyzer_Generator.dir/main.cpp.obj: ../Parser_Generator/Comp
 CMakeFiles/Lexical_Analyzer_Generator.dir/main.cpp.obj: ../Parser_Generator/Components/SyntacticTerm.h
 CMakeFiles/Lexical_Analyzer_Generator.dir/main.cpp.obj: ../Parser_Generator/File_Reader/ReadInputFile.h
 CMakeFiles/Lexical_Analyzer_Generator.dir/main.cpp.obj: ../Parser_Generator/LL(1)\ Converter/LL1Converter.h
+CMakeFiles/Lexical_Analyzer_Generator.dir/main.cpp.obj: ../Parser_Generator/Parsing\ Table\ Constructor/ParsingTable.h
 CMakeFiles/Lexical_Analyzer_Generator.dir/main.cpp.obj: ../main.cpp
 
