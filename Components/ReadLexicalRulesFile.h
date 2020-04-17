@@ -35,6 +35,7 @@ private:
     static vector<string> split_for_regular_definition(const string& str);
     static vector<string> split_for_regular_expression(const string& str);
 
+
 };
 
 

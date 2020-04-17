@@ -24,6 +24,8 @@ string ReadInputFile::removeQuotes(string str) {
     return str;
 }
 
+
+
 vector<string> ReadInputFile::split_by_spaces(string to_be_splitted) {
     vector<string> returner;
     string matched  = std::move(to_be_splitted);
@@ -58,6 +60,7 @@ vector<pair<string, vector<string>>> ReadInputFile::read_from_file(const string&
         } else if (regex_search(str, match, complete_line)){
             string new_str = match.str(1);
             string temp = lines.back().second;
+            temp += " ";
             temp += new_str;
             lines.back().second = temp;
         }
@@ -96,3 +99,4 @@ set<string> ReadInputFile::get_non_terminals() {
 set<string> ReadInputFile::get_terminals() {
     return non_terminals;
 }
+
