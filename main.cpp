@@ -8,7 +8,6 @@
 #include "Components/Scanner.h"
 #include "Parser_Generator/Components/ProductionRule.h"
 #include "Parser_Generator/LL(1) Converter/LL1Converter.h"
-#include "Parser_Generator/Parsing Table Constructor/ParsingTable.h"
 
 using namespace std;
 
@@ -105,19 +104,11 @@ int main() {
     cout << E->toString() << endl;
     cout << "-------- after converting -------" << endl;
     vector<SyntacticTerm*>v{P,Def, E};
-    vector<SyntacticTerm*> answer = LL1Converter::getInstance()->convertToLL1(v);
-    for(SyntacticTerm* t :answer ){
+
+    for(SyntacticTerm* t : LL1Converter::getInstance()->convertToLL1(v)){
         cout << t->toString() << endl;
     }
-    cout << "# of productions" <<answer.size() << endl;
-    ParsingTable* ptable = new ParsingTable();
-    cout << "-------- table -------" << endl;
-    map<SyntacticTerm*, map<string, ProductionRule>> table = ptable->getTable(answer);
-    for (auto i:table){
-        cout << " first element " << i.first->toString()<< " end " << endl;
-        for (auto j:i.second){
-            cout << "char "<<j.first << " rule: " << j.second.toString() << endl;
-        }
-    }
+
+
     return 0;
 }

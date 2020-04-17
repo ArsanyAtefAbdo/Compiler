@@ -199,6 +199,71 @@ CMakeFiles/Lexical_Analyzer_Generator.dir/Components/Scanner.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lexical_Analyzer_Generator.dir/Components/Scanner.cpp.s"
 	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Components\Scanner.cpp -o CMakeFiles\Lexical_Analyzer_Generator.dir\Components\Scanner.cpp.s
 
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.obj: CMakeFiles/Lexical_Analyzer_Generator.dir/flags.make
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.obj: ../Parser_Generator/Components/ProductionRule.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.obj"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Components\ProductionRule.cpp.obj -c C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Components\ProductionRule.cpp
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.i"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Components\ProductionRule.cpp > CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Components\ProductionRule.cpp.i
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.s"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Components\ProductionRule.cpp -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Components\ProductionRule.cpp.s
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.obj: CMakeFiles/Lexical_Analyzer_Generator.dir/flags.make
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.obj: ../Parser_Generator/Components/SyntacticTerm.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.obj"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Components\SyntacticTerm.cpp.obj -c C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Components\SyntacticTerm.cpp
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.i"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Components\SyntacticTerm.cpp > CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Components\SyntacticTerm.cpp.i
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.s"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Components\SyntacticTerm.cpp -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Components\SyntacticTerm.cpp.s
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.obj: CMakeFiles/Lexical_Analyzer_Generator.dir/flags.make
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.obj: ../Parser_Generator/LL(1)\ Converter/LL1Converter.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.obj"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\LL(1)_Converter\LL1Converter.cpp.obj -c "C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\LL(1) Converter\LL1Converter.cpp"
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.i"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\LL(1) Converter\LL1Converter.cpp" > CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\LL(1)_Converter\LL1Converter.cpp.i
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.s"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\LL(1) Converter\LL1Converter.cpp" -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\LL(1)_Converter\LL1Converter.cpp.s
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.obj: CMakeFiles/Lexical_Analyzer_Generator.dir/flags.make
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.obj: ../Parser_Generator/Parsing\ Table\ Constructor/ParsingTable.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.obj"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Parsing_Table_Constructor\ParsingTable.cpp.obj -c "C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Parsing Table Constructor\ParsingTable.cpp"
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.i"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Parsing Table Constructor\ParsingTable.cpp" > CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Parsing_Table_Constructor\ParsingTable.cpp.i
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.s"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\Parsing Table Constructor\ParsingTable.cpp" -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\Parsing_Table_Constructor\ParsingTable.cpp.s
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.obj: CMakeFiles/Lexical_Analyzer_Generator.dir/flags.make
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.obj: ../Parser_Generator/File_Reader/ReadInputFile.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.obj"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\File_Reader\ReadInputFile.cpp.obj -c C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\File_Reader\ReadInputFile.cpp
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.i"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\File_Reader\ReadInputFile.cpp > CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\File_Reader\ReadInputFile.cpp.i
+
+CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.s"
+	C:\PROGRA~2\MINGW-~1\I686-8~1.0-P\mingw32\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\Parser_Generator\File_Reader\ReadInputFile.cpp -o CMakeFiles\Lexical_Analyzer_Generator.dir\Parser_Generator\File_Reader\ReadInputFile.cpp.s
+
 # Object files for target Lexical_Analyzer_Generator
 Lexical_Analyzer_Generator_OBJECTS = \
 "CMakeFiles/Lexical_Analyzer_Generator.dir/main.cpp.obj" \
@@ -211,7 +276,12 @@ Lexical_Analyzer_Generator_OBJECTS = \
 "CMakeFiles/Lexical_Analyzer_Generator.dir/Components/LexicalRuleBuilder.cpp.obj" \
 "CMakeFiles/Lexical_Analyzer_Generator.dir/Components/Minimizer.cpp.obj" \
 "CMakeFiles/Lexical_Analyzer_Generator.dir/Converter/Converter.cpp.obj" \
-"CMakeFiles/Lexical_Analyzer_Generator.dir/Components/Scanner.cpp.obj"
+"CMakeFiles/Lexical_Analyzer_Generator.dir/Components/Scanner.cpp.obj" \
+"CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.obj" \
+"CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.obj" \
+"CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.obj" \
+"CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.obj" \
+"CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.obj"
 
 # External object files for target Lexical_Analyzer_Generator
 Lexical_Analyzer_Generator_EXTERNAL_OBJECTS =
@@ -227,11 +297,16 @@ Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Compon
 Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Components/Minimizer.cpp.obj
 Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Converter/Converter.cpp.obj
 Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Components/Scanner.cpp.obj
+Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/ProductionRule.cpp.obj
+Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Components/SyntacticTerm.cpp.obj
+Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/LL(1)_Converter/LL1Converter.cpp.obj
+Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/Parsing_Table_Constructor/ParsingTable.cpp.obj
+Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/Parser_Generator/File_Reader/ReadInputFile.cpp.obj
 Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/build.make
 Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/linklibs.rsp
 Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/objects1.rsp
 Lexical_Analyzer_Generator.exe: CMakeFiles/Lexical_Analyzer_Generator.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable Lexical_Analyzer_Generator.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\DELL\CLionProjects\Lexical_Analyzer_Generator\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Linking CXX executable Lexical_Analyzer_Generator.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\Lexical_Analyzer_Generator.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

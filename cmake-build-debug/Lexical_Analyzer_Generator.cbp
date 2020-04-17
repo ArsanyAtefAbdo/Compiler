@@ -143,6 +143,39 @@
 		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Converter/Converter.h">
 			<Option target="Lexical_Analyzer_Generator"/>
 		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionRule.cpp">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionRule.h">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/ProductionTerm.h">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/SyntacticTerm.cpp">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Components/SyntacticTerm.h">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/File_Reader/ReadInputFile.cpp">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/File_Reader/ReadInputFile.h">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/LL(1) Converter/LL1Converter.cpp">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/LL(1) Converter/LL1Converter.h">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Parsing Table Constructor/ParsingTable.cpp">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
+		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/Parser_Generator/Parsing Table Constructor/ParsingTable.h">
+			<Option target="Lexical_Analyzer_Generator"/>
+		</Unit>
 		<Unit filename="C:/Users/DELL/CLionProjects/Lexical_Analyzer_Generator/main.cpp">
 			<Option target="Lexical_Analyzer_Generator"/>
 		</Unit>
