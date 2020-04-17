@@ -15,6 +15,7 @@
 class SyntacticTerm;
 class ProductionRule {
 public:
+    ProductionRule();
     explicit ProductionRule(SyntacticTerm* nonTerminal);
     vector<ProductionTerm *> getTerms() const;
     void addProductionTerm(ProductionTerm* t);
@@ -30,6 +31,8 @@ public:
      */
     bool isEpsilon();
     bool isStartWith(ProductionTerm* term);
+
+    bool isSync();
 
 private:
 

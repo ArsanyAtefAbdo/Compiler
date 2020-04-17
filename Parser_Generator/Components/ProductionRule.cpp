@@ -60,3 +60,11 @@ void ProductionRule::setTerms(const vector<ProductionTerm*>& newTerms) {
     this->terms.clear();
     this->terms = newTerms;
 }
+
+ProductionRule::ProductionRule() {
+    this->nonTerminal = nullptr;
+}
+
+bool ProductionRule::isSync() {
+    return this->nonTerminal == nullptr;
+}
