@@ -11,8 +11,8 @@
 class ParsingTable {
 public:
     /// non-terminal  ,      terminal      , ProductionRule
-    map<SyntacticTerm *, map<std::string, struct ProductionRule>> getTable(vector<SyntacticTerm*> non_terminal);
-    void settingFirstANDFollow(vector<SyntacticTerm*> non_terminal);
+    map<SyntacticTerm *, map<std::string, struct ProductionRule>> getTable(const vector<SyntacticTerm*>& non_terminal);
+    void settingFirstANDFollow(const vector<SyntacticTerm*>& non_terminal);
 
 private:
 
