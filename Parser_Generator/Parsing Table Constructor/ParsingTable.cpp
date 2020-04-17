@@ -4,22 +4,8 @@
 
 #include "ParsingTable.h"
 
-map<SyntacticTerm *, map<std::string, struct ProductionRule>> ParsingTable::getTable(vector <SyntacticTerm*> non_terminal) {
+map<SyntacticTerm *, map<std::string, struct ProductionRule>> ParsingTable::getTable(const vector <SyntacticTerm*>& non_terminal) {
     settingFirstANDFollow(non_terminal);
-    for (auto s:non_terminal) {
-        cout << "then " << s->toString() << " its follow has "<< follow.find(s)->second.size() << " number of them" <<endl;
-        for (auto c:follow.find(s)->second) {
-            cout << " " << c;
-        }
-        cout << endl;
-    }
-    for (auto s:non_terminal) {
-        cout << "then " << s->toString() << " its first has "<< first.find(s)->second.size() << " number of them" <<endl;
-        for (auto c:first.find(s)->second) {
-            cout << " " << c;
-        }
-        cout << endl;
-    }
     return table;
 }
 
@@ -30,6 +16,10 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
         /// loop on each production rule and get from it first
         for (auto productionRule:x) {
             unordered_set<string> onePR;
+            if (productionRule->isEpsilon()) {
+                res.insert("EPS");
+                continue;
+            }
             int index = 0;
             SyntacticTerm *firstTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
             /// if symbol is terminal then add to the list
@@ -49,37 +39,32 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
                 res.insert(firstTerm->getName());
                 ///else  if symbol is non-terminal then compute its first then add it
             } else {
-                if (firstTerm->isEpsilon()) {
-                    onePR.insert("EPS");
-                    res.insert("EPS");
+                unordered_set<string> temp;
+                /// if the first is already computed add it
+                if (first.find(firstTerm) != first.end()) {
+                    temp = first.at(firstTerm);
+                    ///else  if it's not computed before then recursive call the function
                 } else {
-                    unordered_set<string> temp;
-                    /// if the first is already computed add it
-                    if (first.find(firstTerm) != first.end()) {
-                        temp = first.at(firstTerm);
-                        ///else  if it's not computed before then recursive call the function
-                    } else {
-                        temp = getFirst(firstTerm);
-                    }
-                    /// handling special case for having epsilon at first of the first non-terminal terms.
-                    while (temp.find("EPS") != temp.end()) {
-                        temp.erase("EPS");
-                        res.insert(temp.begin(), temp.end());
-                        onePR.insert(temp.begin(), temp.end());
-                        index++;
-                        if (index + 1 == productionRule->getTerms().size()) {
-                            temp.insert("EPS");
-                            break;
-                        } else {
-                            SyntacticTerm *nextTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
-                            temp = getFirst(nextTerm);
-                        }
-                    }
+                    temp = getFirst(firstTerm);
+                }
+                /// handling special case for having epsilon at first of the first non-terminal terms.
+                while (temp.find("EPS") != temp.end()) {
+                    temp.erase("EPS");
                     res.insert(temp.begin(), temp.end());
                     onePR.insert(temp.begin(), temp.end());
+                    index++;
+                    if (index + 1 == productionRule->getTerms().size()) {
+                        temp.insert("EPS");
+                        break;
+                    } else {
+                        SyntacticTerm *nextTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
+                        temp = getFirst(nextTerm);
+                    }
                 }
+                res.insert(temp.begin(), temp.end());
+                onePR.insert(temp.begin(), temp.end());
             }
-            for (auto c:onePR){
+            for (const auto& c:onePR){
                 if (table.find(non_terminal) != table.end()){
                     if (table.find(non_terminal)->second.find(c) != table.find(non_terminal)->second.end()){
                         table.find(non_terminal)->second.find(c)->second = *productionRule;
@@ -155,12 +140,12 @@ void ParsingTable::setFollowTable(vector<SyntacticTerm*> non_terminal) {
             if (terms.at(terms.size()-1)->getType() == NonTerminal && terms.at(terms.size()-1) != item){
                 nonterm_follow.find((SyntacticTerm *) terms.at(terms.size()-1))->second.insert((SyntacticTerm *) item);
             }
-            for (int i = terms.size()-1;i > 0;i--){
+            int n = terms.size();
+            n--;
+            for (int i = n;i > 0;i--){
                 if (terms.at(i)->getType() == NonTerminal && terms.at(i-1)->getType() == NonTerminal){
-                    if (((SyntacticTerm *) terms.at(i))->isDerivingToEpsilon()){
-                        if ( terms.at(i - 1) != item) {
-                            nonterm_follow.find((SyntacticTerm *) terms.at(i - 1))->second.insert(item);
-                        }
+                    if (((SyntacticTerm *) terms.at(i))->isDerivingToEpsilon() && ( terms.at(i - 1) != item)){
+                        nonterm_follow.find((SyntacticTerm *) terms.at(i - 1))->second.insert(item);
                     } else {
                         break;
                     }
@@ -174,27 +159,49 @@ void ParsingTable::setFollowTable(vector<SyntacticTerm*> non_terminal) {
     finalizingfollow(nonterm_follow);
 }
 
-void ParsingTable::settingFirstANDFollow(vector<SyntacticTerm *> non_terminal) {
-//    ProductionRule* synch = new ProductionRule(nullptr);
+void ParsingTable::settingFirstANDFollow(const vector<SyntacticTerm *>& non_terminal) {
+    auto* synch = new ProductionRule();
     if (!cons) {
         for (auto i:non_terminal) {
             getFirst(i);
+//            cout << "first " << i->toString() << " size:" << i->getFirst().size();
+//            for (const auto& c:i->getFirst()) {
+//                cout << " "<< c ;
+//            }
+//            cout <<  endl;
         }
+//        cout << "end first "<<endl;
         setFollowTable(non_terminal);
+//        cout << "---------------------"<<endl;
+//        for (auto i:non_terminal) {
+//            cout << "follow " << i->toString() << " size:" << follow.find(i)->second.size();
+//            for (const auto& c:follow.find(i)->second) {
+//                cout << " "<< c ;
+//            }
+//            cout <<  endl;
+//        }
+//        cout << "end follow"<<endl;
         for (auto i:non_terminal) {
             i->setFollow(follow.find(i)->second);
             /// add sync to table
             if (i->isDerivingToEpsilon()){
                 for (auto *pr:i->getProductions()){
                     if (pr->isEpsilon()){
-                        for (auto c:i->getFollow()){
-                            table.find(i)->second.find(c)->second = *pr;
+                        for (const auto& c:i->getFollow()){
+                            if (table.find(i)->second.find(c) != table.find(i)->second.end()){
+                                table.find(i)->second.find(c)->second = *pr;
+                            } else {
+                                table.find(i)->second.insert(pair <std::string, struct ProductionRule>(c,*pr));
+                            }
                         }
+                        break;
                     }
                 }
             } else {
-                for (auto c:i->getFollow()) {
-//                table.find(i)->second.find(c)->second = *synch;
+                for (const auto& c:i->getFollow()) {
+                    if (!(table.find(i)->second.find(c) != table.find(i)->second.end())){
+                        table.find(i)->second.insert(pair <std::string, struct ProductionRule>(c,*synch));
+                    }
                 }
             }
         }
@@ -202,6 +209,7 @@ void ParsingTable::settingFirstANDFollow(vector<SyntacticTerm *> non_terminal) {
     }
 }
 
+/// to finalize the follow results and remove non-terminal from it
 void ParsingTable::finalizingfollow(map<SyntacticTerm *, unordered_set<SyntacticTerm *>> nonterm_follow) {
     int i = 0;
     int times = 0;
@@ -209,11 +217,11 @@ void ParsingTable::finalizingfollow(map<SyntacticTerm *, unordered_set<Syntactic
         times ++;
         i = 0;
         for (auto item:nonterm_follow) {
-            if (item.second.size() != 0) {
+            if (!item.second.empty()) {
                 i++;
                 /// eliminate non-terminal from other elements
                 for (auto item2:item.second) {
-                    if (nonterm_follow.find(item2)->second.size() == 0 && item.second.find(item2) != item.second.end()){
+                    if (nonterm_follow.find(item2)->second.empty() && item.second.find(item2) != item.second.end()){
                         follow.find(item.first)->second.insert(
                                 follow.find(item2)->second.begin(), follow.find(item2)->second.end());
                         item.second.erase(item.second.find(item2));

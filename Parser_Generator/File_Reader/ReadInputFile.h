@@ -8,6 +8,8 @@
 #include <bits/stdc++.h>
 #include <regex>
 #include <algorithm>
+#include "../Components/SyntacticTerm.h"
+
 
 using namespace std;
 
@@ -15,9 +17,10 @@ class ReadInputFile {
 public:
     virtual ~ReadInputFile() = default;
     static ReadInputFile *getInstance();
-    vector<pair<string, vector<string>>> read_from_file(const string& input_file);
+    vector<SyntacticTerm*> read_from_file(const string& input_file);
     set<string> get_terminals();
     set<string> get_non_terminals();
+    vector<SyntacticTerm*> buildRules();
 private:
     regex line;
     regex complete_line;
@@ -30,8 +33,8 @@ private:
     ReadInputFile();
     static ReadInputFile* instance;
     vector<string> split_by_spaces(string to_be_splitted);
-    string removeQuotes(string str);
-    vector<pair<string,vector<string>>> handle_input_lines(vector<pair<string,string>> my_lines);
+    string removeChar(string str, char c);
+    void handle_input_lines(const vector<pair<string,string>>& my_lines);
 
 };
 

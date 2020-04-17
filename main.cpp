@@ -38,94 +38,28 @@ int main() {
 //        cout << token.second << endl;
 //    }
 
-
-//  testing LL1 converter problem 2)a sheet 4 :D
-
-    auto* P = new SyntacticTerm("P");
-    auto* Def = new SyntacticTerm("Def");
-    auto* E = new SyntacticTerm("E");
-
-    auto* id = new ProductionTerm("id", Terminal);
-    auto* num = new ProductionTerm("num", Terminal);
-    auto* close = new ProductionTerm(")", Terminal);
-    auto* open = new ProductionTerm("(", Terminal);
-    auto* plus = new ProductionTerm("+", Terminal);
-    auto* comma = new ProductionTerm(",", Terminal);
-    auto* openS = new ProductionTerm("[", Terminal);
-    auto* closeS = new ProductionTerm("]", Terminal);
-    auto* semi = new ProductionTerm(";", Terminal);
-    auto* equal = new ProductionTerm("=", Terminal);
-    //auto* Eps = new ProductionTerm("", Terminal);
-
-
-    auto* prS1 = new ProductionRule(P);
-    prS1->addProductionTerm(P);
-    prS1->addProductionTerm(semi);
-    prS1->addProductionTerm(Def);
-    auto* prS2 = new ProductionRule(P);
-    prS2->addProductionTerm(Def);
-
-
-    auto* prA1 = new ProductionRule(Def);
-    prA1->addProductionTerm(id);
-    prA1->addProductionTerm(open);
-    prA1->addProductionTerm(id);
-    prA1->addProductionTerm(close);
-    prA1->addProductionTerm(equal);
-    prA1->addProductionTerm(E);
-
-
-    auto* production1 = new ProductionRule(E);
-    production1->addProductionTerm(id);
-
-    auto* production2 = new ProductionRule(E);
-    production2->addProductionTerm(num);
-
-    auto* production3 = new ProductionRule(E);
-    production3->addProductionTerm(open);
-    production3->addProductionTerm(E);
-    production3->addProductionTerm(E);
-    production3->addProductionTerm(close);
-
-    auto* production4 = new ProductionRule(E);
-    production4->addProductionTerm(open);
-    production4->addProductionTerm(E);
-    production4->addProductionTerm(plus);
-    production4->addProductionTerm(E);
-    production4->addProductionTerm(close);
-
-    auto* production5 = new ProductionRule(E);
-    production5->addProductionTerm(openS);
-    production5->addProductionTerm(E);
-    production5->addProductionTerm(comma);
-    production5->addProductionTerm(E);
-    production5->addProductionTerm(closeS);
-
-    cout << P->toString() << endl;
-    cout << Def->toString() << endl;
-    cout << E->toString() << endl;
-    cout << "-------- after converting -------" << endl;
-    vector<SyntacticTerm*>v{P,Def, E};
-    vector<SyntacticTerm*> answer = LL1Converter::getInstance()->convertToLL1(v);
+    vector<SyntacticTerm*>answer = ReadInputFile::getInstance()->read_from_file("test_input_file_phase_2.txt");
     for(SyntacticTerm* t :answer ){
         cout << t->toString() << endl;
     }
-//    cout << "# of productions" <<answer.size() << endl;
-//    ParsingTable* ptable = new ParsingTable();
-//    cout << "-------- table -------" << endl;
-//    map<SyntacticTerm*, map<string, ProductionRule>> table = ptable->getTable(answer);
-//    for (auto i:table){
-//        cout << " first element " << i.first->toString()<< " end " << endl;
-//        for (auto j:i.second){
-//            cout << "char "<<j.first << " rule: " << j.second.toString() << endl;
-//        }
-//    }
-    for(const auto& l : ReadInputFile::getInstance()->read_from_file("test_input_file_phase_2.txt")){
-        cout << l.first << ":\n{";
-        for(string s : l.second){
-            cout << s << ",";
+    cout << "-------- after converting -------" << endl;
+
+    answer = LL1Converter::getInstance()->convertToLL1(answer);
+    for(SyntacticTerm* t :answer ){
+        cout << t->toString() << endl;
+    }
+    auto* ptable = new ParsingTable();
+    cout << "-------- table -------" << endl;
+    map<SyntacticTerm*, map<string, ProductionRule>> table = ptable->getTable(answer);
+    for (const auto& i:table){
+        cout << " non-terminal " << i.first->getName() << endl;
+        for (auto j:i.second){
+            if (j.second.isSync()) {
+                cout << j.first << " rule: " << "synch" << endl;
+            } else {
+                cout << j.first << " rule: " << j.second.toString() << endl;
+            }
         }
-        cout << " }\n";
     }
     return 0;
 }
