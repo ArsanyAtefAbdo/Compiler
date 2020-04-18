@@ -54,14 +54,18 @@ void Parser::parsing(string programFileName) {
                     stack.pop();
                     output.push_back(prodTemp.toString());
                     for (int i = prodTemp.getTerms().size()-1; i >= 0; i--){
-                        stack.push(prodTemp.getTerms().at(i));
+                        if(!prodTemp.getTerms().at(i)->isEpsilon()){
+                            stack.push(prodTemp.getTerms().at(i));
+                        }
                     }
                 }
             }
         }
     }
-    if (error == false & stack.empty()){
-        output.push_back("Accept");
+    if (!error && stack.empty()){
+        output.emplace_back("Accept");
+    }else{
+        output.emplace_back("Not-Accept");
     }
     for(int i = 0; i < output.size() ; i++){
         cout << output.at(i) << endl;
