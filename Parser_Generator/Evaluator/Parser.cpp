@@ -67,6 +67,10 @@ void Parser::parsing(string programFileName) {
     }else{
         output.emplace_back("Not-Accept");
     }
+    while (!stack.empty()){
+        cout << stack.top()->getName()<<endl;
+        stack.pop();
+    }
     for(int i = 0; i < output.size() ; i++){
         cout << output.at(i) << endl;
     }
