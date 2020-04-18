@@ -16,27 +16,37 @@ Parser::Parser(const string &lexical_file, const string& CFGFileName, bool print
 
 }
 
-void Parser::parsing(string programFileName) {
+vector<string> Parser::parsing(const string& programFileName) {
     scanner->scanProgramFile(programFileName);
     // t--> has token(terminal) and value
     // first production
-    SyntacticTerm* Firstproduction = productions.front();
     SyntacticTerm* temp;
     ProductionRule prodTemp;
-    stack<ProductionTerm*> stack;
-    vector<string> output;
+    stack<ProductionTerm*> stack{};
+    vector<string> output{};
+    output.push_back(productions.front()->getName());
     bool error = false;
     stack.push(new ProductionTerm("$", Terminal));
-    stack.push(Firstproduction);
-    for (Token *t = scanner->getNextToken(); scanner->hasNextToken();){
+    stack.push(productions.front());
+    if(!scanner->hasNextToken()){
+        return output;
+    }
+    Token *t = scanner->getNextToken();
+    while (true){
         if (stack.top()->getType() == Terminal){
             if (stack.top()->getName() == t->getName()){
                 stack.pop();
-                t = scanner->getNextToken();
-            }else{
+                if(scanner->hasNextToken()){
+                    t = scanner->getNextToken();
+                }else{
+                    break;
+                }
+            }else if(!stack.top()->isEpsilon()){
                 //ERROR (missing terminal of stack)
                 error = true;
                 output.push_back("Error: missing '" + stack.top()->getName() + "'");
+                stack.pop();
+            } else{
                 stack.pop();
             }
         }else{
@@ -45,7 +55,11 @@ void Parser::parsing(string programFileName) {
                 //Error:(illegal non-terminal) – discard terminal
                 error = true;
                 output.push_back("Error: illegal '" + stack.top()->getName()+ "'" + "Discard '" + t->getName() + "'");
-                t = scanner->getNextToken();
+                if(scanner->hasNextToken()){
+                    t = scanner->getNextToken();
+                }else{
+                    break;
+                }
             }else{
                 if (table.at(temp).at(t->getName()).isSync()){
                     stack.pop();
@@ -53,10 +67,9 @@ void Parser::parsing(string programFileName) {
                     prodTemp = table.at(temp).at(t->getName());
                     stack.pop();
                     output.push_back(prodTemp.toString());
-                    for (int i = prodTemp.getTerms().size()-1; i >= 0; i--){
-                        if(!prodTemp.getTerms().at(i)->isEpsilon()){
-                            stack.push(prodTemp.getTerms().at(i));
-                        }
+
+                    for (auto it = prodTemp.getTerms().rbegin(); it != prodTemp.getTerms().rend(); it++){
+                        stack.push(*it);
                     }
                 }
             }
@@ -67,11 +80,5 @@ void Parser::parsing(string programFileName) {
     }else{
         output.emplace_back("Not-Accept");
     }
-    while (!stack.empty()){
-        cout << stack.top()->getName()<<endl;
-        stack.pop();
-    }
-    for(int i = 0; i < output.size() ; i++){
-        cout << output.at(i) << endl;
-    }
+    return output;
 }

@@ -16,7 +16,7 @@ public:
     //lexical_file contains lexical rules (file name)
     //CFGFileName contains production rules (file name)
     Parser(const string& lexical_file, const string& CFGFileName, bool printTable);
-    void parsing(string programFileName);
+    vector<string> parsing(const string& programFileName);
 
 private:
     Scanner* scanner;

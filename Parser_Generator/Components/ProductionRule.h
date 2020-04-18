@@ -17,7 +17,7 @@ class ProductionRule {
 public:
     ProductionRule();
     explicit ProductionRule(SyntacticTerm* nonTerminal);
-    vector<ProductionTerm *> getTerms() const;
+    vector<ProductionTerm *>& getTerms() ;
     void addProductionTerm(ProductionTerm* t);
     void addProductionTerms(const vector<ProductionTerm*>& newTerms);
     void setTerms(const vector<ProductionTerm*>& newTerms);

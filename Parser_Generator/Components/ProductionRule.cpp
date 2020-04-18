@@ -20,7 +20,7 @@ string ProductionRule::toString() {
     return s;
 }
 
-vector<ProductionTerm *> ProductionRule::getTerms() const{
+vector<ProductionTerm *>& ProductionRule::getTerms() {
     return terms;
 }
 

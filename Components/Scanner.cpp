@@ -16,6 +16,7 @@ void Scanner::scanProgramFile(const string& fileName) {
     for(string s : words){
        scanWord(s);
     }
+    tokens.push(new Token("$", "$"));
 }
 
 void Scanner::scanWord(string &word) {
