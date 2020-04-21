@@ -24,8 +24,6 @@ string ReadInputFile::removeChar(string str, char c) {
     return str;
 }
 
-
-
 vector<string> ReadInputFile::split_by_spaces(string to_be_splitted) {
     vector<string> returner;
     string matched  = std::move(to_be_splitted);
@@ -80,7 +78,7 @@ void ReadInputFile::handle_input_lines(const vector<pair<string, string>>& my_li
     for (const pair<string, string>& p : my_lines){
         pair<string, vector<string>> temp;
         temp.first = p.first;
-        vector<string> splited = split_by_spaces(p.second);
+        vector<string> splited = split_by_spaces(add_spaces(p.second));
         vector<string> final_vector;
         for(const string& s : splited){
 
@@ -129,5 +127,17 @@ vector<SyntacticTerm *> ReadInputFile::buildRules() {
         rules.push_back(nonTerminal);
     }
     return rules;
+}
+
+string ReadInputFile::add_spaces(string str) {
+    string with_spaces = "";
+    for(auto i : str){
+        if(i != '\\|'){
+            with_spaces+=i;
+        } else {
+            with_spaces += " \\| ";
+        }
+    }
+    return with_spaces;
 }
 
