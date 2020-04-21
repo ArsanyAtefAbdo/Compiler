@@ -4,8 +4,15 @@
 
 #include "Scanner.h"
 
-void Scanner::scanProgramFile(const string& fileName) {
+bool Scanner::scanProgramFile(const string& fileName) {
+    if(this->recognizer == nullptr){
+        return false;
+    }
     ifstream file(fileName + ".txt");
+    if(!file.is_open()){
+        cout << fileName << " does not exist !"<<endl;
+        return false;
+    }
     string line;
     vector<string>words{};
     while(getline(file, line)){
@@ -17,6 +24,7 @@ void Scanner::scanProgramFile(const string& fileName) {
        scanWord(s);
     }
     tokens.push(new Token("$", "$"));
+    return true;
 }
 
 void Scanner::scanWord(string &word) {

@@ -16,6 +16,9 @@ Converter *Converter::getInstance() {
 }
 
 DFA *Converter::convert(NFA *nfa, const set<char> &alphabet) {
+    if(nfa == nullptr || alphabet.empty()){
+        return nullptr;
+    }
     set<Node *> nfaState ;
     map <set<Node*>,Node*> ndStates;
     map <Node*,bool> mark;

@@ -5,6 +5,9 @@
 #include "ParsingTable.h"
 
 map<SyntacticTerm *, map<std::string, struct ProductionRule>> ParsingTable::getTable(const vector <SyntacticTerm*>& non_terminal) {
+    if(non_terminal.empty()){
+        return table;
+    }
     settingFirstANDFollow(non_terminal);
     return table;
 }
@@ -21,7 +24,7 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
                 continue;
             }
             int index = 0;
-            SyntacticTerm *firstTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
+            auto *firstTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
             /// if symbol is terminal then add to the list
             if (firstTerm->getType() == Terminal) {
                 if (table.find(non_terminal) == table.end()){
@@ -57,7 +60,7 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
                         temp.insert("EPS");
                         break;
                     } else {
-                        SyntacticTerm *nextTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
+                        auto *nextTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
                         temp = getFirst(nextTerm);
                     }
                 }

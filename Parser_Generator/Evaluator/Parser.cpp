@@ -8,8 +8,11 @@
 
 Parser::Parser(const string &lexical_file, const string& CFGFileName, bool printTable) {
     scanner = new Scanner(lexical_file, printTable);
+
     productions = ReadInputFile::getInstance()->read_from_file(CFGFileName);
+
     productions = LL1Converter::getInstance()->convertToLL1(productions);
+
     auto* ptable = new ParsingTable();
     //table contain under each input which production will be used
     table = ptable->getTable(productions);
@@ -17,13 +20,15 @@ Parser::Parser(const string &lexical_file, const string& CFGFileName, bool print
 }
 
 vector<string> Parser::parsing(const string& programFileName) {
-    scanner->scanProgramFile(programFileName);
     // t--> has token(terminal) and value
     // first production
+    vector<string> output{};
+    if (!scanner->scanProgramFile(programFileName) || productions.empty() || table.empty()){
+        return output;
+    }
     SyntacticTerm* temp;
     ProductionRule prodTemp;
     stack<ProductionTerm*> stack{};
-    vector<string> output{};
     output.push_back(productions.front()->getName());
     bool error = false;
     stack.push(new ProductionTerm("$", Terminal));
@@ -32,6 +37,7 @@ vector<string> Parser::parsing(const string& programFileName) {
         return output;
     }
     Token *t = scanner->getNextToken();
+
     while (true){
         if (stack.top()->getType() == Terminal){
             if (stack.top()->getName() == t->getName()){

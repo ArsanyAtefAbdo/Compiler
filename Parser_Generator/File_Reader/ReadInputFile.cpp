@@ -7,8 +7,8 @@
 ReadInputFile* ReadInputFile::instance = nullptr;
 
 ReadInputFile::ReadInputFile() {
-    this->line = regex(R"(#((\w|\s)+)=((\w|\s|\.|\'|\||;|\*|\/|\-|\+|\(|\)|\{|\}|=)+))");
-    this->complete_line = regex(R"(\s*(\|((\w|\s|\.|\'|\||;|\*|\/|\-|\+|\(|\)|\{|\}|=)+)))");
+    this->line = regex(R"(#((\w|\s)+)=((\w|\s|\.|\'|\||;|\*|\/|\-|\+|\(|\)|\{|\}|=|\\L)+))");
+    this->complete_line = regex(R"(\s*(\|((\w|\s|\.|\'|\||;|\*|\/|\-|\+|\(|\)|\{|\}|=|\\L)+)))");
 
 }
 
@@ -49,7 +49,11 @@ vector<string> ReadInputFile::split_by_spaces(string to_be_splitted) {
 
 vector<SyntacticTerm*> ReadInputFile::read_from_file(const string& input_file){
     vector<pair<string,string>> lines;
-    std::ifstream file(input_file);
+    std::ifstream file(input_file + ".txt");
+    if(!file.is_open()){
+        cout << input_file << " dose not exit !" <<endl;
+        return vector<SyntacticTerm*>();
+    }
     std::string str;
     while (std::getline(file, str)) {
         if (regex_search(str, match, line)){
@@ -79,10 +83,14 @@ void ReadInputFile::handle_input_lines(const vector<pair<string, string>>& my_li
         vector<string> splited = split_by_spaces(p.second);
         vector<string> final_vector;
         for(const string& s : splited){
+
             if(s.find('\'') != std::string::npos){
                 terminals.insert(removeChar(s, '\''));
                 final_vector.push_back(removeChar(s, '\''));
-            } else  {
+            } else if(s == "\\L"){
+                terminals.insert("");
+                final_vector.emplace_back("");
+            }else {
                 final_vector.push_back(s);
             }
         }

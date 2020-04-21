@@ -10,7 +10,9 @@ Minimizer* Minimizer::instance = nullptr;
 
 // minimizer function
 void Minimizer::DFAMinimize(DFA *dfa) {
-
+    if(dfa == nullptr){
+        return;
+    }
     this->partitions.clear();
     // get dfa before minimizing
     DFAStates = dfa->getDTable();

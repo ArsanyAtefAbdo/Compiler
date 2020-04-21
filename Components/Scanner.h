@@ -15,7 +15,7 @@ class Scanner {
 public:
     explicit Scanner(DFA* recognizer);
     Scanner(const string& lexical_file, bool printTable);
-    void scanProgramFile(const string& fileName);
+    bool scanProgramFile(const string& fileName);
     bool hasNextToken();
     Token* getNextToken();
 

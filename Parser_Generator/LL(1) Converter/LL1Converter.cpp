@@ -148,6 +148,9 @@ vector<SyntacticTerm *> LL1Converter::eliminateLeftFactoring(SyntacticTerm *E) {
 }
 
 vector<SyntacticTerm *> LL1Converter::convertToLL1(const vector<SyntacticTerm *> &terms) {
+    if(terms.empty()){
+        return terms;
+    }
     vector<SyntacticTerm *>tmp = eliminateLeftRecursion(terms);
     return eliminateLeftFactoring(tmp);
 }
