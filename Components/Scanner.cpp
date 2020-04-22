@@ -82,7 +82,7 @@ Scanner::Scanner(const string& lexical_file, bool printTable) {
     //--------------Minimize the DFA Table and save it----------------
     Minimizer::getInstance()->DFAMinimize(this->recognizer);
 
-    if(printTable){
+    if(printTable && this->recognizer != nullptr){
         ReadLexicalRulesFile::getInstance()->printTable(lexical_file + "_table", this->recognizer->getDTable(), Builder::getInstance()->getAlphabet());
     }
 

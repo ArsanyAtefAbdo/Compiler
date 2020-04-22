@@ -4,7 +4,6 @@
 
 #include "Parser.h"
 #include "../../Components/Scanner.h"
-#include "../File_Reader/ReadInputFile.h"
 
 Parser::Parser(const string &lexical_file, const string& CFGFileName, bool printTable) {
     scanner = new Scanner(lexical_file, printTable);
@@ -16,7 +15,11 @@ Parser::Parser(const string &lexical_file, const string& CFGFileName, bool print
     productions = LL1Converter::getInstance()->convertToLL1(productions);
 
     table = ParsingTable::getInstance()->getTable(productions);
+    if(printTable){
+        ReadInputFile::getInstance()->printTable(CFGFileName + "_table", table ,productions);
+    }
     this->ambiguous = ParsingTable::getInstance()->ambiguity();
+
 }
 
 bool Parser::parsing(const string& programFileName) {
@@ -25,11 +28,11 @@ bool Parser::parsing(const string& programFileName) {
     errors.clear();
     derivations.clear();
 
-    if(this->ambiguous){
-        errors.emplace_back("Parser is ambiguous !!");
+    if (!scanner->scanProgramFile(programFileName) || productions.empty() || table.empty()){
         return false;
     }
-    if (!scanner->scanProgramFile(programFileName) || productions.empty() || table.empty()){
+    if(this->ambiguous){
+        cout << "Parser is ambiguous !!" << endl;
         return false;
     }
     SyntacticTerm* temp;
@@ -111,7 +114,7 @@ vector<string> Parser::getDerivations() const{
     return output;
 }
 
-const vector<string> &Parser::getErrors() const {
+vector<string> Parser::getErrors() const {
     return errors;
 }
 

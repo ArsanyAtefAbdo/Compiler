@@ -13,6 +13,8 @@ string ProductionRule::toString() {
     string s;
     if(isEpsilon()){
         return "EPS";
+    }else if(isSync()){
+        return "Sync";
     }
     for(ProductionTerm* term : terms){
         s += term->getName() + " ";

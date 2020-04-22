@@ -9,6 +9,7 @@
 #include "../LL(1) Converter/LL1Converter.h"
 #include "../../Components/Token.h"
 #include "../../Components/Scanner.h"
+#include "../File_Reader/ReadInputFile.h"
 
 
 class Parser {
@@ -20,7 +21,7 @@ public:
     bool isAmbiguous();
 
     vector<string> getDerivations() const;
-    const vector<string> &getErrors() const;
+    vector<string> getErrors() const;
 private:
     Scanner* scanner;
     vector<SyntacticTerm *> productions;

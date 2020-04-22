@@ -1,0 +1,18 @@
+Non-Terminal\Terminal	$	(	)	+	-	;	addop	assign	else	float	id	if	int	mulop	num	relop	while	{	}
+METHOD_BODY	Sync	error	error	error	error	error	error	error	error	STATEMENT_LIST	STATEMENT_LIST	STATEMENT_LIST	STATEMENT_LIST	error	error	error	STATEMENT_LIST	error	error
+STATEMENT_LIST	Sync	error	error	error	error	error	error	error	error	STATEMENT STATEMENT_LIST'	STATEMENT STATEMENT_LIST'	STATEMENT STATEMENT_LIST'	STATEMENT STATEMENT_LIST'	error	error	error	STATEMENT STATEMENT_LIST'	error	error
+STATEMENT_LIST'	EPS	error	error	error	error	error	error	error	error	STATEMENT STATEMENT_LIST'	STATEMENT STATEMENT_LIST'	STATEMENT STATEMENT_LIST'	STATEMENT STATEMENT_LIST'	error	error	error	STATEMENT STATEMENT_LIST'	error	error
+STATEMENT	Sync	error	error	error	error	error	error	error	error	DECLARATION	ASSIGNMENT	IF	DECLARATION	error	error	error	WHILE	error	Sync
+DECLARATION	Sync	error	error	error	error	error	error	error	error	PRIMITIVE_TYPE id ;	Sync	Sync	PRIMITIVE_TYPE id ;	error	error	error	Sync	error	Sync
+PRIMITIVE_TYPE	error	error	error	error	error	error	error	error	error	float	Sync	error	int	error	error	error	error	error	error
+IF	Sync	error	error	error	error	error	error	error	error	Sync	Sync	if ( EXPRESSION ) { STATEMENT } else { STATEMENT }	Sync	error	error	error	Sync	error	Sync
+WHILE	Sync	error	error	error	error	error	error	error	error	Sync	Sync	Sync	Sync	error	error	error	while ( EXPRESSION ) { STATEMENT }	error	Sync
+ASSIGNMENT	Sync	error	error	error	error	error	error	error	error	Sync	id assign EXPRESSION ;	Sync	Sync	error	error	error	Sync	error	Sync
+EXPRESSION	error	SIMPLE_EXPRESSION EXPRESSION'	Sync	SIMPLE_EXPRESSION EXPRESSION'	SIMPLE_EXPRESSION EXPRESSION'	Sync	error	error	error	error	SIMPLE_EXPRESSION EXPRESSION'	error	error	error	SIMPLE_EXPRESSION EXPRESSION'	error	error	error	error
+EXPRESSION'	error	error	EPS	error	error	EPS	error	error	error	error	error	error	error	error	error	relop SIMPLE_EXPRESSION	error	error	error
+SIMPLE_EXPRESSION	error	TERM SIMPLE_EXPRESSION'	Sync	SIGN TERM SIMPLE_EXPRESSION'	SIGN TERM SIMPLE_EXPRESSION'	Sync	error	error	error	error	TERM SIMPLE_EXPRESSION'	error	error	error	TERM SIMPLE_EXPRESSION'	Sync	error	error	error
+SIMPLE_EXPRESSION'	error	error	EPS	error	error	EPS	addop TERM SIMPLE_EXPRESSION'	error	error	error	error	error	error	error	error	EPS	error	error	error
+TERM	error	FACTOR TERM'	Sync	error	error	Sync	Sync	error	error	error	FACTOR TERM'	error	error	error	FACTOR TERM'	Sync	error	error	error
+TERM'	error	error	EPS	error	error	EPS	EPS	error	error	error	error	error	error	mulop FACTOR TERM'	error	EPS	error	error	error
+FACTOR	error	( EXPRESSION )	Sync	error	error	Sync	Sync	error	error	error	id	error	error	Sync	num	Sync	error	error	error
+SIGN	error	Sync	error	+	-	error	error	error	error	error	Sync	error	error	error	Sync	error	error	error	error

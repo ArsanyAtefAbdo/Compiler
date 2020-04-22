@@ -52,6 +52,9 @@ vector<SyntacticTerm*> ReadInputFile::read_from_file(const string& input_file){
         cout << input_file << " dose not exit !" <<endl;
         return vector<SyntacticTerm*>();
     }
+    input_lines.clear();
+    terminals.clear();
+    non_terminals.clear();
     std::string str;
     while (std::getline(file, str)) {
         if (regex_search(str, match, line)){
@@ -139,5 +142,48 @@ string ReadInputFile::add_spaces(const string& str) {
         }
     }
     return with_spaces;
+}
+void ReadInputFile::printTable(const string &fileName, const map<SyntacticTerm*, map<string, ProductionRule>> &table,
+                               const vector<SyntacticTerm *>& productions) {
+
+    if(table.empty() || productions.empty()){
+        return;
+    }
+    ofstream of;
+    of.open(fileName + ".trnstb");
+    streambuf * buf = of.rdbuf();
+    std::ostream stream(buf);
+    string tap = "\t";
+    stream << left << "Non-Terminal\\Terminal";
+    terminals.insert("$");
+    for(const string& s : terminals){
+        stream << tap << s;
+    }
+    stream << endl;
+    for(auto* term : productions){
+
+        map<string, ProductionRule> row = table.at(term);
+        stream << left <<term->getName();
+        for(const string& s : terminals){
+            if(row.find(s) != row.end()){
+                stream << tap << row.at(s).toString();
+            }else{
+                stream << tap << "error";
+            }
+        }
+        stream << endl;
+    }
+    of.close();
+
+}
+
+void ReadInputFile::write(const string &fileName, const vector<string>& lines) {
+    fstream file;
+    file.open (fileName + ".txt" ,	ios::out);
+    for(const string& s : lines){
+        file << s << endl;
+        cout << s << endl;
+    }
+    file.close();
 }
 

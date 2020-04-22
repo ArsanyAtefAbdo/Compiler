@@ -21,6 +21,9 @@ public:
     set<string> get_terminals();
     set<string> get_non_terminals();
     vector<SyntacticTerm*> buildRules();
+    void printTable(const string &fileName, const map<SyntacticTerm*, map<string, ProductionRule>> &table,
+               const vector<SyntacticTerm *>& productions);
+    void write(const string &fileName,const vector<string>& lines);
 private:
     regex line;
     regex complete_line;

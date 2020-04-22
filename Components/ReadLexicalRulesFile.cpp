@@ -16,7 +16,7 @@ ReadLexicalRulesFile::ReadLexicalRulesFile(){
 }
 
 vector<LexicalRule*>ReadLexicalRulesFile::read_from_file(const string& input_file , map<string, int> *priorities) {
-    vector<LexicalRule*>rules;
+    vector<LexicalRule*>rules{};
     std::ifstream file(input_file);
     if(!file.is_open()){
         cout << input_file << " does not exist !"<< endl;
