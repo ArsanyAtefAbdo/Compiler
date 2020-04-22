@@ -75,11 +75,3 @@ ProductionRule::ProductionRule() {
 bool ProductionRule::isSync() {
     return this->nonTerminal == nullptr;
 }
-
-vector<string> ProductionRule::getTermsAsString() {
-    vector<string>s(terms.size());
-    for(ProductionTerm* term : terms){
-        s.push_back(term->getName());
-    }
-    return s;
-}

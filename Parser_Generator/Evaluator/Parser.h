@@ -16,13 +16,20 @@ public:
     //lexical_file contains lexical rules (file name)
     //CFGFileName contains production rules (file name)
     Parser(const string& lexical_file, const string& CFGFileName, bool printTable);
-    vector<string> parsing(const string& programFileName);
+    bool parsing(const string& programFileName);
     bool isAmbiguous();
+
+    vector<string> getDerivations() const;
+    const vector<string> &getErrors() const;
 private:
     Scanner* scanner;
     vector<SyntacticTerm *> productions;
     map<SyntacticTerm*, map<string, ProductionRule>> table;
     bool ambiguous;
+    vector<vector<ProductionTerm*>> derivations{};
+    vector<string> errors{};
+    void handleDerivation(ProductionRule p);
+
 };
 
 

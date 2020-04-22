@@ -25,7 +25,6 @@ public:
     SyntacticTerm *getNonTerminal() const;
     void setNonTerminal(SyntacticTerm *syntacticTerm);
     string toString();
-    vector<string> getTermsAsString();
     /*
      * return true if production is Epsilon (empty string)
      * ex E ------> EPS
