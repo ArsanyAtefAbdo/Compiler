@@ -26,6 +26,7 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
             int index = 0;
             auto *firstTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
             /// if symbol is terminal then add to the list
+
             if (firstTerm->getType() == Terminal) {
                 if (table.find(non_terminal) == table.end()){
                     map<std::string, struct ProductionRule> newchar;
@@ -56,12 +57,12 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
                     res.insert(temp.begin(), temp.end());
                     onePR.insert(temp.begin(), temp.end());
                     index++;
-                    if (index + 1 == productionRule->getTerms().size()) {
-                        temp.insert("EPS");
-                        break;
-                    } else {
+                    if (index < productionRule->getTerms().size()) {
                         auto *nextTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
                         temp = getFirst(nextTerm);
+                    } else {
+                        temp.insert("EPS");
+                        break;
                     }
                 }
                 res.insert(temp.begin(), temp.end());
