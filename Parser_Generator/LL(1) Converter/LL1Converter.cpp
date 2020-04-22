@@ -23,7 +23,7 @@ SyntacticTerm *LL1Converter::eliminateLeftRecursion(SyntacticTerm *E) {
             p->removeFirstTerm();
             p->addProductionTerm(newE);
             p->setNonTerminal(newE);
-        } else{
+        } else if(!p->isEpsilon()){
             p->addProductionTerm(newE);
             productionNotStartWithE.push_back(p);
         }
