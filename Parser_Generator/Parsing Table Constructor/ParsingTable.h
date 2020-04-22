@@ -13,7 +13,7 @@ public:
     /// non-terminal  ,      terminal      , ProductionRule
     map<SyntacticTerm *, map<std::string, struct ProductionRule>> getTable(const vector<SyntacticTerm*>& non_terminal);
     void settingFirstANDFollow(const vector<SyntacticTerm*>& non_terminal);
-
+    bool ambiguity();
 private:
 
     map<SyntacticTerm*, map <string, ProductionRule>> table;
@@ -23,6 +23,7 @@ private:
     void setFollowTable(vector<SyntacticTerm*> non_terminal);
     void finalizingfollow(map<SyntacticTerm*, unordered_set<SyntacticTerm*>> nonterm_follow);
     bool cons = false;
+    bool amb = false;
 };
 
 #endif //LEXICAL_ANALYZER_GENERATOR_PARSINGTABLE_H

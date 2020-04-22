@@ -9,6 +9,7 @@ map<SyntacticTerm *, map<std::string, struct ProductionRule>> ParsingTable::getT
         return table;
     }
     settingFirstANDFollow(non_terminal);
+//    cout << "amb is "<<amb;
     return table;
 }
 
@@ -193,7 +194,8 @@ void ParsingTable::settingFirstANDFollow(const vector<SyntacticTerm *>& non_term
                     if (pr->isEpsilon()){
                         for (const auto& c:i->getFollow()){
                             if (table.find(i)->second.find(c) != table.find(i)->second.end()){
-                                table.find(i)->second.find(c)->second = *pr;
+//                                table.find(i)->second.find(c)->second = *pr;
+                                amb = true;
                             } else {
                                 table.find(i)->second.insert(pair <std::string, struct ProductionRule>(c,*pr));
                             }
@@ -235,4 +237,8 @@ void ParsingTable::finalizingfollow(map<SyntacticTerm *, unordered_set<Syntactic
             }
         }
     } while (i != 0 && times <= nonterm_follow.size());
+}
+
+bool ParsingTable::ambiguity() {
+    return amb;
 }
