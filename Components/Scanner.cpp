@@ -83,7 +83,7 @@ Scanner::Scanner(const string& lexical_file, bool printTable) {
     Minimizer::getInstance()->DFAMinimize(this->recognizer);
 
     if(printTable){
-        ReadLexicalRulesFile::getInstance()->printTable(lexical_file + "table", this->recognizer->getDTable(), Builder::getInstance()->getAlphabet());
+        ReadLexicalRulesFile::getInstance()->printTable(lexical_file + "_table", this->recognizer->getDTable(), Builder::getInstance()->getAlphabet());
     }
 
 }

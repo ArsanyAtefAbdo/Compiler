@@ -35,7 +35,7 @@ private:
     vector<string> split_by_spaces(string to_be_splitted);
     string removeChar(string str, char c);
     void handle_input_lines(const vector<pair<string,string>>& my_lines);
-    string add_spaces(string str);
+    string add_spaces(const string& str);
 
 };
 

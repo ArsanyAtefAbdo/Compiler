@@ -11,21 +11,29 @@ Parser::Parser(const string &lexical_file, const string& CFGFileName, bool print
 
     productions = ReadInputFile::getInstance()->read_from_file(CFGFileName);
 
+//    table = ParsingTable::getInstance()->getTable(productions);
+
     productions = LL1Converter::getInstance()->convertToLL1(productions);
 
-    auto* ptable = new ParsingTable();
-    //table contain under each input which production will be used
-    table = ptable->getTable(productions);
-
+    table = ParsingTable::getInstance()->getTable(productions);
+    this->ambiguous = ParsingTable::getInstance()->ambiguity();
 }
 
 vector<string> Parser::parsing(const string& programFileName) {
     // t--> has token(terminal) and value
     // first production
     vector<string> output{};
+    if(this->ambiguous){
+        output.emplace_back("Parser is ambiguous !!");
+        return output;
+    }
     if (!scanner->scanProgramFile(programFileName) || productions.empty() || table.empty()){
         return output;
     }
+
+    vector<string> errors{};
+    vector<vector<string>> derivations{};
+
     SyntacticTerm* temp;
     ProductionRule prodTemp;
     stack<ProductionTerm*> stack{};
@@ -33,12 +41,13 @@ vector<string> Parser::parsing(const string& programFileName) {
     bool error = false;
     stack.push(new ProductionTerm("$", Terminal));
     stack.push(productions.front());
+
     if(!scanner->hasNextToken()){
         return output;
     }
     Token *t = scanner->getNextToken();
 
-    while (true){
+    while (!stack.empty()){
         if (stack.top()->getType() == Terminal){
             if (stack.top()->getName() == t->getName()){
                 stack.pop();
@@ -51,6 +60,7 @@ vector<string> Parser::parsing(const string& programFileName) {
                 //ERROR (missing terminal of stack)
                 error = true;
                 output.push_back("Error: missing '" + stack.top()->getName() + "'");
+//                cout << "Error: missing '" + stack.top()->getName() + "'" << endl;
                 stack.pop();
             } else{
                 stack.pop();
@@ -61,6 +71,7 @@ vector<string> Parser::parsing(const string& programFileName) {
                 //Error:(illegal non-terminal) – discard terminal
                 error = true;
                 output.push_back("Error: illegal '" + stack.top()->getName()+ "'" + "Discard '" + t->getName() + "'");
+//                cout << "Error: illegal '" + stack.top()->getName()+ "'" + "Discard '" + t->getName() + "'" << endl;
                 if(scanner->hasNextToken()){
                     t = scanner->getNextToken();
                 }else{
@@ -73,6 +84,7 @@ vector<string> Parser::parsing(const string& programFileName) {
                     prodTemp = table.at(temp).at(t->getName());
                     stack.pop();
                     output.push_back(prodTemp.toString());
+//                    cout << prodTemp.toString() << endl;
 
                     for (auto it = prodTemp.getTerms().rbegin(); it != prodTemp.getTerms().rend(); it++){
                         stack.push(*it);
@@ -87,4 +99,8 @@ vector<string> Parser::parsing(const string& programFileName) {
         output.emplace_back("Not-Accept");
     }
     return output;
+}
+
+bool Parser::isAmbiguous() {
+    return this->ambiguous;
 }

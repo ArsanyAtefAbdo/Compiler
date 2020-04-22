@@ -11,19 +11,22 @@
 class ParsingTable {
 public:
     /// non-terminal  ,      terminal      , ProductionRule
-    map<SyntacticTerm *, map<std::string, struct ProductionRule>> getTable(const vector<SyntacticTerm*>& non_terminal);
-    void settingFirstANDFollow(const vector<SyntacticTerm*>& non_terminal);
+    static ParsingTable *getInstance();
+    unordered_set<string>getFirst(SyntacticTerm* non_terminal);
+    map<SyntacticTerm *, map<std::string, ProductionRule>> getTable(const vector<SyntacticTerm*>& non_terminal);
     bool ambiguity();
 private:
+    ParsingTable();
+    static ParsingTable* instance;
 
     map<SyntacticTerm*, map <string, ProductionRule>> table;
     map<SyntacticTerm*, unordered_set<string>> first;
     map<SyntacticTerm*, unordered_set<string>> follow;
-    unordered_set<string>getFirst(SyntacticTerm* non_terminal);
+    void settingFirstANDFollow(const vector<SyntacticTerm*>& non_terminal);
     void setFollowTable(vector<SyntacticTerm*> non_terminal);
     void finalizingfollow(map<SyntacticTerm*, unordered_set<SyntacticTerm*>> nonterm_follow);
-    bool cons = false;
-    bool amb = false;
+    bool cons;
+    bool amb;
 };
 
 #endif //LEXICAL_ANALYZER_GENERATOR_PARSINGTABLE_H

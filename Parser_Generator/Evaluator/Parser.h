@@ -17,12 +17,12 @@ public:
     //CFGFileName contains production rules (file name)
     Parser(const string& lexical_file, const string& CFGFileName, bool printTable);
     vector<string> parsing(const string& programFileName);
-
+    bool isAmbiguous();
 private:
     Scanner* scanner;
     vector<SyntacticTerm *> productions;
     map<SyntacticTerm*, map<string, ProductionRule>> table;
-
+    bool ambiguous;
 };
 
 

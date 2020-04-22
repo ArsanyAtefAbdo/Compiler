@@ -5,6 +5,7 @@
 #ifndef LEXICAL_ANALYZER_GENERATOR_LL1CONVERTER_H
 #define LEXICAL_ANALYZER_GENERATOR_LL1CONVERTER_H
 #include "../Components/ProductionRule.h"
+#include "../Parsing Table Constructor/ParsingTable.h"
 
 class LL1Converter {
 
@@ -38,6 +39,8 @@ private:
 
     vector<SyntacticTerm*>  eliminateLeftRecursion(const vector<SyntacticTerm*>& terms);
     vector<SyntacticTerm*>  eliminateLeftFactoring(const vector<SyntacticTerm*>& terms);
+
+    bool intersectionSets(const unordered_set<string>&s1, const unordered_set<string>&s2);
 
 };
 

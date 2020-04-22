@@ -3,8 +3,16 @@
 //
 
 #include "ParsingTable.h"
+ParsingTable* ParsingTable::instance = nullptr;
 
-map<SyntacticTerm *, map<std::string, struct ProductionRule>> ParsingTable::getTable(const vector <SyntacticTerm*>& non_terminal) {
+map<SyntacticTerm *, map<std::string, ProductionRule>> ParsingTable::getTable(const vector <SyntacticTerm*>& non_terminal) {
+
+    this->cons = false;
+    this->amb = false;
+    table.clear();
+    first.clear();
+    follow.clear();
+
     if(non_terminal.empty()){
         return table;
     }
@@ -35,7 +43,8 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
                     table.insert(pair<SyntacticTerm *, map<std::string, struct ProductionRule>>(non_terminal,newchar));
                 } else {
                     if (table.find(non_terminal)->second.find(firstTerm->getName()) != table.find(non_terminal)->second.end()){
-                        table.find(non_terminal)->second.find(firstTerm->getName())->second = *productionRule;
+                        //table.find(non_terminal)->second.find(firstTerm->getName())->second = *productionRule;
+                        amb = true;
                     } else {
                         table.find(non_terminal)->second.insert(
                                 pair<std::string, struct ProductionRule>(firstTerm->getName(), *productionRule));
@@ -49,7 +58,7 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
                 if (first.find(firstTerm) != first.end()) {
                     temp = first.at(firstTerm);
                     ///else  if it's not computed before then recursive call the function
-                } else {
+                } else if(non_terminal != firstTerm){
                     temp = getFirst(firstTerm);
                 }
                 /// handling special case for having epsilon at first of the first non-terminal terms.
@@ -60,7 +69,9 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
                     index++;
                     if (index < productionRule->getTerms().size()) {
                         auto *nextTerm = (SyntacticTerm *) productionRule->getTerms().at(index);
-                        temp = getFirst(nextTerm);
+                        if(non_terminal != nextTerm){
+                            temp = getFirst(nextTerm);
+                        }
                     } else {
                         temp.insert("EPS");
                         break;
@@ -72,7 +83,8 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
             for (const auto& c:onePR){
                 if (table.find(non_terminal) != table.end()){
                     if (table.find(non_terminal)->second.find(c) != table.find(non_terminal)->second.end()){
-                        table.find(non_terminal)->second.find(c)->second = *productionRule;
+                        //table.find(non_terminal)->second.find(c)->second = *productionRule;
+                        amb = true;
                     } else {
                         table.find(non_terminal)->second.insert(pair <std::string, struct ProductionRule> (c, *productionRule));
                     }
@@ -85,6 +97,7 @@ unordered_set<string> ParsingTable::getFirst(SyntacticTerm* non_terminal) {
         }
         first.insert(pair<SyntacticTerm *, unordered_set<string>>(non_terminal, res));
         non_terminal->setFirst(res);
+        //cout << non_terminal->getName()<<endl;
         return res;
     } else {
         non_terminal->setFirst(first.at(non_terminal));
@@ -240,5 +253,17 @@ void ParsingTable::finalizingfollow(map<SyntacticTerm *, unordered_set<Syntactic
 }
 
 bool ParsingTable::ambiguity() {
-    return amb;
+    return this->amb;
+}
+
+ParsingTable::ParsingTable() {
+    this->cons = false;
+    this->amb = false;
+}
+
+ParsingTable *ParsingTable::getInstance() {
+    if(instance == nullptr){
+        instance = new ParsingTable();
+    }
+    return instance;
 }

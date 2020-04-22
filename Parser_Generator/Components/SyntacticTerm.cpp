@@ -50,9 +50,9 @@ void SyntacticTerm::setFollow(const unordered_set<string> &followSet) {
 }
 
 string SyntacticTerm::toString() {
-    string s;
+    string s = this->getName() + " ----> ";
     for(auto* p : productions){
-        s += p->toString() + "\n";
+        s += p->toString() + " | ";
     }
     s.pop_back();
     return s;

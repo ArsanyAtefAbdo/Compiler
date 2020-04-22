@@ -4,7 +4,6 @@
  | IF
  | WHILE
  | ASSIGNMENT
- | \L
 # DECLARATION = PRIMITIVE_TYPE 'id' ';'
 # PRIMITIVE_TYPE = 'int' | 'float'
 # IF = 'if' '(' EXPRESSION ')' '{' STATEMENT '}' 'else' '{' STATEMENT '}'

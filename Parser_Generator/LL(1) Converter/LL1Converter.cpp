@@ -105,9 +105,9 @@ vector<SyntacticTerm *> LL1Converter::eliminateLeftFactoring(SyntacticTerm *E) {
                     break;
                 }
                 ProductionTerm *term = p->getTerms().at(window);
-                if(set.empty() && set.find(term) == set.end()){
+                if(set.empty()){
                     set.insert(term);
-                }else if (set.size() == 1 && set.find(term) == set.end()){
+                }else if (set.find(term) == set.end()){
                     allMatching = false;
                     break;
                 }
@@ -136,6 +136,16 @@ vector<SyntacticTerm *> LL1Converter::eliminateLeftFactoring(SyntacticTerm *E) {
             p->addProductionTerms(firstGroup.at(i));
             p->addProductionTerm(newE);
             newPR.push_back(p);
+            // to handel indirect left factoring.
+            unordered_set<string> first_of_newE = ParsingTable::getInstance()->getFirst(newE);
+            for(auto* x : newE->getProductions()){
+                if(x->getTerms().front()->getType() == NonTerminal){
+                    auto* y = (SyntacticTerm *) x->getTerms().front();
+                    if(intersectionSets(first_of_newE, ParsingTable::getInstance()->getFirst(y))){
+                        newE->replaceProductionWith(y);
+                    }
+                }
+            }
             vector<SyntacticTerm *>tmp = eliminateLeftFactoring(newE);
             newEs.insert(newEs.end(), tmp.begin(), tmp.end());
         }else{
@@ -153,4 +163,11 @@ vector<SyntacticTerm *> LL1Converter::convertToLL1(const vector<SyntacticTerm *>
     }
     vector<SyntacticTerm *>tmp = eliminateLeftRecursion(terms);
     return eliminateLeftFactoring(tmp);
+}
+
+bool LL1Converter::intersectionSets(const unordered_set<string>& s1, const unordered_set<string>& s2) {
+    unordered_set<string> s{};
+    s.insert(s1.begin(), s1.end());
+    s.insert(s2.begin(), s2.end());
+    return s.size() != s1.size() + s2.size();
 }

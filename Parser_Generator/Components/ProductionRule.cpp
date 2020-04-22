@@ -9,9 +9,10 @@ ProductionRule::ProductionRule(SyntacticTerm* nonTerminal) {
     this->nonTerminal->addProduction(this);
 }
 string ProductionRule::toString() {
-    string s = nonTerminal->getName() + " ----> ";
+    //string s = nonTerminal->getName() + " ----> ";
+    string s;
     if(isEpsilon()){
-        return s + "EPS";
+        return "EPS";
     }
     for(ProductionTerm* term : terms){
         s += term->getName() + " ";
@@ -29,6 +30,9 @@ SyntacticTerm *ProductionRule::getNonTerminal() const {
 }
 
 void ProductionRule::addProductionTerm(ProductionTerm *t) {
+    if(isEpsilon()){
+        this->terms.erase(this->terms.begin());
+    }
     this->terms.push_back(t);
 }
 
@@ -37,6 +41,9 @@ bool ProductionRule::isEpsilon() {
 }
 
 void ProductionRule::addProductionTerms(const vector<ProductionTerm *>& newTerms) {
+    if(isEpsilon()){
+        this->terms.erase(this->terms.begin());
+    }
     this->terms.insert(this->terms.end(), newTerms.begin(), newTerms.end());
 }
 
@@ -67,4 +74,12 @@ ProductionRule::ProductionRule() {
 
 bool ProductionRule::isSync() {
     return this->nonTerminal == nullptr;
+}
+
+vector<string> ProductionRule::getTermsAsString() {
+    vector<string>s(terms.size());
+    for(ProductionTerm* term : terms){
+        s.push_back(term->getName());
+    }
+    return s;
 }

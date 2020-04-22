@@ -129,13 +129,13 @@ vector<SyntacticTerm *> ReadInputFile::buildRules() {
     return rules;
 }
 
-string ReadInputFile::add_spaces(string str) {
-    string with_spaces = "";
+string ReadInputFile::add_spaces(const string& str) {
+    string with_spaces;
     for(auto i : str){
-        if(i != '\\|'){
+        if(i != '|'){
             with_spaces+=i;
         } else {
-            with_spaces += " \\| ";
+            with_spaces += " | ";
         }
     }
     return with_spaces;
