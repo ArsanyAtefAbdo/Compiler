@@ -2,9 +2,9 @@
 #include "Parser_Generator/Evaluator/Parser.h"
 
 using namespace std;
-// tests/test1/lexical_rules
-// tests/test1/production_rules
-// tests/test1/program_test
+// ../tests/test1/lexical_rules
+// ../tests/test1/production_rules
+// ../tests/test1/program_test
 int main() {
 
     cout << "Please enter the full filename/path of the lexical rules file you want to use..." << endl;
@@ -30,6 +30,8 @@ int main() {
 
             ReadInputFile::getInstance()->write(src_file + "_derivations", derivations);
             ReadInputFile::getInstance()->write(src_file + "_errors", errors);
+        }else{
+            break;
         }
     }
 
