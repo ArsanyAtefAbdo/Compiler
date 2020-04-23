@@ -76,13 +76,13 @@ bool Parser::parsing(const string& programFileName) {
                 }
             }else{
                 prodTemp = table.at(temp).at(t->getName());
+                handleDerivation(prodTemp);
+                stack.pop();
                 if (!prodTemp.isSync()){
                     for (auto it = prodTemp.getTerms().rbegin(); it != prodTemp.getTerms().rend(); it++){
                         stack.push(*it);
                     }
                 }
-                stack.pop();
-                handleDerivation(prodTemp);
             }
         }
     }
