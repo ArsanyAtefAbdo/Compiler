@@ -55,6 +55,8 @@ string SyntacticTerm::toString() {
         s += p->toString() + " | ";
     }
     s.pop_back();
+    s.pop_back();
+    s.pop_back();
     return s;
 }
 

@@ -10,9 +10,11 @@ Parser::Parser(const string &lexical_file, const string& CFGFileName, bool print
 
     productions = ReadInputFile::getInstance()->read_from_file(CFGFileName);
 
-//    table = ParsingTable::getInstance()->getTable(productions);
-
     productions = LL1Converter::getInstance()->convertToLL1(productions);
+
+//    for(auto* p : productions){
+//        cout << p->toString() << endl;
+//    }
 
     table = ParsingTable::getInstance()->getTable(productions);
     if(printTable){
