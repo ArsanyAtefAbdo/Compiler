@@ -39,8 +39,8 @@ bool     "true"|"false"
 {bool}                  {yylval.val = yytext;yylval.type = "BOOL"; return BOOL;}
 {id}                    {yylval.val = yytext;yylval.type = "ID";return ID;}
 {addop}                 {yylval.val = yytext;yylval.type = "ADD_OP"; return ADD_OP;}
-{mulop}                 {yylval.val = yytext;yylval.ival = "MUL_OP"; return MUL_OP;}
-{num}                   {yylval.val = yytext;yylval.type = atoi(yytext); return NUM;}
+{mulop}                 {yylval.val = yytext;yylval.type = "MUL_OP"; return MUL_OP;}
+{num}                   {yylval.val = yytext;yylval.ival = atoi(yytext); return NUM;}
 {assign}                {return EQUALS;}
 .                       {showError(); return (OTHER);}
 %%
