@@ -33,14 +33,14 @@ bool     "true"|"false"
 ")"                     {return RIGHT_BRACKET;}
 "{"                     {return LEFT_CURLY_BRACKET;}
 "}"                     {return RIGHT_CURLY_BRACKET;}
-{fnum}                  {yylval.val = yytext;yylval.type = "F_NUM"; return F_NUM;}
+{fnum}                  {yylval.val = yytext;yylval.fval = atof(yytext); return F_NUM;}
 {relop}                 {yylval.val = yytext;yylval.type = "REL_OP"; return REL_OP;}
 {boolop}                {yylval.val = yytext;yylval.type = "BOOL_OP"; return BOOL_OP;}
 {bool}                  {yylval.val = yytext;yylval.type = "BOOL"; return BOOL;}
 {id}                    {yylval.val = yytext;yylval.type = "ID";return ID;}
 {addop}                 {yylval.val = yytext;yylval.type = "ADD_OP"; return ADD_OP;}
-{mulop}                 {yylval.val = yytext;yylval.type = "MUL_OP"; return MUL_OP;}
-{num}                   {yylval.val = yytext;yylval.type = "NUM"; return NUM;}
+{mulop}                 {yylval.val = yytext;yylval.ival = "MUL_OP"; return MUL_OP;}
+{num}                   {yylval.val = yytext;yylval.type = atoi(yytext); return NUM;}
 {assign}                {return EQUALS;}
 .                       {showError(); return (OTHER);}
 %%

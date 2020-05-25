@@ -7,6 +7,8 @@ int yyerror(char *s);
 
 %union{
 
+    int ival;     // int
+	float fval;   // float
 	char * val; // value
     char * type; // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
 }
@@ -60,7 +62,7 @@ WHILE :
     LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET 
     ;
 ASSIGNMENT :
-    ID = EXPRESSION
+    ID EQUALS EXPRESSION
     ; 
 EXPRESSION :
     NUMBER | EXPRESSION INFIX_OPERATOR EXPRESSION 
@@ -68,7 +70,7 @@ EXPRESSION :
     | LEFT_BRACKET EXPRESSION RIGHT_BRACKET
     ;
 INFIX_OPERATOR :
-    + | - | * | / | %| < | > | <= | >= | == | !=| | | && 
+    ADD_OP | MUL_OP| REL_OP | BOOL_OP 
 ;
 
 %%
