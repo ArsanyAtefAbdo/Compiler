@@ -1,8 +1,11 @@
 %{
-**** C stuff ****
-#include <stdio.h>
-#include <bits/stdc++.h>
-#include "y.tab.h"
+/* run flex LEX.l  bison -dy SYN.y g++ -Wno-write-strings -std=gnu++11 lex.yy.c y.tab.c */
+/* C stuff */
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string>
+    #include "y.tab.h"
+     extern "C" int yyparse (void);
 void showError();
 %}
  /* Regular Expressions */
@@ -33,24 +36,34 @@ bool     "true"|"false"
 ")"                     {return RIGHT_BRACKET;}
 "{"                     {return LEFT_CURLY_BRACKET;}
 "}"                     {return RIGHT_CURLY_BRACKET;}
-{fnum}                  {yylval.val = yytext;yylval.fval = atof(yytext); return F_NUM;}
+{fnum}                  {yylval.fval = atof(yytext); return F_NUM;}
 {relop}                 {yylval.val = yytext;yylval.type = "REL_OP"; return REL_OP;}
 {boolop}                {yylval.val = yytext;yylval.type = "BOOL_OP"; return BOOL_OP;}
 {bool}                  {yylval.val = yytext;yylval.type = "BOOL"; return BOOL;}
 {id}                    {yylval.val = yytext;yylval.type = "ID";return ID;}
 {addop}                 {yylval.val = yytext;yylval.type = "ADD_OP"; return ADD_OP;}
 {mulop}                 {yylval.val = yytext;yylval.type = "MUL_OP"; return MUL_OP;}
-{num}                   {yylval.val = yytext;yylval.ival = atoi(yytext); return NUM;}
+{num}                   {yylval.ival = atoi(yytext); return NUM;}
 {assign}                {return EQUALS;}
 .                       {showError(); return (OTHER);}
 %%
-**** C functions ****
+ /* C functions */
 int main(void)
 {
 yyparse();
 return 0;
 }
 
+int yywrap(void)
+{
+return 0;
+}
+
+int yyerror(void)
+{
+printf("Error\n");
+exit(1);
+}
 void showError()
 {
 printf("Error: invalid input");

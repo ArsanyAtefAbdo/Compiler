@@ -1,61 +1,62 @@
 %{
-**** C stuff ****
+/* C stuff */
 #include <stdio.h>
-int yylex();
-int yyerror(char *s);
+#include <string>
+extern int yylex();
+extern int yyerror(char *s);
 %}
+
+%code requires {
+	#include <vector>
+	using namespace std;
+}
 
 %union{
 
     int ival;     // int
 	float fval;   // float
-	char * val; // value
-    char * type; // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
+	char * val;   // value
+    char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
+    struct {
+        vector<string *> *code;
+        vector<string *> *next;
+  } Basic_nt;
 }
 
-%token INT FLOAT BOOLEAN IF_WORD ELSE FOR_WORD WHILE_WORD SYSTEM_OUT CLASS MODIFIER_TYPE
-%token ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID EQUALS
-%token SEMI_COLON LEFT_BRACKET RIGHT_BRACKET LEFT_CURLY_BRACKET RIGHT_CURLY_BRACKET OTHER
+%token <ival> NUM
+%token <fval> F_NUM 
+%token INT FLOAT BOOLEAN IF_WORD ELSE FOR_WORD WHILE_WORD SYSTEM_OUT
+%token <val> ADD_OP MUL_OP REL_OP BOOL_OP BOOL ID
+%token SEMI_COLON LEFT_BRACKET RIGHT_BRACKET LEFT_CURLY_BRACKET RIGHT_CURLY_BRACKET EQUALS OTHER
 
-%type ....
+ /* %type */
+%type <Basic_nt> STATEMENT_LIST
+%type <Basic_nt> STATEMENT
+%type <Basic_nt> DECLARATION
+%type <Basic_nt> ASSIGNMENT
+ /* %type PRIMITIVE_TYPE %type EXPRESSION %type SIMPLE_EXPRESSION %type TERM %type FACTOR %type SIGN */
 
 %%
 
-CLASS_DECL:
-    MODIFIER CLASS ID LEFT_CURLY_BRACKET CLASS_BODY RIGHT_CURLY_BRACKET
-    ;
-CLASS_BODY:
-    DECLARATION | ASSIGNMENT | METHOD_LIST | Epsilon
-    ;
-METHOD_LIST:
-    METHOD_DECL | METHOD_LIST METHOD_DECL
-    ;
-METHOD_DECL:
-    MODIFIER PRIMITIVE_TYPE ID LEFT_BRACKET RIGHT_BRACKET 
-    LEFT_CURLY_BRACKET METHOD_BODY RIGHT_CURLY_BRACKET
-    ;
 METHOD_BODY:
     STATEMENT_LIST
     ;
 STATEMENT_LIST:
     STATEMENT | STATEMENT_LIST STATEMENT
     ;
-STATMENT :
+STATEMENT :
     DECLARATION | IF_WORD | WHILE_WORD | ASSIGNMENT
     ; 
 DECLARATION :
-    PRIMITIVE_TYPE IDENTIFIER
+    PRIMITIVE_TYPE ID
     ; 
 PRIMITIVE_TYPE :
     INT | FLOAT
     ;
-MODIFIER :
-    MODIFIER_TYPE 
-    ;
 IF :
     IF_WORD LEFT_BRACKET EXPRESSION RIGHT_BRACKET 
     LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET
-    else LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET 
+    ELSE LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET 
     ;
 WHILE :
     WHILE_WORD LEFT_BRACKET EXPRESSION RIGHT_BRACKET 
@@ -64,15 +65,20 @@ WHILE :
 ASSIGNMENT :
     ID EQUALS EXPRESSION
     ; 
-EXPRESSION :
-    NUMBER | EXPRESSION INFIX_OPERATOR EXPRESSION 
-    | ID 
-    | LEFT_BRACKET EXPRESSION RIGHT_BRACKET
+EXPRESSION : SIMPLE_EXPRESSION  | SIMPLE_EXPRESSION REL_OP SIMPLE_EXPRESSION
+    { printf("EXP\n"); return 0;}
     ;
-INFIX_OPERATOR :
-    ADD_OP | MUL_OP| REL_OP | BOOL_OP 
-;
-
+SIMPLE_EXPRESSION : TERM | SIGN TERM | SIMPLE_EXPRESSION ADD_OP TERM  
+    { printf("S_EXP\n"); return 0;}
+    ;
+TERM : FACTOR | TERM MUL_OP FACTOR
+    { printf("TERM\n"); return 0;}
+    ;
+FACTOR : ID | NUM | LEFT_BRACKET EXPRESSION RIGHT_BRACKET
+    { printf("FACTOR\n"); return 0;}
+    ;
+SIGN : ADD_OP 
+    { printf("SIGN\n"); return 0;}
+    ; 
 %%
 /* MAIN */
-...
