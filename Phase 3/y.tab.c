@@ -75,10 +75,11 @@
 #include <string>
 extern int yylex();
 extern int yyerror(char *s);
+extern "C" int yyparse (void);
 
 
 /* Line 189 of yacc.c  */
-#line 82 "y.tab.c"
+#line 83 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -101,7 +102,7 @@ extern int yyerror(char *s);
 /* "%code requires" blocks.  */
 
 /* Line 209 of yacc.c  */
-#line 9 "SYN.y"
+#line 10 "SYN.y"
 
 	#include <vector>
 	using namespace std;
@@ -109,7 +110,7 @@ extern int yyerror(char *s);
 
 
 /* Line 209 of yacc.c  */
-#line 113 "y.tab.c"
+#line 114 "y.tab.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -175,7 +176,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 14 "SYN.y"
+#line 15 "SYN.y"
 
 
     int ival;     // int
@@ -190,7 +191,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 194 "y.tab.c"
+#line 195 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -202,7 +203,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 206 "y.tab.c"
+#line 207 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -493,9 +494,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    42,    42,    45,    45,    48,    48,    48,    48,    51,
-      54,    54,    66,    68,    68,    71,    71,    71,    74,    74,
-      77,    77,    77,    80
+       0,    43,    43,    46,    46,    49,    49,    49,    49,    52,
+      55,    55,    67,    69,    69,    72,    72,    72,    75,    75,
+      78,    78,    78,    81
 };
 #endif
 
@@ -1418,42 +1419,42 @@ yyreduce:
         case 14:
 
 /* Line 1455 of yacc.c  */
-#line 69 "SYN.y"
+#line 70 "SYN.y"
     { printf("EXP\n"); return 0;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 72 "SYN.y"
+#line 73 "SYN.y"
     { printf("S_EXP\n"); return 0;}
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 75 "SYN.y"
+#line 76 "SYN.y"
     { printf("TERM\n"); return 0;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 78 "SYN.y"
+#line 79 "SYN.y"
     { printf("FACTOR\n"); return 0;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 81 "SYN.y"
+#line 82 "SYN.y"
     { printf("SIGN\n"); return 0;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1457 "y.tab.c"
+#line 1458 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1665,6 +1666,11 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 83 "SYN.y"
+#line 84 "SYN.y"
 
 /* MAIN */
+int yyerror(void)
+{
+printf("Error\n");
+exit(1);
+}

@@ -4,6 +4,7 @@
 #include <string>
 extern int yylex();
 extern int yyerror(char *s);
+extern "C" int yyparse (void);
 %}
 
 %code requires {
@@ -82,3 +83,8 @@ SIGN : ADD_OP
     ; 
 %%
 /* MAIN */
+int yyerror(void)
+{
+printf("Error\n");
+exit(1);
+}

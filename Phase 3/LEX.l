@@ -6,6 +6,7 @@
     #include <string>
     #include "y.tab.h"
      extern "C" int yyparse (void);
+     extern "C" int yyerror(char *s); 
 void showError();
 %}
  /* Regular Expressions */
@@ -59,11 +60,7 @@ int yywrap(void)
 return 0;
 }
 
-int yyerror(void)
-{
-printf("Error\n");
-exit(1);
-}
+
 void showError()
 {
 printf("Error: invalid input");

@@ -426,9 +426,10 @@ char *yytext;
     #include <string>
     #include "y.tab.h"
      extern "C" int yyparse (void);
+     extern "C" int yyerror(char *s); 
 void showError();
 /* Regular Expressions */
-#line 432 "lex.yy.c"
+#line 433 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -579,10 +580,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 24 "LEX.l"
+#line 25 "LEX.l"
 
  /* Token Specifications */
-#line 586 "lex.yy.c"
+#line 587 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -667,125 +668,125 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 26 "LEX.l"
+#line 27 "LEX.l"
 {return INT;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "LEX.l"
+#line 28 "LEX.l"
 {return FLOAT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 28 "LEX.l"
+#line 29 "LEX.l"
 {return BOOLEAN;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 29 "LEX.l"
+#line 30 "LEX.l"
 {return IF_WORD;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 30 "LEX.l"
+#line 31 "LEX.l"
 {return ELSE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 31 "LEX.l"
+#line 32 "LEX.l"
 {return FOR_WORD;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 32 "LEX.l"
+#line 33 "LEX.l"
 {return WHILE_WORD;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 33 "LEX.l"
+#line 34 "LEX.l"
 {return SYSTEM_OUT;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 34 "LEX.l"
+#line 35 "LEX.l"
 {return SEMI_COLON;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 35 "LEX.l"
+#line 36 "LEX.l"
 {return LEFT_BRACKET;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 36 "LEX.l"
+#line 37 "LEX.l"
 {return RIGHT_BRACKET;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 37 "LEX.l"
+#line 38 "LEX.l"
 {return LEFT_CURLY_BRACKET;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 38 "LEX.l"
+#line 39 "LEX.l"
 {return RIGHT_CURLY_BRACKET;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 39 "LEX.l"
+#line 40 "LEX.l"
 {yylval.fval = atof(yytext); return F_NUM;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 40 "LEX.l"
+#line 41 "LEX.l"
 {yylval.val = yytext;yylval.type = "REL_OP"; return REL_OP;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 41 "LEX.l"
+#line 42 "LEX.l"
 {yylval.val = yytext;yylval.type = "BOOL_OP"; return BOOL_OP;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 42 "LEX.l"
+#line 43 "LEX.l"
 {yylval.val = yytext;yylval.type = "BOOL"; return BOOL;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 43 "LEX.l"
+#line 44 "LEX.l"
 {yylval.val = yytext;yylval.type = "ID";return ID;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 44 "LEX.l"
+#line 45 "LEX.l"
 {yylval.val = yytext;yylval.type = "ADD_OP"; return ADD_OP;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 45 "LEX.l"
+#line 46 "LEX.l"
 {yylval.val = yytext;yylval.type = "MUL_OP"; return MUL_OP;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 46 "LEX.l"
+#line 47 "LEX.l"
 {yylval.ival = atoi(yytext); return NUM;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 47 "LEX.l"
+#line 48 "LEX.l"
 {return EQUALS;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 48 "LEX.l"
+#line 49 "LEX.l"
 {showError(); return (OTHER);}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 49 "LEX.l"
+#line 50 "LEX.l"
 ECHO;
 	YY_BREAK
-#line 789 "lex.yy.c"
+#line 790 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1671,7 +1672,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 49 "LEX.l"
+#line 50 "LEX.l"
 
  /* C functions */
 int main(void)
@@ -1685,11 +1686,7 @@ int yywrap(void)
 return 0;
 }
 
-int yyerror(void)
-{
-printf("Error\n");
-exit(1);
-}
+
 void showError()
 {
 printf("Error: invalid input");
