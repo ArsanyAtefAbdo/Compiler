@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string>
 extern int yylex();
-extern int yyerror(char *s);
+int yyerror(char *s);
 extern "C" int yyparse (void);
 %}
 

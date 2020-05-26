@@ -424,10 +424,10 @@ char *yytext;
     #include <stdio.h>
     #include <stdlib.h>
     #include <string>
-    #include "y.tab.h"
      extern "C" int yyparse (void);
      extern "C" int yyerror(char *s); 
-void showError();
+     void showError();
+     #include "y.tab.h"
 /* Regular Expressions */
 #line 433 "lex.yy.c"
 
