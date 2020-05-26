@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string>
 extern int yylex();
-int yyerror(char *s);
+void yyerror(const char*);
 extern "C" int yyparse (void);
 %}
 
@@ -83,7 +83,7 @@ SIGN : ADD_OP
     ; 
 %%
 /* MAIN */
-int yyerror(void)
+void yyerror(const char *s)
 {
 printf("Error\n");
 exit(1);
