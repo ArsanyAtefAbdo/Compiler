@@ -1,5 +1,7 @@
 %{
-/* run flex LEX.l  bison -dy SYN.y g++ -Wno-write-strings -std=gnu++11 lex.yy.c y.tab.c */
+/* flex LEX.l
+  bison -dy SYN.y
+g++ -Wno-write-strings -std=gnu++11 lex.yy.c y.tab.c */
 /* C stuff */
     #include <stdio.h>
     #include <stdlib.h>

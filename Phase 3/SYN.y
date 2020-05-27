@@ -12,8 +12,9 @@ void yyerror(const char*);
 extern "C" int yyparse (void);
 int sym_num = 1;
 ///           name          num  value  type
-unordered_map<string, tuple<int, float, string>> symbol_table;
-
+unordered_map<string, tuple<int, float, int>> symbol_table;
+typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
+#define maxid 20
 %}
 
 %code requires {
@@ -25,16 +26,24 @@ unordered_map<string, tuple<int, float, string>> symbol_table;
 
 %union{
 
-    int ival;     // int
+  int ival;     // int
 	float fval;   // float
 	char * val;   // value
-    char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
-    struct {
-        string *type;    // int, float,   bool,    basic
-        string *value;   // 5,    1.5,  true|false  null
-        vector<string *> *code; // bytecode for this non terminal
+  char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
+  struct {
+        int type;
+        vector<string *> *code;
         vector<string *> *next;
-  } non_terminal;
+  } exp;
+	struct {
+			int type;
+			vector<string *> *code;
+	} factor;
+	struct {
+			vector<string *> *code;
+			vector<string *> *next;
+	} block;
+	int pt;
 }
 
 %token <ival> NUM
@@ -44,106 +53,105 @@ unordered_map<string, tuple<int, float, string>> symbol_table;
 %token SEMI_COLON LEFT_BRACKET RIGHT_BRACKET LEFT_CURLY_BRACKET RIGHT_CURLY_BRACKET EQUALS OTHER
 
  /* %type */
-%type <non_terminal> METHOD_BODY
-%type <non_terminal> STATEMENT_LIST
-%type <non_terminal> STATEMENT
-%type <non_terminal> IF
-%type <non_terminal> WHILE
-%type <non_terminal> DECLARATION
-%type <non_terminal> ASSIGNMENT
-%type <non_terminal> PRIMITIVE_TYPE
-%type <non_terminal> EXPRESSION
-%type <non_terminal> SIMPLE_EXPRESSION
-%type <non_terminal> TERM
-%type <non_terminal> FACTOR
-%type <non_terminal> SIGN
+%type <block> METHOD_BODY
+%type <block> STATEMENT_LIST
+%type <block> STATEMENT
+%type <block> IF
+%type <block> WHILE
+%type <block> DECLARATION
+%type <block> ASSIGNMENT
+%type <pt> PRIMITIVE_TYPE
+%type <exp> EXPRESSION
+%type <exp> SIMPLE_EXPRESSION
+%type <factor> TERM
+%type <factor> FACTOR
+%type <val> SIGN
 
 %%
 
 METHOD_BODY:
     STATEMENT_LIST {
-        /* $$.type = "basic";
         $$.code = $1.code;
-        // print  */
+        // print
     };
 STATEMENT_LIST:
     STATEMENT {
-        /* $$.type = new string("basic");
         $$.code = $1.code;
         $$.next = $1.next;
-        //print */
+        //print
     }
     | STATEMENT_LIST STATEMENT{
-        /* $$.type = new string("basic");
         vector<string *> *currentcode = new vector<string *>();
         currentcode->insert(currentcode->begin(), $1.code->begin(), $1.code->end());
         currentcode->insert(currentcode->end(), $2.code->begin(), $2.code->end());
         $$.code = currentcode;
         $$.next = $2.next;
-        // print */
+        // print
     };
 STATEMENT :
     DECLARATION {
-        /* $$.type = new string("basic");
         $$.code = $1.code;
-        $$.next = $1.next; */
+        $$.next = $1.next;
     } | IF {
-        /* $$.type = new string("basic");
         $$.code = $1.code;
-        $$.next = $1.next; */
+        $$.next = $1.next;
     } | WHILE {
-        /* $$.type = new string("basic");
         $$.code = $1.code;
-        $$.next = $1.next; */
+        $$.next = $1.next;
     } | ASSIGNMENT{
-        /* $$.type = new string("basic");
         $$.code = $1.code;
-        $$.next = $1.next; */
+        $$.next = $1.next;
     };
 DECLARATION :
     PRIMITIVE_TYPE ID SEMI_COLON {
-        /* unordered_map<string, tuple<int, float, string>>::iterator it;
-        it = symbol_table.find($2.val);
+        unordered_map<string, tuple<int, float, int>>::iterator it;
+        it = symbol_table.find($2);
         if (it != symbol_table.end()){
-            $$.type = new string("basic");
             $$.code = nullptr;
-            yyerror($2.val + " EXIST BEFORE!!");
+						string str($2, $2 + maxid);
+            yyerror((str + " EXIST BEFORE!!").c_str());
         } else {
-            $$.type = new string("basic");
             // add in symbol table int/float
-            string key = $2.val;
-            tuple<int, float, string> element (make_tuple(sym_num, 0, $1.type));
+						string str($2, $2 + maxid);
+            string key = str;
+						string t1;
+						if ($1 == INT_T){
+							 t1.push_back('i');
+						} else if ($1 == FLOAT_T){
+					  	 t1.push_back('f');
+			  		} else if ($1 == BOOL_T){
+					  	 t1.push_back('b');
+						}
+            tuple<int, float, int> element (make_tuple(sym_num, 0, $1));
             symbol_table.insert({key, element});
             vector<string *> *currentcode = new vector<string *>();
-            currentcode->push_back(new string($1.type + "const_0"));
-            currentcode->push_back(new string($1.type + "store" + to_string(sym_num)));
+            currentcode->push_back(new string(t1 + "const_0"));
+            currentcode->push_back(new string(t1 + "store" + to_string(sym_num)));
             sym_num++;
             $$.code = currentcode;
         }
-        $$.next = nullptr; */
+        $$.next = nullptr;
     };
 PRIMITIVE_TYPE :
     INT {
-        $$.type = new string("i");
+        $$ = INT_T;
     }| FLOAT{
-        $$.type = new string("f");
+        $$ = FLOAT_T;
     };
 IF :
     IF_WORD LEFT_BRACKET EXPRESSION RIGHT_BRACKET
     LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET
     ELSE LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET {
-        /* if (*$3.type == "bool"){
-            $$.type = new string("basic");
-            if ($3.val == "true"){ // or 1
+        if ($3.type == BOOL_T){
+					/// if true add its code
                 $$.code = $6.code;
                 $$.next = $6.next;
-            } else if ($3.val == "false"){
+					/// if false
                 $$.code = $10.code;
                 $$.next = $10.next;
-            }
         } else {
             yyerror("Expression incorrect");
-        } */
+        }
     };
 WHILE :
     WHILE_WORD LEFT_BRACKET EXPRESSION RIGHT_BRACKET
@@ -152,193 +160,161 @@ WHILE :
         // optional
     };
 ASSIGNMENT : ID EQUALS EXPRESSION SEMI_COLON {
-        /* unordered_map<string, tuple<int, float, string>>::iterator it;
-        it = symbol_table.find($1.val);
+        unordered_map<string, tuple<int, float, int>>::iterator it;
+        it = symbol_table.find($1);
         if (it != symbol_table.end()){
-            std::get<1>(it->second) = $3.value;
+            // bytecode of assignment
         } else {
-            yyerror($1.val + " WASN'T DECLARED!!");
-        } */
+					string str($1, $1 + maxid);
+            yyerror((str + " WASN'T DECLARED!!").c_str());
+        }
     };
 EXPRESSION : SIMPLE_EXPRESSION {
-        /* $$.type = $1.type;
+        $$.type = $1.type;
         $$.code = $1.code;
-        $$.next = $$.next; /// not sure */
+        $$.next = $$.next;
     }| SIMPLE_EXPRESSION REL_OP SIMPLE_EXPRESSION {
-    /* if (*$1.type == *$2.type) {
-        $$.type = new string("bool");
-        float v1 = atof(*$1.value);
-        float v2 = atof(*$3.value);
-        string t1 = *$1.type;
-        string t2 = *$3.type;
-        switch(REL_OP.val) {
-           case "=="  :
-              if (v1 == v2){
-                $$.value = new string("true");
-              } else {
-                $$.value = new string("false");
-              }
-              $$.code->push_back(new string(t1 + "load_1"));
-              $$.code->push_back(new string(t2 + "load_2"));
-              $$.code->push_back("if_" + t1 + "cmpe");
-              break;
-           case "!="  :
-              if (v1 != v2){
-                $$.value = new string("true");
-              } else {
-                $$.value = new string("false");
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpne");
-              break;
-           case ">="  :
-             if (v1 != v2){
-                $$.value = new string("true");
-              } else {
-                $$.value = new string("false");
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpge");
-              break;
-           case "<="  :
-              if (v1 <= v2){
-                  $$.value = new string("true");
-              } else {
-                $$.value = new string("false");
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmple");
-              break;
-           case ">"  :
-              if (v1 > v2){
-              	$$.value = new string("true");
-              } else {
-                $$.value = new string("false");
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpg");
-              break;
-           case "<"  :
-              if (v1 < v2){
-                $$.value = new string("true");
-              } else {
-                $$.value = new string("false");
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpl");
-              break;
-            }
-        } else {
-            $$.type = new string("error");
+    if ($1.type == $3.type) {
+        $$.type = BOOL_T;
+				string t1;
+				if ($1.type == INT_T){
+					 t1.push_back('i');
+				} else if ($1.type == FLOAT_T){
+					 t1.push_back('f');
+				} else if ($1.type == BOOL_T){
+					 t1.push_back('b');
+				}
+				$$.code->push_back(new string(t1 + "load_1")); // EXPRESSION MEM_NUMBER?
+				$$.code->push_back(new string(t1 + "load_2"));
+				string str($2, $2 + 2);
+        if(str == "==") {
+              $$.code->push_back(new string ("if_" + t1 + "cmpe"));
+						} else if (str == "!="){
+              $$.code->push_back(new string ("if_" + t1 + "cmpne"));
+						} else if (str == ">="){
+              $$.code->push_back(new string ("if_" + t1 + "cmpge"));
+          	} else if (str == "<="){
+              $$.code->push_back(new string ("if_" + t1 + "cmple"));
+          	} else if (str == ">"){
+              $$.code->push_back(new string ("if_" + t1 + "cmpg"));
+          	} else if (str == "<"){
+              $$.code->push_back(new string ("if_" + t1 + "cmpl"));
+						}
+        	} else {
+            $$.type = ERROR_T;
             yyerror("Can't do this operation for two diffrent types");
-        } */
+        }
     };
 SIMPLE_EXPRESSION :
     TERM {
-        /* $$.type = $1.type;
+        $$.type = $1.type;
         $$.code = $1.code;
-        $$.next = $1.nest; // not sure */
     }| SIGN TERM {
-        /* if (*$2.type == "i" || *$2.type == "f"){
+        if ($2.type == INT_T || $2.type == FLOAT_T){
             $$.type = $2.type;
-            if (*$1.value == "neg"){
-                $$.value = (-1) * $1.value;
-                $$.code = $1.code; /// is there a change in bytecode?!
+            if ($1 == "-"){
+                $$.code = $2.code; /// is there a change in bytecode?!
             } else {
-                $$.value = $1.value;
-                $$.code = $1.code;
+                $$.code = $2.code;
             }
-            $$.next = $1.nest; // not sure
         } else {
-            $$.type = "error";
+            $$.type = ERROR_T;
             yyerror("Can't add sign for types nether int nor float");
-        } */
+        }
     }| SIMPLE_EXPRESSION ADD_OP TERM {
-        /* if ($1.type == $3.type && ($3.type == "i" || $3.type == "f")){
+        if ($1.type == $3.type && ($3.type == INT_T || $3.type == FLOAT_T)){
             $$.type = $3.type;
-            vector<string *> currentcode = new vector<string *>();
-            currentcode.push_back($1.code);
-            currentcode.push_back($3.code);
-            $$.code = currentcode;
-            $$.next = $3.next;
-            if ($2.val = "-"){
-                $$.value = $1.value - $3.value;
-                currentcode.push_back(new string($1.type + "sub"));
+						vector<string *> *currentcode = new vector<string *>();
+		        currentcode->insert(currentcode->begin(), $1.code->begin(), $1.code->end());
+		        currentcode->insert(currentcode->end(), $3.code->begin(), $3.code->end());
+						string t1;
+						if ($1.type == INT_T){
+							 t1.push_back('i');
+						} else if ($1.type == FLOAT_T){
+							 t1.push_back('f');
+						} else if ($1.type == BOOL_T){
+							 t1.push_back('b');
+						}
+            if ($2 = "-"){
+                currentcode->push_back(new string(t1 + "sub"));
             } else {
-                $$.value = $1.value + $3.value;
-                currentcode.push_back(new string($1.type + "add"));
+                currentcode->push_back(new string(t1 + "add"));
             }
+						$$.code = currentcode;
         } else {
-            $$.type = "error";
+            $$.type = ERROR_T;
             yyerror("Can't add two diffrent types nether int nor float");
-        } */
+        }
     };
 TERM : FACTOR {
-        /* $$.code = $1.code;
+        $$.code = $1.code;
         $$.type = $1.type;
-        $$.next = $1.next;
-        $$.value = $1.value; */
     }| TERM MUL_OP FACTOR {
-        /* if ($1.type == $3.type && ($3.type == "i" || $3.type == "f")){
+        if ($1.type == $3.type && ($3.type == INT_T || $3.type == FLOAT_T)){
             $$.type = $3.type;
-            vector<string *> currentcode = new vector<string *>();
-            currentcode.push_back($1.code);
-            currentcode.push_back($3.code);
-            $$.code = currentcode;
-            $$.next = $3.next;
-            if ($2.val = "*"){
-                $$.value = $1.value * $3.value;
-                currentcode.push_back(new string($1.type + "mul"));
-            } else if ($2.val = "/"){
-                $$.value = $1.value / $3.value;
-                currentcode.push_back(new string($1.type + "div"));
+						vector<string *> *currentcode = new vector<string *>();
+		        currentcode->insert(currentcode->begin(), $1.code->begin(), $1.code->end());
+		        currentcode->insert(currentcode->end(), $3.code->begin(), $3.code->end());
+						string t1;
+						if ($1.type == INT_T){
+							 t1.push_back('i');
+						} else if ($1.type == FLOAT_T){
+							 t1.push_back('f');
+						} else if ($1.type == BOOL_T){
+							 t1.push_back('b');
+						}
+            if ($2 = "*"){
+                currentcode->push_back(new string(t1 + "mul"));
+            } else if ($2 = "/"){
+                currentcode->push_back(new string(t1 + "div"));
             } else {
-                $$.value = $1.value % $3.value;
-                currentcode.push_back(new string($1.type + "mod"));
+                currentcode->push_back(new string(t1 + "mod"));
             }
+						$$.code = currentcode;
         } else {
-            $$.type = "error";
+            $$.type = ERROR_T;
             yyerror("Can't add two diffrent types nether int nor float");
-        } */
+        }
     };
 FACTOR : ID {
-        /* string t;
-        unordered_map<string, tuple<int, float, string>>::iterator it;
-        it = symbol_table.find($1.val);
+        unordered_map<string, tuple<int, float, int>>::iterator it;
+        it = symbol_table.find($1);
         if (it != symbol_table.end()){
-            $$.type = std::get<2>(it->second);
-            $$.value = std::get<1>(it->second);
-            vector<string *> currentcode = new vector<string *>();
-                  string *s = new string($$.type + "load_" + to_string($$.value));
-                  currentcode.push_back(s);
-                  $$.code = currentcode;
+					int t = std::get<2>(it->second);
+					string t1;
+					if (t == INT_T){
+						 t1.push_back('i');
+					} else if (t == FLOAT_T){
+						 t1.push_back('f');
+					} else if (t == BOOL_T){
+						 t1.push_back('b');
+					}
+            $$.type = INT_T; /// change it to right type
+            vector<string *> *currentcode = new vector<string *>();
+						string str($1, $1 + maxid);
+            currentcode->push_back(new string($$.type + "load_" + str));
+            $$.code = currentcode;
         } else {
-            yyerror($1.val + " WASN'T DECLARED!!");
-        } */
+					string str($1, $1 + maxid);
+            yyerror((str + " WASN'T DECLARED!!").c_str());
+        }
     }| NUM {
-        /* $$.code = new vector<string *>();
-        $$.type = "i";
-        string *s = new string("ldc " + to_string($1));
-        $$.code->push_back(s);
-        $$.value = $1.ival; */
+        $$.code = new vector<string *>();
+        $$.type = INT_T;
+				string str($1, $1 + maxid);
+        $$.code->push_back(new string("ldc " + str));
     }| F_NUM {
-        /* $$.code = new vector<string *>();
-        $$.type = "f";
-        string *s = new string("ldc " + to_string($1));
-        $$.code->push_back(s);
-        $$.value = $1.ival; */
+			$$.code = new vector<string *>();
+			$$.type = FLOAT_T;
+			string str($1, $1 + maxid);
+			$$.code->push_back(new string("ldc " + str));
     }| LEFT_BRACKET EXPRESSION RIGHT_BRACKET {
-        /* $$.type = $2.type;
+        $$.type = $2.type;
         $$.code = $2.code;
-        $$.value = $2.value; */
     };
  SIGN : ADD_OP {
-
+	    char * v = $1;
+	 		$$ = v;
     };
 %%
 /* MAIN */

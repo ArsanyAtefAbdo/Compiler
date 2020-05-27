@@ -83,12 +83,13 @@ void yyerror(const char*);
 extern "C" int yyparse (void);
 int sym_num = 1;
 ///           name          num  value  type
-unordered_map<string, tuple<int, float, string>> symbol_table;
-
+unordered_map<string, tuple<int, float, int>> symbol_table;
+typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
+#define maxid 20
 
 
 /* Line 189 of yacc.c  */
-#line 92 "y.tab.c"
+#line 93 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -111,7 +112,7 @@ unordered_map<string, tuple<int, float, string>> symbol_table;
 /* "%code requires" blocks.  */
 
 /* Line 209 of yacc.c  */
-#line 19 "SYN.y"
+#line 20 "SYN.y"
 
 	#include <vector>
 	using namespace std;
@@ -119,7 +120,7 @@ unordered_map<string, tuple<int, float, string>> symbol_table;
 
 
 /* Line 209 of yacc.c  */
-#line 123 "y.tab.c"
+#line 124 "y.tab.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -185,24 +186,32 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 26 "SYN.y"
+#line 27 "SYN.y"
 
 
-    int ival;     // int
+  int ival;     // int
 	float fval;   // float
 	char * val;   // value
-    char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
-    typedef struct {
-        string type;    // int, float,   bool,    basic
-        string value;   // 5,    1.5,  true|false  null
-        vector<string *> *code; // bytecode for this non terminal
+  char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
+  struct {
+        int type;
+        vector<string *> *code;
         vector<string *> *next;
-  } non_terminal;
+  } exp;
+	struct {
+			int type;
+			vector<string *> *code;
+	} factor;
+	struct {
+			vector<string *> *code;
+			vector<string *> *next;
+	} block;
+	int pt;
 
 
 
 /* Line 214 of yacc.c  */
-#line 206 "y.tab.c"
+#line 215 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -214,7 +223,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 218 "y.tab.c"
+#line 227 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -508,9 +517,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    64,    64,    70,    76,    86,    90,    94,    98,   104,
-     126,   128,   132,   149,   154,   163,   167,   242,   246,   261,
-     281,   286,   309,   323,   329,   335,   340
+       0,    73,    73,    78,    83,    92,    95,    98,   101,   106,
+     136,   138,   142,   157,   162,   172,   176,   209,   212,   224,
+     249,   252,   279,   301,   306,   311,   315
 };
 #endif
 
@@ -1443,154 +1452,153 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 64 "SYN.y"
+#line 73 "SYN.y"
     {
-        /* $$.type = "basic";
-        $$.code = $1.code;
-        // print  */
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        // print
     }
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 70 "SYN.y"
+#line 78 "SYN.y"
     {
-        /* $$.type = "basic";
-        $$.code = $1.code;
-        $$.next = $1.next;
-        //print */
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
+        //print
     }
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 76 "SYN.y"
+#line 83 "SYN.y"
     {
-        /* $$.type = "basic";
         vector<string *> *currentcode = new vector<string *>();
-        currentcode->insert(currentcode->begin(), $1.code->begin(), $1.code->end());
-        currentcode->insert(currentcode->end(), $2.code->begin(), $2.code->end());
-        $$.code = currentcode;
-        $$.next = $2.next;
-        // print */
+        currentcode->insert(currentcode->begin(), (yyvsp[(1) - (2)].block).code->begin(), (yyvsp[(1) - (2)].block).code->end());
+        currentcode->insert(currentcode->end(), (yyvsp[(2) - (2)].block).code->begin(), (yyvsp[(2) - (2)].block).code->end());
+        (yyval.block).code = currentcode;
+        (yyval.block).next = (yyvsp[(2) - (2)].block).next;
+        // print
     }
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 86 "SYN.y"
+#line 92 "SYN.y"
     {
-        /* $$.type = "basic";
-        $$.code = $1.code;
-        $$.next = $1.next; */
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
     }
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 90 "SYN.y"
+#line 95 "SYN.y"
     {
-        /* $$.type = "basic";
-        $$.code = $1.code;
-        $$.next = $1.next; */
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
     }
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 94 "SYN.y"
+#line 98 "SYN.y"
     {
-        /* $$.type = "basic";
-        $$.code = $1.code;
-        $$.next = $1.next; */
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
     }
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 98 "SYN.y"
+#line 101 "SYN.y"
     {
-        /* $$.type = "basic";
-        $$.code = $1.code;
-        $$.next = $1.next; */
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
     }
     break;
 
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 104 "SYN.y"
+#line 106 "SYN.y"
     {
-        /* unordered_map<string, tuple<int, float, string>>::iterator it;
-        it = symbol_table.find($2.val);
+        unordered_map<string, tuple<int, float, int>>::iterator it;
+        it = symbol_table.find((yyvsp[(2) - (3)].val));
         if (it != symbol_table.end()){
-            $$.type = "error";
-            $$.code = nullptr;
-            yyerror($2.val + " EXIST BEFORE!!");
+            (yyval.block).code = nullptr;
+						string str((yyvsp[(2) - (3)].val), (yyvsp[(2) - (3)].val) + maxid);
+            yyerror((str + " EXIST BEFORE!!").c_str());
         } else {
-            $$.type = "basic";
             // add in symbol table int/float
-            string key = $2.val;
-            tuple<int, float, string> element (make_tuple(sym_num, 0, $1.type));
+						string str((yyvsp[(2) - (3)].val), (yyvsp[(2) - (3)].val) + maxid);
+            string key = str;
+						string t1;
+						if ((yyvsp[(1) - (3)].pt) == INT_T){
+							 t1.push_back('i');
+						} else if ((yyvsp[(1) - (3)].pt) == FLOAT_T){
+					  	 t1.push_back('f');
+			  		} else if ((yyvsp[(1) - (3)].pt) == BOOL_T){
+					  	 t1.push_back('b');
+						}
+            tuple<int, float, int> element (make_tuple(sym_num, 0, (yyvsp[(1) - (3)].pt)));
             symbol_table.insert({key, element});
             vector<string *> *currentcode = new vector<string *>();
-            currentcode->push_back(new string($1.type + "const_0"));
-            currentcode->push_back(new string($1.type + "store" + to_string(sym_num)));
+            currentcode->push_back(new string(t1 + "const_0"));
+            currentcode->push_back(new string(t1 + "store" + to_string(sym_num)));
             sym_num++;
-            $$.code = currentcode;
+            (yyval.block).code = currentcode;
         }
-        $$.next = nullptr; */
+        (yyval.block).next = nullptr;
     }
     break;
 
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 126 "SYN.y"
+#line 136 "SYN.y"
     {
-        strcpy((yyval.non_terminal).type, "i");
+        (yyval.pt) = INT_T;
     }
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 128 "SYN.y"
+#line 138 "SYN.y"
     {
-        (yyval.non_terminal).type = "f";
+        (yyval.pt) = FLOAT_T;
     }
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 134 "SYN.y"
+#line 144 "SYN.y"
     {
-        /* if ($3.type == "bool"){
-            $$.type = "basic";
-            if ($3.val == "true"){ // or 1
-                $$.code = $6.code;
-                $$.next = $6.next;
-            } else if ($3.val == "false"){
-                $$.code = $10.code;
-                $$.next = $10.next;
-            }
+        if ((yyvsp[(3) - (11)].exp).type == BOOL_T){
+					/// if true add its code
+                (yyval.block).code = (yyvsp[(6) - (11)].block).code;
+                (yyval.block).next = (yyvsp[(6) - (11)].block).next;
+					/// if false
+                (yyval.block).code = (yyvsp[(10) - (11)].block).code;
+                (yyval.block).next = (yyvsp[(10) - (11)].block).next;
         } else {
             yyerror("Expression incorrect");
-        } */
+        }
     }
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 151 "SYN.y"
+#line 159 "SYN.y"
     {
         // optional
     }
@@ -1599,280 +1607,248 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 154 "SYN.y"
+#line 162 "SYN.y"
     {
-        /* unordered_map<string, tuple<int, float, string>>::iterator it;
-        it = symbol_table.find($1.val);
+        unordered_map<string, tuple<int, float, int>>::iterator it;
+        it = symbol_table.find((yyvsp[(1) - (4)].val));
         if (it != symbol_table.end()){
-            std::get<1>(it->second) = $3.value;
+            // bytecode of assignment
         } else {
-            yyerror($1.val + " WASN'T DECLARED!!");
-        } */
+					string str((yyvsp[(1) - (4)].val), (yyvsp[(1) - (4)].val) + maxid);
+            yyerror((str + " WASN'T DECLARED!!").c_str());
+        }
     }
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 163 "SYN.y"
+#line 172 "SYN.y"
     {
-        /* $$.type = $1.type;
-        $$.code = $1.code;
-        $$.next = $$.next; /// not sure */
+        (yyval.exp).type = (yyvsp[(1) - (1)].exp).type;
+        (yyval.exp).code = (yyvsp[(1) - (1)].exp).code;
+        (yyval.exp).next = (yyval.exp).next;
     }
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 167 "SYN.y"
+#line 176 "SYN.y"
     {
-    /* if ($1.type == $2.type) {
-        $$.type = "bool";
-        float v1 = atof($1.value);
-        float v2 = atof($3.value);
-        string t1 = $1.type;
-        string t2 = $3.type;
-        switch(REL_OP.val) {
-           case "=="  :
-              if (v1 == v2){
-                $$.value = "true";
-              } else {
-                $$.value = "false";
-              }
-              $$.code->push_back(new string(t1 + "load_1"));
-              $$.code->push_back(new string(t2 + "load_2"));
-              $$.code->push_back("if_" + t1 + "cmpe");
-              break;
-           case "!="  :
-              if (v1 != v2){
-                $$.value = "true";
-              } else {
-                $$.value = "false";
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpne");
-              break;
-           case ">="  :
-              if (v1 >= v2){
-                $$.value = "true";
-              } else {
-                $$.value = "false";
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpge");
-              break;
-           case "<="  :
-              if (v1 <= v2){
-                $$.value = "true";
-              } else {
-                $$.value = "false";
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmple");
-              break;
-           case ">"  :
-              if (v1 > v2){
-                $$.value = "true";
-              } else {
-                $$.value = "false";
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpg");
-              break;
-           case "<"  :
-              if (v1 < v2){
-                $$.value = "true";
-              } else {
-                $$.value = "false";
-              }
-              $$.code.push_back(new string(t1 + "load_1"));
-              $$.code.push_back(new string(t2 + "load_2"));
-              $$.code.push_back("if_" + t1 + "cmpl");
-              break;
-            }
-        } else {
-            $$.type = "error";
+    if ((yyvsp[(1) - (3)].exp).type == (yyvsp[(3) - (3)].exp).type) {
+        (yyval.exp).type = BOOL_T;
+				string t1;
+				if ((yyvsp[(1) - (3)].exp).type == INT_T){
+					 t1.push_back('i');
+				} else if ((yyvsp[(1) - (3)].exp).type == FLOAT_T){
+					 t1.push_back('f');
+				} else if ((yyvsp[(1) - (3)].exp).type == BOOL_T){
+					 t1.push_back('b');
+				}
+				(yyval.exp).code->push_back(new string(t1 + "load_1")); // EXPRESSION MEM_NUMBER?
+				(yyval.exp).code->push_back(new string(t1 + "load_2"));
+				string str((yyvsp[(2) - (3)].val), (yyvsp[(2) - (3)].val) + 2);
+        if(str == "==") {
+              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpe"));
+						} else if (str == "!="){
+              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpne"));
+						} else if (str == ">="){
+              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpge"));
+          	} else if (str == "<="){
+              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmple"));
+          	} else if (str == ">"){
+              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpg"));
+          	} else if (str == "<"){
+              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpl"));
+						}
+        	} else {
+            (yyval.exp).type = ERROR_T;
             yyerror("Can't do this operation for two diffrent types");
-        } */
+        }
     }
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 242 "SYN.y"
+#line 209 "SYN.y"
     {
-        /* $$.type = $1.type;
-        $$.code = $1.code;
-        $$.next = $1.nest; // not sure */
+        (yyval.exp).type = (yyvsp[(1) - (1)].factor).type;
+        (yyval.exp).code = (yyvsp[(1) - (1)].factor).code;
     }
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 246 "SYN.y"
+#line 212 "SYN.y"
     {
-        /* if ($2.type == "i" || $2.type == "f"){
-            $$.type = $2.type;
-            if ($1.value == "neg"){
-                $$.value = (-1) * $1.value;
-                $$.code = $1.code; /// is there a change in bytecode?!
+        if ((yyvsp[(2) - (2)].factor).type == INT_T || (yyvsp[(2) - (2)].factor).type == FLOAT_T){
+            (yyval.exp).type = (yyvsp[(2) - (2)].factor).type;
+            if ((yyvsp[(1) - (2)].val) == "-"){
+                (yyval.exp).code = (yyvsp[(2) - (2)].factor).code; /// is there a change in bytecode?!
             } else {
-                $$.value = $1.value;
-                $$.code = $1.code;
+                (yyval.exp).code = (yyvsp[(2) - (2)].factor).code;
             }
-            $$.next = $1.nest; // not sure
         } else {
-            $$.type = "error";
+            (yyval.exp).type = ERROR_T;
             yyerror("Can't add sign for types nether int nor float");
-        } */
+        }
     }
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 261 "SYN.y"
+#line 224 "SYN.y"
     {
-        /* if ($1.type == $3.type && ($3.type == "i" || $3.type == "f")){
-            $$.type = $3.type;
-            vector<string *> currentcode = new vector<string *>();
-            currentcode.push_back($1.code);
-            currentcode.push_back($3.code);
-            $$.code = currentcode;
-            $$.next = $3.next;
-            if ($2.val = "-"){
-                $$.value = $1.value - $3.value;
-                currentcode.push_back(new string($1.type + "sub"));
+        if ((yyvsp[(1) - (3)].exp).type == (yyvsp[(3) - (3)].factor).type && ((yyvsp[(3) - (3)].factor).type == INT_T || (yyvsp[(3) - (3)].factor).type == FLOAT_T)){
+            (yyval.exp).type = (yyvsp[(3) - (3)].factor).type;
+						vector<string *> *currentcode = new vector<string *>();
+		        currentcode->insert(currentcode->begin(), (yyvsp[(1) - (3)].exp).code->begin(), (yyvsp[(1) - (3)].exp).code->end());
+		        currentcode->insert(currentcode->end(), (yyvsp[(3) - (3)].factor).code->begin(), (yyvsp[(3) - (3)].factor).code->end());
+						string t1;
+						if ((yyvsp[(1) - (3)].exp).type == INT_T){
+							 t1.push_back('i');
+						} else if ((yyvsp[(1) - (3)].exp).type == FLOAT_T){
+							 t1.push_back('f');
+						} else if ((yyvsp[(1) - (3)].exp).type == BOOL_T){
+							 t1.push_back('b');
+						}
+            if ((yyvsp[(2) - (3)].val) = "-"){
+                currentcode->push_back(new string(t1 + "sub"));
             } else {
-                $$.value = $1.value + $3.value;
-                currentcode.push_back(new string($1.type + "add"));
+                currentcode->push_back(new string(t1 + "add"));
             }
+						(yyval.exp).code = currentcode;
         } else {
-            $$.type = "error";
+            (yyval.exp).type = ERROR_T;
             yyerror("Can't add two diffrent types nether int nor float");
-        } */
+        }
     }
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 281 "SYN.y"
+#line 249 "SYN.y"
     {
-        /* $$.code = $1.code;
-        $$.type = $1.type;
-        $$.next = $1.next;
-        $$.value = $1.value; */
+        (yyval.factor).code = (yyvsp[(1) - (1)].factor).code;
+        (yyval.factor).type = (yyvsp[(1) - (1)].factor).type;
     }
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 286 "SYN.y"
+#line 252 "SYN.y"
     {
-        /* if ($1.type == $3.type && ($3.type == "i" || $3.type == "f")){
-            $$.type = $3.type;
-            vector<string *> currentcode = new vector<string *>();
-            currentcode.push_back($1.code);
-            currentcode.push_back($3.code);
-            $$.code = currentcode;
-            $$.next = $3.next;
-            if ($2.val = "*"){
-                $$.value = $1.value * $3.value;
-                currentcode.push_back(new string($1.type + "mul"));
-            } else if ($2.val = "/"){
-                $$.value = $1.value / $3.value;
-                currentcode.push_back(new string($1.type + "div"));
+        if ((yyvsp[(1) - (3)].factor).type == (yyvsp[(3) - (3)].factor).type && ((yyvsp[(3) - (3)].factor).type == INT_T || (yyvsp[(3) - (3)].factor).type == FLOAT_T)){
+            (yyval.factor).type = (yyvsp[(3) - (3)].factor).type;
+						vector<string *> *currentcode = new vector<string *>();
+		        currentcode->insert(currentcode->begin(), (yyvsp[(1) - (3)].factor).code->begin(), (yyvsp[(1) - (3)].factor).code->end());
+		        currentcode->insert(currentcode->end(), (yyvsp[(3) - (3)].factor).code->begin(), (yyvsp[(3) - (3)].factor).code->end());
+						string t1;
+						if ((yyvsp[(1) - (3)].factor).type == INT_T){
+							 t1.push_back('i');
+						} else if ((yyvsp[(1) - (3)].factor).type == FLOAT_T){
+							 t1.push_back('f');
+						} else if ((yyvsp[(1) - (3)].factor).type == BOOL_T){
+							 t1.push_back('b');
+						}
+            if ((yyvsp[(2) - (3)].val) = "*"){
+                currentcode->push_back(new string(t1 + "mul"));
+            } else if ((yyvsp[(2) - (3)].val) = "/"){
+                currentcode->push_back(new string(t1 + "div"));
             } else {
-                $$.value = $1.value % $3.value;
-                currentcode.push_back(new string($1.type + "mod"));
+                currentcode->push_back(new string(t1 + "mod"));
             }
+						(yyval.factor).code = currentcode;
         } else {
-            $$.type = "error";
+            (yyval.factor).type = ERROR_T;
             yyerror("Can't add two diffrent types nether int nor float");
-        } */
+        }
     }
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 309 "SYN.y"
+#line 279 "SYN.y"
     {
-        /* string t;
-        unordered_map<string, tuple<int, float, string>>::iterator it;
-        it = symbol_table.find($1.val);
+        unordered_map<string, tuple<int, float, int>>::iterator it;
+        it = symbol_table.find((yyvsp[(1) - (1)].val));
         if (it != symbol_table.end()){
-            $$.type = std::get<2>(it->second);
-            $$.value = std::get<1>(it->second);
-            vector<string *> currentcode = new vector<string *>();
-                  string *s = new string($$.type + "load_" + to_string($$.value));
-                  currentcode.push_back(s);
-                  $$.code = currentcode;
+					int t = std::get<2>(it->second);
+					string t1;
+					if (t == INT_T){
+						 t1.push_back('i');
+					} else if (t == FLOAT_T){
+						 t1.push_back('f');
+					} else if (t == BOOL_T){
+						 t1.push_back('b');
+					}
+            (yyval.factor).type = INT_T; /// change it to right type
+            vector<string *> *currentcode = new vector<string *>();
+						string str((yyvsp[(1) - (1)].val), (yyvsp[(1) - (1)].val) + maxid);
+            currentcode->push_back(new string((yyval.factor).type + "load_" + str));
+            (yyval.factor).code = currentcode;
         } else {
-            yyerror($1.val + " WASN'T DECLARED!!");
-        } */
+					string str((yyvsp[(1) - (1)].val), (yyvsp[(1) - (1)].val) + maxid);
+            yyerror((str + " WASN'T DECLARED!!").c_str());
+        }
     }
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 323 "SYN.y"
+#line 301 "SYN.y"
     {
-        /* $$.code = new vector<string *>();
-        $$.type = "i";
-        string *s = new string("ldc " + to_string($1));
-        $$.code->push_back(s);
-        $$.value = $1.ival; */
+        (yyval.factor).code = new vector<string *>();
+        (yyval.factor).type = INT_T;
+				string str((yyvsp[(1) - (1)].ival), (yyvsp[(1) - (1)].ival) + maxid);
+        (yyval.factor).code->push_back(new string("ldc " + str));
     }
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 329 "SYN.y"
+#line 306 "SYN.y"
     {
-        /* $$.code = new vector<string *>();
-        $$.type = "f";
-        string *s = new string("ldc " + to_string($1));
-        $$.code->push_back(s);
-        $$.value = $1.ival; */
+			(yyval.factor).code = new vector<string *>();
+			(yyval.factor).type = FLOAT_T;
+			string str((yyvsp[(1) - (1)].fval), (yyvsp[(1) - (1)].fval) + maxid);
+			(yyval.factor).code->push_back(new string("ldc " + str));
     }
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 335 "SYN.y"
+#line 311 "SYN.y"
     {
-        /* $$.type = $2.type;
-        $$.code = $2.code;
-        $$.value = $2.value; */
+        (yyval.factor).type = (yyvsp[(2) - (3)].exp).type;
+        (yyval.factor).code = (yyvsp[(2) - (3)].exp).code;
     }
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 340 "SYN.y"
+#line 315 "SYN.y"
     {
-        (yyval.non_terminal).value = (yyvsp[(1) - (1)].val).val;
+	    char * v = (yyvsp[(1) - (1)].val);
+	 		(yyval.val) = v;
     }
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1876 "y.tab.c"
+#line 1852 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2084,7 +2060,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 343 "SYN.y"
+#line 319 "SYN.y"
 
 /* MAIN */
 void yyerror(const char *s)
