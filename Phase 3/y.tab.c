@@ -73,13 +73,22 @@
 /* C stuff */
 #include <stdio.h>
 #include <string>
+#include <tuple>
+#include <unordered_map>
+#include <bits/stdc++.h>
+#include <unistd.h>
+using namespace std;
 extern int yylex();
 void yyerror(const char*);
 extern "C" int yyparse (void);
+int sym_num = 1;
+///           name          num  value  type
+unordered_map<string, tuple<int, float, string>> symbol_table;
+
 
 
 /* Line 189 of yacc.c  */
-#line 83 "y.tab.c"
+#line 92 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -102,7 +111,7 @@ extern "C" int yyparse (void);
 /* "%code requires" blocks.  */
 
 /* Line 209 of yacc.c  */
-#line 10 "SYN.y"
+#line 19 "SYN.y"
 
 	#include <vector>
 	using namespace std;
@@ -110,7 +119,7 @@ extern "C" int yyparse (void);
 
 
 /* Line 209 of yacc.c  */
-#line 114 "y.tab.c"
+#line 123 "y.tab.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -176,22 +185,24 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 15 "SYN.y"
+#line 26 "SYN.y"
 
 
     int ival;     // int
 	float fval;   // float
 	char * val;   // value
     char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
-    struct {
-        vector<string *> *code;
+    typedef struct {
+        string type;    // int, float,   bool,    basic
+        string value;   // 5,    1.5,  true|false  null
+        vector<string *> *code; // bytecode for this non terminal
         vector<string *> *next;
-  } Basic_nt;
+  } non_terminal;
 
 
 
 /* Line 214 of yacc.c  */
-#line 195 "y.tab.c"
+#line 206 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -203,7 +214,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 207 "y.tab.c"
+#line 218 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -416,18 +427,18 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  13
+#define YYFINAL  17
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   29
+#define YYLAST   45
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  26
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  12
+#define YYNNTS  14
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  23
+#define YYNRULES  26
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  34
+#define YYNSTATES  55
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -476,27 +487,30 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint8 yyprhs[] =
 {
        0,     0,     3,     5,     7,    10,    12,    14,    16,    18,
-      21,    23,    25,    29,    31,    35,    37,    40,    44,    46,
-      50,    52,    54,    58
+      22,    24,    26,    38,    46,    51,    53,    57,    59,    62,
+      66,    68,    72,    74,    76,    78,    82
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
       27,     0,    -1,    28,    -1,    29,    -1,    28,    29,    -1,
-      30,    -1,     8,    -1,    11,    -1,    32,    -1,    31,    18,
-      -1,     5,    -1,     6,    -1,    18,    24,    33,    -1,    34,
-      -1,    34,    15,    34,    -1,    35,    -1,    37,    35,    -1,
-      34,    13,    35,    -1,    36,    -1,    35,    14,    36,    -1,
-      18,    -1,     3,    -1,    20,    33,    21,    -1,    13,    -1
+      30,    -1,    32,    -1,    33,    -1,    34,    -1,    31,    18,
+      19,    -1,     5,    -1,     6,    -1,     8,    20,    35,    21,
+      22,    29,    23,     9,    22,    29,    23,    -1,    11,    20,
+      35,    21,    22,    29,    23,    -1,    18,    24,    35,    19,
+      -1,    36,    -1,    36,    15,    36,    -1,    37,    -1,    39,
+      37,    -1,    36,    13,    37,    -1,    38,    -1,    37,    14,
+      38,    -1,    18,    -1,     3,    -1,     4,    -1,    20,    35,
+      21,    -1,    13,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    43,    43,    46,    46,    49,    49,    49,    49,    52,
-      55,    55,    67,    69,    69,    72,    72,    72,    75,    75,
-      78,    78,    78,    81
+       0,    64,    64,    70,    76,    86,    90,    94,    98,   104,
+     126,   128,   132,   149,   154,   163,   167,   242,   246,   261,
+     281,   286,   309,   323,   329,   335,   340
 };
 #endif
 
@@ -510,9 +524,9 @@ static const char *const yytname[] =
   "ADD_OP", "MUL_OP", "REL_OP", "BOOL_OP", "BOOL", "ID", "SEMI_COLON",
   "LEFT_BRACKET", "RIGHT_BRACKET", "LEFT_CURLY_BRACKET",
   "RIGHT_CURLY_BRACKET", "EQUALS", "OTHER", "$accept", "METHOD_BODY",
-  "STATEMENT_LIST", "STATEMENT", "DECLARATION", "PRIMITIVE_TYPE",
-  "ASSIGNMENT", "EXPRESSION", "SIMPLE_EXPRESSION", "TERM", "FACTOR",
-  "SIGN", 0
+  "STATEMENT_LIST", "STATEMENT", "DECLARATION", "PRIMITIVE_TYPE", "IF",
+  "WHILE", "ASSIGNMENT", "EXPRESSION", "SIMPLE_EXPRESSION", "TERM",
+  "FACTOR", "SIGN", 0
 };
 #endif
 
@@ -531,16 +545,16 @@ static const yytype_uint16 yytoknum[] =
 static const yytype_uint8 yyr1[] =
 {
        0,    26,    27,    28,    28,    29,    29,    29,    29,    30,
-      31,    31,    32,    33,    33,    34,    34,    34,    35,    35,
-      36,    36,    36,    37
+      31,    31,    32,    33,    34,    35,    35,    36,    36,    36,
+      37,    37,    38,    38,    38,    38,    39
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     1,     2,     1,     1,     1,     1,     2,
-       1,     1,     3,     1,     3,     1,     2,     3,     1,     3,
-       1,     1,     3,     1
+       0,     2,     1,     1,     2,     1,     1,     1,     1,     3,
+       1,     1,    11,     7,     4,     1,     3,     1,     2,     3,
+       1,     3,     1,     1,     1,     3,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -548,35 +562,39 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,    10,    11,     6,     7,     0,     0,     2,     3,     5,
-       0,     8,     0,     1,     4,     9,    21,    23,    20,     0,
-      12,    13,    15,    18,     0,     0,     0,     0,     0,    16,
-      22,    17,    14,    19
+       0,    10,    11,     0,     0,     0,     0,     2,     3,     5,
+       0,     6,     7,     8,     0,     0,     0,     1,     4,     0,
+      23,    24,    26,    22,     0,     0,    15,    17,    20,     0,
+       0,     0,     9,     0,     0,     0,     0,     0,    18,     0,
+      14,    25,     0,    19,    16,    21,     0,     0,     0,     0,
+      13,     0,     0,     0,    12
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     6,     7,     8,     9,    10,    11,    20,    21,    22,
-      23,    24
+      -1,     6,     7,     8,     9,    10,    11,    12,    13,    25,
+      26,    27,    28,    29
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -22
+#define YYPACT_NINF -27
 static const yytype_int8 yypact[] =
 {
-       1,   -22,   -22,   -22,   -22,   -16,    11,     1,   -22,   -22,
-      -5,   -22,    -3,   -22,   -22,   -22,   -22,   -22,   -22,    -3,
-     -22,   -11,     0,   -22,    -2,    -1,    -2,    -3,    -2,     0,
-     -22,     0,     8,   -22
+       2,   -27,   -27,   -14,    -8,     3,    17,     2,   -27,   -27,
+       7,   -27,   -27,   -27,    -2,    -2,    -2,   -27,   -27,    10,
+     -27,   -27,   -27,   -27,    -2,     5,     9,    14,   -27,     1,
+      11,    12,   -27,    13,     8,     1,    -2,     1,    14,    15,
+     -27,   -27,     2,    14,    20,   -27,     2,    18,    19,    27,
+     -27,    16,     2,    21,   -27
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -22,   -22,   -22,    15,   -22,   -22,   -22,     4,     2,   -21,
-      -4,   -22
+     -27,   -27,   -27,    -7,   -27,   -27,   -27,   -27,   -27,    -1,
+       4,   -26,     6,   -27
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -586,16 +604,20 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      16,    16,    26,    29,    27,    31,     1,     2,    12,     3,
-      17,    13,     4,    15,    28,    18,    18,    19,    19,     5,
-      30,    26,    14,    25,    33,     0,     0,     0,     0,    32
+      18,    20,    21,    38,    20,    21,    14,     1,     2,    43,
+       3,    22,    15,     4,    30,    31,    23,    17,    24,    23,
+       5,    24,    35,    33,    36,    19,    34,    16,    37,    32,
+      42,    40,    39,    35,    41,    47,    51,    46,    52,    48,
+      44,    49,    50,    45,    54,    53
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-       3,     3,    13,    24,    15,    26,     5,     6,    24,     8,
-      13,     0,    11,    18,    14,    18,    18,    20,    20,    18,
-      21,    13,     7,    19,    28,    -1,    -1,    -1,    -1,    27
+       7,     3,     4,    29,     3,     4,    20,     5,     6,    35,
+       8,    13,    20,    11,    15,    16,    18,     0,    20,    18,
+      18,    20,    13,    24,    15,    18,    21,    24,    14,    19,
+      22,    19,    21,    13,    21,    42,     9,    22,    22,    46,
+      36,    23,    23,    37,    23,    52
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -603,9 +625,11 @@ static const yytype_int8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     5,     6,     8,    11,    18,    27,    28,    29,    30,
-      31,    32,    24,     0,    29,    18,     3,    13,    18,    20,
-      33,    34,    35,    36,    37,    33,    13,    15,    14,    35,
-      21,    35,    34,    36
+      31,    32,    33,    34,    20,    20,    24,     0,    29,    18,
+       3,     4,    13,    18,    20,    35,    36,    37,    38,    39,
+      35,    35,    19,    35,    21,    13,    15,    14,    37,    21,
+      19,    21,    22,    37,    36,    38,    22,    29,    29,    23,
+      23,     9,    22,    29,    23
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1416,45 +1440,439 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 14:
+        case 2:
+
+/* Line 1455 of yacc.c  */
+#line 64 "SYN.y"
+    {
+        /* $$.type = "basic";
+        $$.code = $1.code;
+        // print  */
+    }
+    break;
+
+  case 3:
 
 /* Line 1455 of yacc.c  */
 #line 70 "SYN.y"
-    { printf("EXP\n"); return 0;}
+    {
+        /* $$.type = "basic";
+        $$.code = $1.code;
+        $$.next = $1.next;
+        //print */
+    }
+    break;
+
+  case 4:
+
+/* Line 1455 of yacc.c  */
+#line 76 "SYN.y"
+    {
+        /* $$.type = "basic";
+        vector<string *> *currentcode = new vector<string *>();
+        currentcode->insert(currentcode->begin(), $1.code->begin(), $1.code->end());
+        currentcode->insert(currentcode->end(), $2.code->begin(), $2.code->end());
+        $$.code = currentcode;
+        $$.next = $2.next;
+        // print */
+    }
+    break;
+
+  case 5:
+
+/* Line 1455 of yacc.c  */
+#line 86 "SYN.y"
+    {
+        /* $$.type = "basic";
+        $$.code = $1.code;
+        $$.next = $1.next; */
+    }
+    break;
+
+  case 6:
+
+/* Line 1455 of yacc.c  */
+#line 90 "SYN.y"
+    {
+        /* $$.type = "basic";
+        $$.code = $1.code;
+        $$.next = $1.next; */
+    }
+    break;
+
+  case 7:
+
+/* Line 1455 of yacc.c  */
+#line 94 "SYN.y"
+    {
+        /* $$.type = "basic";
+        $$.code = $1.code;
+        $$.next = $1.next; */
+    }
+    break;
+
+  case 8:
+
+/* Line 1455 of yacc.c  */
+#line 98 "SYN.y"
+    {
+        /* $$.type = "basic";
+        $$.code = $1.code;
+        $$.next = $1.next; */
+    }
+    break;
+
+  case 9:
+
+/* Line 1455 of yacc.c  */
+#line 104 "SYN.y"
+    {
+        /* unordered_map<string, tuple<int, float, string>>::iterator it;
+        it = symbol_table.find($2.val);
+        if (it != symbol_table.end()){
+            $$.type = "error";
+            $$.code = nullptr;
+            yyerror($2.val + " EXIST BEFORE!!");
+        } else {
+            $$.type = "basic";
+            // add in symbol table int/float
+            string key = $2.val;
+            tuple<int, float, string> element (make_tuple(sym_num, 0, $1.type));
+            symbol_table.insert({key, element});
+            vector<string *> *currentcode = new vector<string *>();
+            currentcode->push_back(new string($1.type + "const_0"));
+            currentcode->push_back(new string($1.type + "store" + to_string(sym_num)));
+            sym_num++;
+            $$.code = currentcode;
+        }
+        $$.next = nullptr; */
+    }
+    break;
+
+  case 10:
+
+/* Line 1455 of yacc.c  */
+#line 126 "SYN.y"
+    {
+        strcpy((yyval.non_terminal).type, "i");
+    }
+    break;
+
+  case 11:
+
+/* Line 1455 of yacc.c  */
+#line 128 "SYN.y"
+    {
+        (yyval.non_terminal).type = "f";
+    }
+    break;
+
+  case 12:
+
+/* Line 1455 of yacc.c  */
+#line 134 "SYN.y"
+    {
+        /* if ($3.type == "bool"){
+            $$.type = "basic";
+            if ($3.val == "true"){ // or 1
+                $$.code = $6.code;
+                $$.next = $6.next;
+            } else if ($3.val == "false"){
+                $$.code = $10.code;
+                $$.next = $10.next;
+            }
+        } else {
+            yyerror("Expression incorrect");
+        } */
+    }
+    break;
+
+  case 13:
+
+/* Line 1455 of yacc.c  */
+#line 151 "SYN.y"
+    {
+        // optional
+    }
+    break;
+
+  case 14:
+
+/* Line 1455 of yacc.c  */
+#line 154 "SYN.y"
+    {
+        /* unordered_map<string, tuple<int, float, string>>::iterator it;
+        it = symbol_table.find($1.val);
+        if (it != symbol_table.end()){
+            std::get<1>(it->second) = $3.value;
+        } else {
+            yyerror($1.val + " WASN'T DECLARED!!");
+        } */
+    }
+    break;
+
+  case 15:
+
+/* Line 1455 of yacc.c  */
+#line 163 "SYN.y"
+    {
+        /* $$.type = $1.type;
+        $$.code = $1.code;
+        $$.next = $$.next; /// not sure */
+    }
+    break;
+
+  case 16:
+
+/* Line 1455 of yacc.c  */
+#line 167 "SYN.y"
+    {
+    /* if ($1.type == $2.type) {
+        $$.type = "bool";
+        float v1 = atof($1.value);
+        float v2 = atof($3.value);
+        string t1 = $1.type;
+        string t2 = $3.type;
+        switch(REL_OP.val) {
+           case "=="  :
+              if (v1 == v2){
+                $$.value = "true";
+              } else {
+                $$.value = "false";
+              }
+              $$.code->push_back(new string(t1 + "load_1"));
+              $$.code->push_back(new string(t2 + "load_2"));
+              $$.code->push_back("if_" + t1 + "cmpe");
+              break;
+           case "!="  :
+              if (v1 != v2){
+                $$.value = "true";
+              } else {
+                $$.value = "false";
+              }
+              $$.code.push_back(new string(t1 + "load_1"));
+              $$.code.push_back(new string(t2 + "load_2"));
+              $$.code.push_back("if_" + t1 + "cmpne");
+              break;
+           case ">="  :
+              if (v1 >= v2){
+                $$.value = "true";
+              } else {
+                $$.value = "false";
+              }
+              $$.code.push_back(new string(t1 + "load_1"));
+              $$.code.push_back(new string(t2 + "load_2"));
+              $$.code.push_back("if_" + t1 + "cmpge");
+              break;
+           case "<="  :
+              if (v1 <= v2){
+                $$.value = "true";
+              } else {
+                $$.value = "false";
+              }
+              $$.code.push_back(new string(t1 + "load_1"));
+              $$.code.push_back(new string(t2 + "load_2"));
+              $$.code.push_back("if_" + t1 + "cmple");
+              break;
+           case ">"  :
+              if (v1 > v2){
+                $$.value = "true";
+              } else {
+                $$.value = "false";
+              }
+              $$.code.push_back(new string(t1 + "load_1"));
+              $$.code.push_back(new string(t2 + "load_2"));
+              $$.code.push_back("if_" + t1 + "cmpg");
+              break;
+           case "<"  :
+              if (v1 < v2){
+                $$.value = "true";
+              } else {
+                $$.value = "false";
+              }
+              $$.code.push_back(new string(t1 + "load_1"));
+              $$.code.push_back(new string(t2 + "load_2"));
+              $$.code.push_back("if_" + t1 + "cmpl");
+              break;
+            }
+        } else {
+            $$.type = "error";
+            yyerror("Can't do this operation for two diffrent types");
+        } */
+    }
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 73 "SYN.y"
-    { printf("S_EXP\n"); return 0;}
+#line 242 "SYN.y"
+    {
+        /* $$.type = $1.type;
+        $$.code = $1.code;
+        $$.next = $1.nest; // not sure */
+    }
+    break;
+
+  case 18:
+
+/* Line 1455 of yacc.c  */
+#line 246 "SYN.y"
+    {
+        /* if ($2.type == "i" || $2.type == "f"){
+            $$.type = $2.type;
+            if ($1.value == "neg"){
+                $$.value = (-1) * $1.value;
+                $$.code = $1.code; /// is there a change in bytecode?!
+            } else {
+                $$.value = $1.value;
+                $$.code = $1.code;
+            }
+            $$.next = $1.nest; // not sure
+        } else {
+            $$.type = "error";
+            yyerror("Can't add sign for types nether int nor float");
+        } */
+    }
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 76 "SYN.y"
-    { printf("TERM\n"); return 0;}
+#line 261 "SYN.y"
+    {
+        /* if ($1.type == $3.type && ($3.type == "i" || $3.type == "f")){
+            $$.type = $3.type;
+            vector<string *> currentcode = new vector<string *>();
+            currentcode.push_back($1.code);
+            currentcode.push_back($3.code);
+            $$.code = currentcode;
+            $$.next = $3.next;
+            if ($2.val = "-"){
+                $$.value = $1.value - $3.value;
+                currentcode.push_back(new string($1.type + "sub"));
+            } else {
+                $$.value = $1.value + $3.value;
+                currentcode.push_back(new string($1.type + "add"));
+            }
+        } else {
+            $$.type = "error";
+            yyerror("Can't add two diffrent types nether int nor float");
+        } */
+    }
+    break;
+
+  case 20:
+
+/* Line 1455 of yacc.c  */
+#line 281 "SYN.y"
+    {
+        /* $$.code = $1.code;
+        $$.type = $1.type;
+        $$.next = $1.next;
+        $$.value = $1.value; */
+    }
+    break;
+
+  case 21:
+
+/* Line 1455 of yacc.c  */
+#line 286 "SYN.y"
+    {
+        /* if ($1.type == $3.type && ($3.type == "i" || $3.type == "f")){
+            $$.type = $3.type;
+            vector<string *> currentcode = new vector<string *>();
+            currentcode.push_back($1.code);
+            currentcode.push_back($3.code);
+            $$.code = currentcode;
+            $$.next = $3.next;
+            if ($2.val = "*"){
+                $$.value = $1.value * $3.value;
+                currentcode.push_back(new string($1.type + "mul"));
+            } else if ($2.val = "/"){
+                $$.value = $1.value / $3.value;
+                currentcode.push_back(new string($1.type + "div"));
+            } else {
+                $$.value = $1.value % $3.value;
+                currentcode.push_back(new string($1.type + "mod"));
+            }
+        } else {
+            $$.type = "error";
+            yyerror("Can't add two diffrent types nether int nor float");
+        } */
+    }
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 79 "SYN.y"
-    { printf("FACTOR\n"); return 0;}
+#line 309 "SYN.y"
+    {
+        /* string t;
+        unordered_map<string, tuple<int, float, string>>::iterator it;
+        it = symbol_table.find($1.val);
+        if (it != symbol_table.end()){
+            $$.type = std::get<2>(it->second);
+            $$.value = std::get<1>(it->second);
+            vector<string *> currentcode = new vector<string *>();
+                  string *s = new string($$.type + "load_" + to_string($$.value));
+                  currentcode.push_back(s);
+                  $$.code = currentcode;
+        } else {
+            yyerror($1.val + " WASN'T DECLARED!!");
+        } */
+    }
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 82 "SYN.y"
-    { printf("SIGN\n"); return 0;}
+#line 323 "SYN.y"
+    {
+        /* $$.code = new vector<string *>();
+        $$.type = "i";
+        string *s = new string("ldc " + to_string($1));
+        $$.code->push_back(s);
+        $$.value = $1.ival; */
+    }
+    break;
+
+  case 24:
+
+/* Line 1455 of yacc.c  */
+#line 329 "SYN.y"
+    {
+        /* $$.code = new vector<string *>();
+        $$.type = "f";
+        string *s = new string("ldc " + to_string($1));
+        $$.code->push_back(s);
+        $$.value = $1.ival; */
+    }
+    break;
+
+  case 25:
+
+/* Line 1455 of yacc.c  */
+#line 335 "SYN.y"
+    {
+        /* $$.type = $2.type;
+        $$.code = $2.code;
+        $$.value = $2.value; */
+    }
+    break;
+
+  case 26:
+
+/* Line 1455 of yacc.c  */
+#line 340 "SYN.y"
+    {
+        (yyval.non_terminal).value = (yyvsp[(1) - (1)].val).val;
+    }
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1458 "y.tab.c"
+#line 1876 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1666,7 +2084,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 84 "SYN.y"
+#line 343 "SYN.y"
 
 /* MAIN */
 void yyerror(const char *s)
@@ -1674,3 +2092,4 @@ void yyerror(const char *s)
 printf("Error\n");
 exit(1);
 }
+

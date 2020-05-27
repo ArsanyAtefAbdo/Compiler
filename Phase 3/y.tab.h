@@ -35,7 +35,7 @@
 /* "%code requires" blocks.  */
 
 /* Line 1676 of yacc.c  */
-#line 10 "SYN.y"
+#line 19 "SYN.y"
 
 	#include <vector>
 	using namespace std;
@@ -109,22 +109,24 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 15 "SYN.y"
+#line 26 "SYN.y"
 
 
     int ival;     // int
 	float fval;   // float
 	char * val;   // value
     char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
-    struct {
-        vector<string *> *code;
+    typedef struct {
+        string type;    // int, float,   bool,    basic
+        string value;   // 5,    1.5,  true|false  null
+        vector<string *> *code; // bytecode for this non terminal
         vector<string *> *next;
-  } Basic_nt;
+  } non_terminal;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 128 "y.tab.h"
+#line 130 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
