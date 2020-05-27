@@ -29,9 +29,9 @@ unordered_map<string, tuple<int, float, string>> symbol_table;
 	float fval;   // float
 	char * val;   // value
     char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
-    typedef struct {
-        string type;    // int, float,   bool,    basic
-        string value;   // 5,    1.5,  true|false  null
+    struct {
+        string *type;    // int, float,   bool,    basic
+        string *value;   // 5,    1.5,  true|false  null
         vector<string *> *code; // bytecode for this non terminal
         vector<string *> *next;
   } non_terminal;
@@ -68,13 +68,13 @@ METHOD_BODY:
     };
 STATEMENT_LIST:
     STATEMENT {
-        /* $$.type = "basic";
+        /* $$.type = new string("basic");
         $$.code = $1.code;
         $$.next = $1.next;
         //print */
     }
     | STATEMENT_LIST STATEMENT{
-        /* $$.type = "basic";
+        /* $$.type = new string("basic");
         vector<string *> *currentcode = new vector<string *>();
         currentcode->insert(currentcode->begin(), $1.code->begin(), $1.code->end());
         currentcode->insert(currentcode->end(), $2.code->begin(), $2.code->end());
@@ -84,19 +84,19 @@ STATEMENT_LIST:
     };
 STATEMENT :
     DECLARATION {
-        /* $$.type = "basic";
+        /* $$.type = new string("basic");
         $$.code = $1.code;
         $$.next = $1.next; */
     } | IF {
-        /* $$.type = "basic";
+        /* $$.type = new string("basic");
         $$.code = $1.code;
         $$.next = $1.next; */
     } | WHILE {
-        /* $$.type = "basic";
+        /* $$.type = new string("basic");
         $$.code = $1.code;
         $$.next = $1.next; */
     } | ASSIGNMENT{
-        /* $$.type = "basic";
+        /* $$.type = new string("basic");
         $$.code = $1.code;
         $$.next = $1.next; */
     };
@@ -105,11 +105,11 @@ DECLARATION :
         /* unordered_map<string, tuple<int, float, string>>::iterator it;
         it = symbol_table.find($2.val);
         if (it != symbol_table.end()){
-            $$.type = "error";
+            $$.type = new string("basic");
             $$.code = nullptr;
             yyerror($2.val + " EXIST BEFORE!!");
         } else {
-            $$.type = "basic";
+            $$.type = new string("basic");
             // add in symbol table int/float
             string key = $2.val;
             tuple<int, float, string> element (make_tuple(sym_num, 0, $1.type));
@@ -124,16 +124,16 @@ DECLARATION :
     };
 PRIMITIVE_TYPE :
     INT {
-        strcpy($$.type, "i");
+        $$.type = new string("i");
     }| FLOAT{
-        $$.type = "f";
+        $$.type = new string("f");
     };
 IF :
     IF_WORD LEFT_BRACKET EXPRESSION RIGHT_BRACKET
     LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET
     ELSE LEFT_CURLY_BRACKET STATEMENT RIGHT_CURLY_BRACKET {
-        /* if ($3.type == "bool"){
-            $$.type = "basic";
+        /* if (*$3.type == "bool"){
+            $$.type = new string("basic");
             if ($3.val == "true"){ // or 1
                 $$.code = $6.code;
                 $$.next = $6.next;
@@ -165,18 +165,18 @@ EXPRESSION : SIMPLE_EXPRESSION {
         $$.code = $1.code;
         $$.next = $$.next; /// not sure */
     }| SIMPLE_EXPRESSION REL_OP SIMPLE_EXPRESSION {
-    /* if ($1.type == $2.type) {
-        $$.type = "bool";
-        float v1 = atof($1.value);
-        float v2 = atof($3.value);
-        string t1 = $1.type;
-        string t2 = $3.type;
+    /* if (*$1.type == *$2.type) {
+        $$.type = new string("bool");
+        float v1 = atof(*$1.value);
+        float v2 = atof(*$3.value);
+        string t1 = *$1.type;
+        string t2 = *$3.type;
         switch(REL_OP.val) {
            case "=="  :
               if (v1 == v2){
-                $$.value = "true";
+                $$.value = new string("true");
               } else {
-                $$.value = "false";
+                $$.value = new string("false");
               }
               $$.code->push_back(new string(t1 + "load_1"));
               $$.code->push_back(new string(t2 + "load_2"));
@@ -184,19 +184,19 @@ EXPRESSION : SIMPLE_EXPRESSION {
               break;
            case "!="  :
               if (v1 != v2){
-                $$.value = "true";
+                $$.value = new string("true");
               } else {
-                $$.value = "false";
+                $$.value = new string("false");
               }
               $$.code.push_back(new string(t1 + "load_1"));
               $$.code.push_back(new string(t2 + "load_2"));
               $$.code.push_back("if_" + t1 + "cmpne");
               break;
            case ">="  :
-              if (v1 >= v2){
-                $$.value = "true";
+             if (v1 != v2){
+                $$.value = new string("true");
               } else {
-                $$.value = "false";
+                $$.value = new string("false");
               }
               $$.code.push_back(new string(t1 + "load_1"));
               $$.code.push_back(new string(t2 + "load_2"));
@@ -204,9 +204,9 @@ EXPRESSION : SIMPLE_EXPRESSION {
               break;
            case "<="  :
               if (v1 <= v2){
-                $$.value = "true";
+                  $$.value = new string("true");
               } else {
-                $$.value = "false";
+                $$.value = new string("false");
               }
               $$.code.push_back(new string(t1 + "load_1"));
               $$.code.push_back(new string(t2 + "load_2"));
@@ -214,9 +214,9 @@ EXPRESSION : SIMPLE_EXPRESSION {
               break;
            case ">"  :
               if (v1 > v2){
-                $$.value = "true";
+              	$$.value = new string("true");
               } else {
-                $$.value = "false";
+                $$.value = new string("false");
               }
               $$.code.push_back(new string(t1 + "load_1"));
               $$.code.push_back(new string(t2 + "load_2"));
@@ -224,9 +224,9 @@ EXPRESSION : SIMPLE_EXPRESSION {
               break;
            case "<"  :
               if (v1 < v2){
-                $$.value = "true";
+                $$.value = new string("true");
               } else {
-                $$.value = "false";
+                $$.value = new string("false");
               }
               $$.code.push_back(new string(t1 + "load_1"));
               $$.code.push_back(new string(t2 + "load_2"));
@@ -234,7 +234,7 @@ EXPRESSION : SIMPLE_EXPRESSION {
               break;
             }
         } else {
-            $$.type = "error";
+            $$.type = new string("error");
             yyerror("Can't do this operation for two diffrent types");
         } */
     };
@@ -244,9 +244,9 @@ SIMPLE_EXPRESSION :
         $$.code = $1.code;
         $$.next = $1.nest; // not sure */
     }| SIGN TERM {
-        /* if ($2.type == "i" || $2.type == "f"){
+        /* if (*$2.type == "i" || *$2.type == "f"){
             $$.type = $2.type;
-            if ($1.value == "neg"){
+            if (*$1.value == "neg"){
                 $$.value = (-1) * $1.value;
                 $$.code = $1.code; /// is there a change in bytecode?!
             } else {
@@ -337,8 +337,8 @@ FACTOR : ID {
         $$.code = $2.code;
         $$.value = $2.value; */
     };
-SIGN : ADD_OP {
-        $$.value = $1.val;
+ SIGN : ADD_OP {
+
     };
 %%
 /* MAIN */
