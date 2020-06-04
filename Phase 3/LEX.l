@@ -48,7 +48,7 @@ bool     "true"|"false"
 {mulop}                 {yylval.val = yytext;yylval.type = "MUL_OP"; return MUL_OP;}
 {num}                   {yylval.ival = atoi(yytext); return NUM;}
 {assign}                {return EQUALS;}
-.                       {showError(); return (OTHER);}
+\n                      {;}
 %%
  /* C functions */
 /* int main(void)
@@ -59,11 +59,11 @@ return 0;
 
 int yywrap(void)
 {
-return 0;
+return 1;
 }
 
 
 void showError()
 {
-printf("Error: invalid input");
+printf("Error: invalid input\n");
 }

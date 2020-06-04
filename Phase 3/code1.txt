@@ -1,0 +1,12 @@
+int x; 
+int k;
+x = 5;
+if ( x == 5 )
+{ 
+	x = 100;
+	int i;
+}
+else
+{
+	x= 9;
+}

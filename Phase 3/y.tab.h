@@ -35,7 +35,7 @@
 /* "%code requires" blocks.  */
 
 /* Line 1676 of yacc.c  */
-#line 24 "SYN.y"
+#line 25 "SYN.y"
 
 	#include <vector>
 	using namespace std;
@@ -109,7 +109,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 31 "SYN.y"
+#line 32 "SYN.y"
 
 
   int ival;     // int

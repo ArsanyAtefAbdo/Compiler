@@ -286,9 +286,9 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 #define YY_END_OF_BUFFER 25
 static yyconst short int yy_accept[87] =
     {   0,
-        0,    0,   25,   23,   24,   23,   20,   23,   10,   11,
+        0,    0,   25,   24,   23,   24,   20,   24,   10,   11,
        19,   19,   21,    9,   15,   22,   15,   18,   18,   18,
-       18,   18,   18,   18,   18,   12,   23,   13,   15,   16,
+       18,   18,   18,   18,   18,   12,   24,   13,   15,   16,
        21,    0,   21,   18,   18,   18,   18,   18,   18,   18,
         4,   18,   18,   18,   14,   14,   18,   18,   18,   18,
        18,    6,    1,   18,   18,    0,    0,   18,   18,    5,
@@ -781,7 +781,7 @@ YY_RULE_SETUP
 case 23:
 YY_RULE_SETUP
 #line 51 "LEX.l"
-{showError(); return (OTHER);}
+{;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
@@ -1685,11 +1685,11 @@ return 0;
 
 int yywrap(void)
 {
-return 0;
+return 1;
 }
 
 
 void showError()
 {
-printf("Error: invalid input");
+printf("Error: invalid input\n");
 }

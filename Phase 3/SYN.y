@@ -13,6 +13,7 @@ void yyerror(const char*);
 void print_code(vector<string *> * code);
 extern "C" int yyparse (void);
 ofstream *parserOut;
+ofstream fileOut("out.j");
 int sym_num = 1;
 int block_id = 1;
 ///           name          num block_id  type
@@ -130,7 +131,7 @@ DECLARATION :
 			  		} else if ($1 == BOOL_T){
 					  	 t1.push_back('b');
 						}
-            tuple<int, float, int> element (make_tuple(sym_num, 0, $1));
+            tuple<int, int, int> element (make_tuple(sym_num, 0, $1));
             symbol_table.insert({key, element});
             vector<string *> *currentcode = new vector<string *>();
             currentcode->push_back(new string(t1 + "const_0"));
@@ -243,7 +244,7 @@ SIMPLE_EXPRESSION :
 						} else if ($1.type == BOOL_T){
 							 t1.push_back('b');
 						}
-            if ($2 = "-"){
+            if ($2 == "-"){
                 currentcode->push_back(new string(t1 + "sub"));
             } else {
                 currentcode->push_back(new string(t1 + "add"));
@@ -271,9 +272,9 @@ TERM : FACTOR {
 						} else if ($1.type == BOOL_T){
 							 t1.push_back('b');
 						}
-            if ($2 = "*"){
+            if ($2 == "*"){
                 currentcode->push_back(new string(t1 + "mul"));
-            } else if ($2 = "/"){
+            } else if ($2 == "/"){
                 currentcode->push_back(new string(t1 + "div"));
             } else {
                 currentcode->push_back(new string(t1 + "mod"));
@@ -326,11 +327,10 @@ FACTOR : ID {
     };
 %%
 /* MAIN */
-main (void)
+main ()
 {
 	FILE *myfile;
-		myfile = fopen("code.txt", "r");
-		/* string outfileName = "code.txt"; */
+		myfile = fopen("try.txt", "r");
 	if (!myfile) {
 		printf("Code file does not exist!\n");
 		char path[200];
@@ -343,8 +343,11 @@ main (void)
 		return -1;
 	}
 	yyin = myfile;
-	yyparse();
-	// print result code
+	printf("start parse");
+	/* do { */
+    yyparse();
+  /* } while (!feof(yyin)); */
+	printf("end parse");
 }
 
 void yyerror(const char *s)
@@ -357,8 +360,11 @@ void print_code(vector<string *> * code) {
   if (code == nullptr) {
     return;
   } else {
+		fileOut<<"Start printing"<<endl;
     for (int i = 0; i < code->size(); i++) {
-      (*parserOut) << (*((*code)[i])) << endl;
+      /* (*parserOut) << (*((*code)[i])) << endl; */
+			fileOut<<(*((*code)[i]))<<endl;
+			/* printf((*((*code)[i]))); */
     }
   }
 }

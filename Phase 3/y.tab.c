@@ -84,6 +84,7 @@ void yyerror(const char*);
 void print_code(vector<string *> * code);
 extern "C" int yyparse (void);
 ofstream *parserOut;
+ofstream fileOut("out.j");
 int sym_num = 1;
 int block_id = 1;
 ///           name          num block_id  type
@@ -93,7 +94,7 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 
 
 /* Line 189 of yacc.c  */
-#line 97 "y.tab.c"
+#line 98 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -116,7 +117,7 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 /* "%code requires" blocks.  */
 
 /* Line 209 of yacc.c  */
-#line 24 "SYN.y"
+#line 25 "SYN.y"
 
 	#include <vector>
 	using namespace std;
@@ -124,7 +125,7 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 
 
 /* Line 209 of yacc.c  */
-#line 128 "y.tab.c"
+#line 129 "y.tab.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -190,7 +191,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 31 "SYN.y"
+#line 32 "SYN.y"
 
 
   int ival;     // int
@@ -216,7 +217,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 220 "y.tab.c"
+#line 221 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -228,7 +229,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 232 "y.tab.c"
+#line 233 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -522,9 +523,9 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    78,    78,    84,    91,   100,   103,   106,   109,   114,
-     144,   146,   150,   165,   170,   180,   184,   217,   220,   232,
-     257,   260,   287,   309,   314,   319,   323
+       0,    79,    79,    85,    92,   101,   104,   107,   110,   115,
+     145,   147,   151,   166,   171,   181,   185,   218,   221,   233,
+     258,   261,   288,   310,   315,   320,   324
 };
 #endif
 
@@ -1457,7 +1458,7 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 78 "SYN.y"
+#line 79 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         // print
@@ -1468,7 +1469,7 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 84 "SYN.y"
+#line 85 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         (yyval.block).next = (yyvsp[(1) - (1)].block).next;
@@ -1481,7 +1482,7 @@ yyreduce:
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 91 "SYN.y"
+#line 92 "SYN.y"
     {
         vector<string *> *currentcode = new vector<string *>();
         currentcode->insert(currentcode->begin(), (yyvsp[(1) - (2)].block).code->begin(), (yyvsp[(1) - (2)].block).code->end());
@@ -1495,7 +1496,7 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 100 "SYN.y"
+#line 101 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         (yyval.block).next = (yyvsp[(1) - (1)].block).next;
@@ -1505,7 +1506,7 @@ yyreduce:
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 103 "SYN.y"
+#line 104 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         (yyval.block).next = (yyvsp[(1) - (1)].block).next;
@@ -1515,7 +1516,7 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 106 "SYN.y"
+#line 107 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         (yyval.block).next = (yyvsp[(1) - (1)].block).next;
@@ -1525,7 +1526,7 @@ yyreduce:
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 109 "SYN.y"
+#line 110 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         (yyval.block).next = (yyvsp[(1) - (1)].block).next;
@@ -1535,7 +1536,7 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 114 "SYN.y"
+#line 115 "SYN.y"
     {
         unordered_map<string, tuple<int, int, int>>::iterator it;
         it = symbol_table.find((yyvsp[(2) - (3)].val));
@@ -1555,7 +1556,7 @@ yyreduce:
 			  		} else if ((yyvsp[(1) - (3)].pt) == BOOL_T){
 					  	 t1.push_back('b');
 						}
-            tuple<int, float, int> element (make_tuple(sym_num, 0, (yyvsp[(1) - (3)].pt)));
+            tuple<int, int, int> element (make_tuple(sym_num, 0, (yyvsp[(1) - (3)].pt)));
             symbol_table.insert({key, element});
             vector<string *> *currentcode = new vector<string *>();
             currentcode->push_back(new string(t1 + "const_0"));
@@ -1570,7 +1571,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 144 "SYN.y"
+#line 145 "SYN.y"
     {
         (yyval.pt) = INT_T;
     }
@@ -1579,7 +1580,7 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 146 "SYN.y"
+#line 147 "SYN.y"
     {
         (yyval.pt) = FLOAT_T;
     }
@@ -1588,7 +1589,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 152 "SYN.y"
+#line 153 "SYN.y"
     {
         if ((yyvsp[(3) - (11)].exp).type == BOOL_T){
 					/// if true add its code
@@ -1606,7 +1607,7 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 167 "SYN.y"
+#line 168 "SYN.y"
     {
         // optional
     }
@@ -1615,7 +1616,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 170 "SYN.y"
+#line 171 "SYN.y"
     {
         unordered_map<string, tuple<int, int, int>>::iterator it;
         it = symbol_table.find((yyvsp[(1) - (4)].val));
@@ -1631,7 +1632,7 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 180 "SYN.y"
+#line 181 "SYN.y"
     {
         (yyval.exp).type = (yyvsp[(1) - (1)].exp).type;
         (yyval.exp).code = (yyvsp[(1) - (1)].exp).code;
@@ -1642,7 +1643,7 @@ yyreduce:
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 184 "SYN.y"
+#line 185 "SYN.y"
     {
     if ((yyvsp[(1) - (3)].exp).type == (yyvsp[(3) - (3)].exp).type) {
         (yyval.exp).type = BOOL_T;
@@ -1680,7 +1681,7 @@ yyreduce:
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 217 "SYN.y"
+#line 218 "SYN.y"
     {
         (yyval.exp).type = (yyvsp[(1) - (1)].factor).type;
         (yyval.exp).code = (yyvsp[(1) - (1)].factor).code;
@@ -1690,7 +1691,7 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 220 "SYN.y"
+#line 221 "SYN.y"
     {
         if ((yyvsp[(2) - (2)].factor).type == INT_T || (yyvsp[(2) - (2)].factor).type == FLOAT_T){
             (yyval.exp).type = (yyvsp[(2) - (2)].factor).type;
@@ -1709,7 +1710,7 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 232 "SYN.y"
+#line 233 "SYN.y"
     {
         if ((yyvsp[(1) - (3)].exp).type == (yyvsp[(3) - (3)].factor).type && ((yyvsp[(3) - (3)].factor).type == INT_T || (yyvsp[(3) - (3)].factor).type == FLOAT_T)){
             (yyval.exp).type = (yyvsp[(3) - (3)].factor).type;
@@ -1724,7 +1725,7 @@ yyreduce:
 						} else if ((yyvsp[(1) - (3)].exp).type == BOOL_T){
 							 t1.push_back('b');
 						}
-            if ((yyvsp[(2) - (3)].val) = "-"){
+            if ((yyvsp[(2) - (3)].val) == "-"){
                 currentcode->push_back(new string(t1 + "sub"));
             } else {
                 currentcode->push_back(new string(t1 + "add"));
@@ -1740,7 +1741,7 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 257 "SYN.y"
+#line 258 "SYN.y"
     {
         (yyval.factor).code = (yyvsp[(1) - (1)].factor).code;
         (yyval.factor).type = (yyvsp[(1) - (1)].factor).type;
@@ -1750,7 +1751,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 260 "SYN.y"
+#line 261 "SYN.y"
     {
         if ((yyvsp[(1) - (3)].factor).type == (yyvsp[(3) - (3)].factor).type && ((yyvsp[(3) - (3)].factor).type == INT_T || (yyvsp[(3) - (3)].factor).type == FLOAT_T)){
             (yyval.factor).type = (yyvsp[(3) - (3)].factor).type;
@@ -1765,9 +1766,9 @@ yyreduce:
 						} else if ((yyvsp[(1) - (3)].factor).type == BOOL_T){
 							 t1.push_back('b');
 						}
-            if ((yyvsp[(2) - (3)].val) = "*"){
+            if ((yyvsp[(2) - (3)].val) == "*"){
                 currentcode->push_back(new string(t1 + "mul"));
-            } else if ((yyvsp[(2) - (3)].val) = "/"){
+            } else if ((yyvsp[(2) - (3)].val) == "/"){
                 currentcode->push_back(new string(t1 + "div"));
             } else {
                 currentcode->push_back(new string(t1 + "mod"));
@@ -1783,7 +1784,7 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 287 "SYN.y"
+#line 288 "SYN.y"
     {
         unordered_map<string, tuple<int, int, int>>::iterator it;
         it = symbol_table.find((yyvsp[(1) - (1)].val));
@@ -1812,7 +1813,7 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 309 "SYN.y"
+#line 310 "SYN.y"
     {
         (yyval.factor).code = new vector<string *>();
         (yyval.factor).type = INT_T;
@@ -1824,7 +1825,7 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 314 "SYN.y"
+#line 315 "SYN.y"
     {
 			(yyval.factor).code = new vector<string *>();
 			(yyval.factor).type = FLOAT_T;
@@ -1836,7 +1837,7 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 319 "SYN.y"
+#line 320 "SYN.y"
     {
         (yyval.factor).type = (yyvsp[(2) - (3)].exp).type;
         (yyval.factor).code = (yyvsp[(2) - (3)].exp).code;
@@ -1846,7 +1847,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 323 "SYN.y"
+#line 324 "SYN.y"
     {
 	    char * v = (yyvsp[(1) - (1)].val);
 	 		(yyval.val) = v;
@@ -1856,7 +1857,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1860 "y.tab.c"
+#line 1861 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2068,14 +2069,13 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 327 "SYN.y"
+#line 328 "SYN.y"
 
 /* MAIN */
-main (void)
+main ()
 {
 	FILE *myfile;
-		myfile = fopen("code.txt", "r");
-		/* string outfileName = "code.txt"; */
+		myfile = fopen("try.txt", "r");
 	if (!myfile) {
 		printf("Code file does not exist!\n");
 		char path[200];
@@ -2088,8 +2088,11 @@ main (void)
 		return -1;
 	}
 	yyin = myfile;
-	yyparse();
-	// print result code
+	printf("start parse");
+	/* do { */
+    yyparse();
+  /* } while (!feof(yyin)); */
+	printf("end parse");
 }
 
 void yyerror(const char *s)
@@ -2102,8 +2105,11 @@ void print_code(vector<string *> * code) {
   if (code == nullptr) {
     return;
   } else {
+		fileOut<<"Start printing"<<endl;
     for (int i = 0; i < code->size(); i++) {
-      (*parserOut) << (*((*code)[i])) << endl;
+      /* (*parserOut) << (*((*code)[i])) << endl; */
+			fileOut<<(*((*code)[i]))<<endl;
+			/* printf((*((*code)[i]))); */
     }
   }
 }
