@@ -35,7 +35,7 @@
 /* "%code requires" blocks.  */
 
 /* Line 1676 of yacc.c  */
-#line 20 "SYN.y"
+#line 24 "SYN.y"
 
 	#include <vector>
 	using namespace std;
@@ -109,7 +109,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 27 "SYN.y"
+#line 31 "SYN.y"
 
 
   int ival;     // int
@@ -126,6 +126,7 @@ typedef union YYSTYPE
 			vector<string *> *code;
 	} factor;
 	struct {
+			int l_id; // id of block before it
 			vector<string *> *code;
 			vector<string *> *next;
 	} block;
@@ -134,7 +135,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 138 "y.tab.h"
+#line 139 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

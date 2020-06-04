@@ -1677,11 +1677,11 @@ int main()
 #line 52 "LEX.l"
 
  /* C functions */
-int main(void)
+/* int main(void)
 {
 yyparse();
 return 0;
-}
+} */
 
 int yywrap(void)
 {

@@ -8,11 +8,15 @@
 #include <unistd.h>
 using namespace std;
 extern int yylex();
+extern  FILE *yyin;
 void yyerror(const char*);
+void print_code(vector<string *> * code);
 extern "C" int yyparse (void);
+ofstream *parserOut;
 int sym_num = 1;
-///           name          num  value  type
-unordered_map<string, tuple<int, float, int>> symbol_table;
+int block_id = 1;
+///           name          num block_id  type
+unordered_map<string, tuple<int, int, int>> symbol_table;
 typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 #define maxid 20
 %}
@@ -40,6 +44,7 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 			vector<string *> *code;
 	} factor;
 	struct {
+			int l_id; // id of block before it
 			vector<string *> *code;
 			vector<string *> *next;
 	} block;
@@ -73,11 +78,14 @@ METHOD_BODY:
     STATEMENT_LIST {
         $$.code = $1.code;
         // print
+				print_code($$.code);
     };
 STATEMENT_LIST:
     STATEMENT {
         $$.code = $1.code;
         $$.next = $1.next;
+				/* $$.l_id = block_id;
+				block_id++; */
         //print
     }
     | STATEMENT_LIST STATEMENT{
@@ -104,7 +112,7 @@ STATEMENT :
     };
 DECLARATION :
     PRIMITIVE_TYPE ID SEMI_COLON {
-        unordered_map<string, tuple<int, float, int>>::iterator it;
+        unordered_map<string, tuple<int, int, int>>::iterator it;
         it = symbol_table.find($2);
         if (it != symbol_table.end()){
             $$.code = nullptr;
@@ -160,7 +168,7 @@ WHILE :
         // optional
     };
 ASSIGNMENT : ID EQUALS EXPRESSION SEMI_COLON {
-        unordered_map<string, tuple<int, float, int>>::iterator it;
+        unordered_map<string, tuple<int, int, int>>::iterator it;
         it = symbol_table.find($1);
         if (it != symbol_table.end()){
             // bytecode of assignment
@@ -277,7 +285,7 @@ TERM : FACTOR {
         }
     };
 FACTOR : ID {
-        unordered_map<string, tuple<int, float, int>>::iterator it;
+        unordered_map<string, tuple<int, int, int>>::iterator it;
         it = symbol_table.find($1);
         if (it != symbol_table.end()){
 					int t = std::get<2>(it->second);
@@ -318,8 +326,39 @@ FACTOR : ID {
     };
 %%
 /* MAIN */
+main (void)
+{
+	FILE *myfile;
+		myfile = fopen("code.txt", "r");
+		/* string outfileName = "code.txt"; */
+	if (!myfile) {
+		printf("Code file does not exist!\n");
+		char path[200];
+		if (!getcwd(path, sizeof(path)))
+		     {
+		     return -1;
+		     }
+		printf("%s\n",path);
+		getchar();
+		return -1;
+	}
+	yyin = myfile;
+	yyparse();
+	// print result code
+}
+
 void yyerror(const char *s)
 {
 printf("Error\n");
 exit(1);
+}
+
+void print_code(vector<string *> * code) {
+  if (code == nullptr) {
+    return;
+  } else {
+    for (int i = 0; i < code->size(); i++) {
+      (*parserOut) << (*((*code)[i])) << endl;
+    }
+  }
 }

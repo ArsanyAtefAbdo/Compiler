@@ -51,11 +51,11 @@ bool     "true"|"false"
 .                       {showError(); return (OTHER);}
 %%
  /* C functions */
-int main(void)
+/* int main(void)
 {
 yyparse();
 return 0;
-}
+} */
 
 int yywrap(void)
 {
