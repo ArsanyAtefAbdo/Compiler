@@ -9,10 +9,9 @@
 using namespace std;
 extern int yylex();
 extern  FILE *yyin;
-void yyerror(const char*);
+void yyerror(string);
 void print_code(vector<string *> * code);
 extern "C" int yyparse (void);
-ofstream *parserOut;
 ofstream fileOut("out.j");
 int sym_num = 1;
 int block_id = 1;
@@ -24,6 +23,7 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 
 %code requires {
 	#include <vector>
+	#include <string>
 	using namespace std;
 }
 
@@ -87,7 +87,6 @@ STATEMENT_LIST:
         $$.next = $1.next;
 				/* $$.l_id = block_id;
 				block_id++; */
-        //print
     }
     | STATEMENT_LIST STATEMENT{
         vector<string *> *currentcode = new vector<string *>();
@@ -95,7 +94,6 @@ STATEMENT_LIST:
         currentcode->insert(currentcode->end(), $2.code->begin(), $2.code->end());
         $$.code = currentcode;
         $$.next = $2.next;
-        // print
     };
 STATEMENT :
     DECLARATION {
@@ -117,11 +115,11 @@ DECLARATION :
         it = symbol_table.find($2);
         if (it != symbol_table.end()){
             $$.code = nullptr;
-						string str($2, $2 + maxid);
-            yyerror((str + " EXIST BEFORE!!").c_str());
+						string str($2);
+            yyerror(("ERROR EXIST BEFORE!! --> "+str).c_str());
         } else {
             // add in symbol table int/float
-						string str($2, $2 + maxid);
+						string str($2);
             string key = str;
 						string t1;
 						if ($1 == INT_T){
@@ -159,7 +157,7 @@ IF :
                 $$.code = $10.code;
                 $$.next = $10.next;
         } else {
-            yyerror("Expression incorrect");
+            yyerror("ERROR: Expression incorrect");
         }
     };
 WHILE :
@@ -170,12 +168,26 @@ WHILE :
     };
 ASSIGNMENT : ID EQUALS EXPRESSION SEMI_COLON {
         unordered_map<string, tuple<int, int, int>>::iterator it;
-        it = symbol_table.find($1);
+				string str($1);
+        it = symbol_table.find(str);
         if (it != symbol_table.end()){
             // bytecode of assignment
+						int t = std::get<2>(it->second);
+						int i = std::get<0>(it->second);
+							string t1;
+							if (t == INT_T){
+								 t1.push_back('i');
+							} else if (t == FLOAT_T){
+								 t1.push_back('f');
+							} else if (t == BOOL_T){
+								 t1.push_back('b');
+							}
+							vector<string *> *currentcode = new vector<string *>();
+								currentcode->push_back(new string("bipush      " )); // + value of exp
+								currentcode->push_back(new string(t1 + "store_" + to_string(i)));
+								$$.code = currentcode;
         } else {
-					string str($1, $1 + maxid);
-            yyerror((str + " WASN'T DECLARED!!").c_str());
+            yyerror(("ERROR WASN'T DECLARED!! --> "+str).c_str());
         }
     };
 EXPRESSION : SIMPLE_EXPRESSION {
@@ -305,7 +317,10 @@ FACTOR : ID {
             $$.code = currentcode;
         } else {
 					string str($1, $1 + maxid);
-            yyerror((str + " WASN'T DECLARED!!").c_str());
+					string msg = "\n ERROR";
+					msg +=" WASN'T DECLARED!! -->";
+					msg += str;
+            yyerror((msg).c_str());
         }
     }| NUM {
         $$.code = new vector<string *>();
@@ -343,16 +358,12 @@ main ()
 		return -1;
 	}
 	yyin = myfile;
-	printf("start parse");
-	/* do { */
     yyparse();
-  /* } while (!feof(yyin)); */
-	printf("end parse");
 }
 
-void yyerror(const char *s)
+void yyerror(string s)
 {
-printf("Error\n");
+printf(s.c_str());
 exit(1);
 }
 
@@ -360,11 +371,8 @@ void print_code(vector<string *> * code) {
   if (code == nullptr) {
     return;
   } else {
-		fileOut<<"Start printing"<<endl;
     for (int i = 0; i < code->size(); i++) {
-      /* (*parserOut) << (*((*code)[i])) << endl; */
 			fileOut<<(*((*code)[i]))<<endl;
-			/* printf((*((*code)[i]))); */
     }
   }
 }

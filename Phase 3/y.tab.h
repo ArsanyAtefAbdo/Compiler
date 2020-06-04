@@ -35,15 +35,16 @@
 /* "%code requires" blocks.  */
 
 /* Line 1676 of yacc.c  */
-#line 25 "SYN.y"
+#line 24 "SYN.y"
 
 	#include <vector>
+	#include <string>
 	using namespace std;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 47 "y.tab.h"
+#line 48 "y.tab.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -135,7 +136,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 139 "y.tab.h"
+#line 140 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
