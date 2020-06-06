@@ -281,7 +281,14 @@ WHILE :
     WHILE_WORD LEFT_BRACKET BOOLEAN_CONDITION RIGHT_BRACKET
     BLOCK
     {
-        // optional
+        $$.code = new vector<string*>();
+        $$.next = $3.next;
+        Label Begin;
+        back_patching($5.next, Begin.getName());
+        add_label_to_code($$.code, Begin);
+        $$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
+        $$.code->insert($$.code->end(), $5.code->begin(), $5.code->end());
+        $$.code->push_back(new string("goto " + Begin.getName()));
     };
 ASSIGNMENT : ID EQUALS EXPRESSION SEMI_COLON {
 	
