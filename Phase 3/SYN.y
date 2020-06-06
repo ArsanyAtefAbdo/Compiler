@@ -104,6 +104,7 @@ unordered_map<int, string> type_map = {
 %type <block> SYSTEM_PRINT
 %type <block> IF
 %type <block> WHILE
+%type <block> FOR
 %type <block> DECLARATION
 %type <block> ASSIGNMENT
 %type <block> BLOCK
@@ -290,6 +291,24 @@ WHILE :
         $$.code->insert($$.code->end(), $5.code->begin(), $5.code->end());
         $$.code->push_back(new string("goto " + Begin.getName()));
     };
+FOR :
+    FOR_WORD LEFT_BRACKET STATEMENT SEMI_COLON BOOLEAN_CONDITION SEMI_COLON STATEMENT RIGHT_BRACKET
+    BLOCK
+    {
+        $$.code = new vector<string*>();
+        $$.next = $5.next;
+        Label Begin;
+        //Label $8.next;
+        back_patching($8.next, Begin.getName());
+        add_label_to_code($$.code, Begin);
+        $$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
+        $$.code->insert($$.code->end(), $5.code->begin(), $5.code->end());
+        $$.code->insert($$.code->end(), $9.code->begin(), $9.code->end());
+        //add_label_to_code($$.code, $8.next);
+        $$.code->insert($$.code->end(), $7.code->begin(), $7.code->end());
+        $$.code->push_back(new string("goto " + Begin.getName()));
+    };
+
 ASSIGNMENT : ID EQUALS EXPRESSION SEMI_COLON {
 	
 		string id($1);
