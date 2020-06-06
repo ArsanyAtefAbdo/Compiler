@@ -282,18 +282,18 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 	*yy_cp = '\0'; \
 	yy_c_buf_p = yy_cp;
 
-#define YY_NUM_RULES 24
-#define YY_END_OF_BUFFER 25
+#define YY_NUM_RULES 25
+#define YY_END_OF_BUFFER 26
 static yyconst short int yy_accept[87] =
     {   0,
-        0,    0,   25,   24,   23,   24,   20,   24,   10,   11,
-       19,   19,   21,    9,   15,   22,   15,   18,   18,   18,
-       18,   18,   18,   18,   18,   12,   24,   13,   15,   16,
-       21,    0,   21,   18,   18,   18,   18,   18,   18,   18,
-        4,   18,   18,   18,   14,   14,   18,   18,   18,   18,
-       18,    6,    1,   18,   18,    0,    0,   18,   18,    5,
-       18,   18,   17,   18,   14,   14,   18,   18,    2,    7,
-       18,   18,    0,    3,    0,    0,    0,    0,    0,    0,
+        0,    0,   26,   25,   24,   14,   21,   25,   10,   11,
+       20,   20,   22,    9,   16,   23,   16,   19,   19,   19,
+       19,   19,   19,   19,   19,   12,   25,   13,   16,   17,
+       22,    0,   22,   19,   19,   19,   19,   19,   19,   19,
+        4,   19,   19,   19,   15,   15,   19,   19,   19,   19,
+       19,    6,    1,   19,   19,    0,    0,   19,   19,    5,
+       19,   19,   18,   19,   15,   15,   19,   19,    2,    7,
+       19,   19,    0,    3,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    8,    0
     } ;
 
@@ -428,7 +428,7 @@ g++ -Wno-write-strings -std=gnu++11 lex.yy.c y.tab.c */
     #include <string>
     #include <string.h>
     #include "y.tab.h"
-     extern "C" int yyparse (void);
+    extern "C" int yyparse (void);
     void yyerror(const char*);
      void showError();
 /* Regular Expressions */
@@ -737,59 +737,64 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 43 "LEX.l"
-{yylval.fval = atof(yytext); return F_NUM;}
+{return NOT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 44 "LEX.l"
-{yylval.val = yytext;return REL_OP;}
+{yylval.fval = atof(yytext); return F_NUM;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 45 "LEX.l"
-{yylval.val = yytext;return BOOL_OP;}
+{yylval.val = strdup(yytext);return REL_OP;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 46 "LEX.l"
-{yylval.val = yytext;return BOOL;}
+{yylval.val = strdup(yytext);return BOOL_OP;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 47 "LEX.l"
-{yylval.val = strdup(yytext);return ID;}
+{yylval.val = strdup(yytext);return BOOL;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 48 "LEX.l"
-{yylval.val = yytext;return ADD_OP;}
+{yylval.val = strdup(yytext);return ID;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 49 "LEX.l"
-{yylval.val = yytext;return MUL_OP;}
+{yylval.cval = yytext[0];return ADD_OP;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 50 "LEX.l"
-{yylval.ival = atoi(yytext); return NUM;}
+{yylval.cval = yytext[0];return MUL_OP;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 51 "LEX.l"
-{return EQUALS;}
+{yylval.ival = atoi(yytext); return NUM;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 52 "LEX.l"
-{;}
+{return EQUALS;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 53 "LEX.l"
+{;}
+	YY_BREAK
+case 25:
+YY_RULE_SETUP
+#line 54 "LEX.l"
 ECHO;
 	YY_BREAK
-#line 793 "lex.yy.c"
+#line 798 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1675,7 +1680,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 53 "LEX.l"
+#line 54 "LEX.l"
 
  /* C functions */
 /* int main(void)

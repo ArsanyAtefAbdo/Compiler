@@ -35,16 +35,17 @@
 /* "%code requires" blocks.  */
 
 /* Line 1676 of yacc.c  */
-#line 24 "SYN.y"
+#line 60 "SYN.y"
 
 	#include <vector>
 	#include <string>
+	#include "Label.h"
 	using namespace std;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 48 "y.tab.h"
+#line 49 "y.tab.h"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -62,19 +63,20 @@
      FOR_WORD = 265,
      WHILE_WORD = 266,
      SYSTEM_OUT = 267,
-     ADD_OP = 268,
-     MUL_OP = 269,
-     REL_OP = 270,
-     BOOL_OP = 271,
-     BOOL = 272,
-     ID = 273,
-     SEMI_COLON = 274,
-     LEFT_BRACKET = 275,
-     RIGHT_BRACKET = 276,
-     LEFT_CURLY_BRACKET = 277,
-     RIGHT_CURLY_BRACKET = 278,
-     EQUALS = 279,
-     OTHER = 280
+     REL_OP = 268,
+     BOOL_OP = 269,
+     BOOL = 270,
+     ID = 271,
+     SEMI_COLON = 272,
+     LEFT_BRACKET = 273,
+     RIGHT_BRACKET = 274,
+     LEFT_CURLY_BRACKET = 275,
+     RIGHT_CURLY_BRACKET = 276,
+     EQUALS = 277,
+     OTHER = 278,
+     NOT = 279,
+     ADD_OP = 280,
+     MUL_OP = 281
    };
 #endif
 /* Tokens.  */
@@ -88,19 +90,20 @@
 #define FOR_WORD 265
 #define WHILE_WORD 266
 #define SYSTEM_OUT 267
-#define ADD_OP 268
-#define MUL_OP 269
-#define REL_OP 270
-#define BOOL_OP 271
-#define BOOL 272
-#define ID 273
-#define SEMI_COLON 274
-#define LEFT_BRACKET 275
-#define RIGHT_BRACKET 276
-#define LEFT_CURLY_BRACKET 277
-#define RIGHT_CURLY_BRACKET 278
-#define EQUALS 279
-#define OTHER 280
+#define REL_OP 268
+#define BOOL_OP 269
+#define BOOL 270
+#define ID 271
+#define SEMI_COLON 272
+#define LEFT_BRACKET 273
+#define RIGHT_BRACKET 274
+#define LEFT_CURLY_BRACKET 275
+#define RIGHT_CURLY_BRACKET 276
+#define EQUALS 277
+#define OTHER 278
+#define NOT 279
+#define ADD_OP 280
+#define MUL_OP 281
 
 
 
@@ -110,12 +113,13 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 32 "SYN.y"
+#line 69 "SYN.y"
 
 
   int ival;     // int
-	float fval;   // float
-	char * val;   // value
+  float fval;   // float
+  char cval;   // value
+  char * val;   // value
   char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
   struct {
         int type;
@@ -127,7 +131,7 @@ typedef union YYSTYPE
 			vector<string *> *code;
 	} factor;
 	struct {
-			int l_id; // id of block before it
+			unsigned l_id; // id of block before it
 			vector<string *> *code;
 			vector<string *> *next;
 	} block;
@@ -136,7 +140,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 140 "y.tab.h"
+#line 144 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

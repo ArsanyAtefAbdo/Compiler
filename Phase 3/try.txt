@@ -1,11 +1,9 @@
-int x;
-int k;
-x = 5;
-if ( x == 5 )
-{
-	int i;
-}
-else
-{
-	x= 9;
+boolean zIsBig = true;
+
+int yIsBig = ( 5 + 7 ) ;
+
+System.out.println(yIsBig);
+
+if (true){
+System.out.println(yIsBig);
 }

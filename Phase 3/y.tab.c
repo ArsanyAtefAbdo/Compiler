@@ -71,6 +71,7 @@
 #line 1 "SYN.y"
 
 /* C stuff */
+#include "Label.h"
 #include <stdio.h>
 #include <string>
 #include <tuple>
@@ -79,21 +80,56 @@
 #include <unistd.h>
 using namespace std;
 extern int yylex();
+extern "C" int yyparse (void);
 extern  FILE *yyin;
 void yyerror(string);
 void print_code(vector<string *> * code);
-extern "C" int yyparse (void);
+// -------------Michael Said----------------
+	
+unsigned Label::label_num = 0;
+char Label::label_char = 'a';
+// adding new label to the code.
+void add_label_to_code(vector<string *> *code, Label label);
+// adding a label to the code if the list next needs backpatching, then backpatches next with that label.
+void perform_label_adding(vector<string *> *code, vector<string *> **next);
+// patching all strings in list by adding the string label_name to their end.
+void back_patching(vector<string *> **list, string label_name);
+
+void clear_scope(unsigned l_id);
+
+//------------------------------------------
 ofstream fileOut("out.j");
-int sym_num = 1;
-int block_id = 1;
-///           name          num block_id  type
-unordered_map<string, tuple<int, int, int>> symbol_table;
+unsigned sym_num = 1;
+///           name          num  type
+unordered_map<string, pair<unsigned, int>> symbol_table;
+unordered_map<unsigned, string> memory_table;
 typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
-#define maxid 20
+
+unordered_map<char, string> op_map = {
+  pair<char,string>('+', "add"),
+  pair<char,string>('-', "sub"),
+  pair<char,string>('*', "mul"),
+  pair<char,string>('/', "div"),
+  pair<char,string>('%', "mod")
+};
+
+unordered_map<string, string> real_ops = {
+  pair<string,string>("==", "eq"),
+  pair<string,string>(">=", "ge"),
+  pair<string,string>(">", "gt"),
+  pair<string,string>("<=", "le"),
+  pair<string,string>("<", "lt"),
+  pair<string,string>("!=", "ne")
+};
+
+unordered_map<int, string> type_map = {
+  pair<int, string>(INT_T, "i"), pair<int, string>(BOOL_T, "i"), pair<int, string>(FLOAT_T, "f")
+};
+
 
 
 /* Line 189 of yacc.c  */
-#line 97 "y.tab.c"
+#line 133 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -116,16 +152,17 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 /* "%code requires" blocks.  */
 
 /* Line 209 of yacc.c  */
-#line 24 "SYN.y"
+#line 60 "SYN.y"
 
 	#include <vector>
 	#include <string>
+	#include "Label.h"
 	using namespace std;
 
 
 
 /* Line 209 of yacc.c  */
-#line 129 "y.tab.c"
+#line 166 "y.tab.c"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -143,19 +180,20 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
      FOR_WORD = 265,
      WHILE_WORD = 266,
      SYSTEM_OUT = 267,
-     ADD_OP = 268,
-     MUL_OP = 269,
-     REL_OP = 270,
-     BOOL_OP = 271,
-     BOOL = 272,
-     ID = 273,
-     SEMI_COLON = 274,
-     LEFT_BRACKET = 275,
-     RIGHT_BRACKET = 276,
-     LEFT_CURLY_BRACKET = 277,
-     RIGHT_CURLY_BRACKET = 278,
-     EQUALS = 279,
-     OTHER = 280
+     REL_OP = 268,
+     BOOL_OP = 269,
+     BOOL = 270,
+     ID = 271,
+     SEMI_COLON = 272,
+     LEFT_BRACKET = 273,
+     RIGHT_BRACKET = 274,
+     LEFT_CURLY_BRACKET = 275,
+     RIGHT_CURLY_BRACKET = 276,
+     EQUALS = 277,
+     OTHER = 278,
+     NOT = 279,
+     ADD_OP = 280,
+     MUL_OP = 281
    };
 #endif
 /* Tokens.  */
@@ -169,19 +207,20 @@ typedef enum {INT_T, FLOAT_T, BOOL_T, ERROR_T} type_enum;
 #define FOR_WORD 265
 #define WHILE_WORD 266
 #define SYSTEM_OUT 267
-#define ADD_OP 268
-#define MUL_OP 269
-#define REL_OP 270
-#define BOOL_OP 271
-#define BOOL 272
-#define ID 273
-#define SEMI_COLON 274
-#define LEFT_BRACKET 275
-#define RIGHT_BRACKET 276
-#define LEFT_CURLY_BRACKET 277
-#define RIGHT_CURLY_BRACKET 278
-#define EQUALS 279
-#define OTHER 280
+#define REL_OP 268
+#define BOOL_OP 269
+#define BOOL 270
+#define ID 271
+#define SEMI_COLON 272
+#define LEFT_BRACKET 273
+#define RIGHT_BRACKET 274
+#define LEFT_CURLY_BRACKET 275
+#define RIGHT_CURLY_BRACKET 276
+#define EQUALS 277
+#define OTHER 278
+#define NOT 279
+#define ADD_OP 280
+#define MUL_OP 281
 
 
 
@@ -191,12 +230,13 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 32 "SYN.y"
+#line 69 "SYN.y"
 
 
   int ival;     // int
-	float fval;   // float
-	char * val;   // value
+  float fval;   // float
+  char cval;   // value
+  char * val;   // value
   char * type;  // type --> ADD_OP MUL_OP NUM F_NUM REL_OP BOOL_OP BOOL ID
   struct {
         int type;
@@ -208,7 +248,7 @@ typedef union YYSTYPE
 			vector<string *> *code;
 	} factor;
 	struct {
-			int l_id; // id of block before it
+			unsigned l_id; // id of block before it
 			vector<string *> *code;
 			vector<string *> *next;
 	} block;
@@ -217,7 +257,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 221 "y.tab.c"
+#line 261 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -229,7 +269,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 233 "y.tab.c"
+#line 273 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -442,22 +482,22 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  17
+#define YYFINAL  21
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   45
+#define YYLAST   64
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  26
+#define YYNTOKENS  27
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  14
+#define YYNNTS  17
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  26
+#define YYNRULES  35
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  55
+#define YYNSTATES  64
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   280
+#define YYMAXUTOK   281
 
 #define YYTRANSLATE(YYX)						\
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -493,7 +533,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25
+      25,    26
 };
 
 #if YYDEBUG
@@ -501,31 +541,35 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     7,    10,    12,    14,    16,    18,
-      22,    24,    26,    38,    46,    51,    53,    57,    59,    62,
-      66,    68,    72,    74,    76,    78,    82
+       0,     0,     3,     5,     7,    10,    11,    12,    17,    19,
+      21,    23,    25,    27,    33,    37,    43,    45,    47,    49,
+      55,    63,    69,    74,    76,    78,    82,    84,    87,    91,
+      93,    97,    99,   101,   103,   105
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-      27,     0,    -1,    28,    -1,    29,    -1,    28,    29,    -1,
-      30,    -1,    32,    -1,    33,    -1,    34,    -1,    31,    18,
-      19,    -1,     5,    -1,     6,    -1,     8,    20,    35,    21,
-      22,    29,    23,     9,    22,    29,    23,    -1,    11,    20,
-      35,    21,    22,    29,    23,    -1,    18,    24,    35,    19,
-      -1,    36,    -1,    36,    15,    36,    -1,    37,    -1,    39,
-      37,    -1,    36,    13,    37,    -1,    38,    -1,    37,    14,
-      38,    -1,    18,    -1,     3,    -1,     4,    -1,    20,    35,
-      21,    -1,    13,    -1
+      28,     0,    -1,    29,    -1,    32,    -1,    29,    32,    -1,
+      -1,    -1,    31,    20,    29,    21,    -1,    34,    -1,    36,
+      -1,    37,    -1,    38,    -1,    33,    -1,    12,    18,    40,
+      19,    17,    -1,    35,    16,    17,    -1,    35,    16,    22,
+      40,    17,    -1,     5,    -1,     6,    -1,     7,    -1,     8,
+      18,    39,    19,    30,    -1,     8,    18,    39,    19,    30,
+       9,    30,    -1,    11,    18,    39,    19,    30,    -1,    16,
+      22,    40,    17,    -1,    40,    -1,    41,    -1,    41,    13,
+      41,    -1,    42,    -1,    25,    42,    -1,    41,    25,    42,
+      -1,    43,    -1,    42,    26,    43,    -1,    16,    -1,     3,
+      -1,     4,    -1,    15,    -1,    18,    40,    19,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    79,    79,    85,    91,    99,   102,   105,   108,   113,
-     143,   145,   149,   164,   169,   193,   197,   230,   233,   245,
-     270,   273,   300,   325,   330,   335,   339
+       0,   122,   122,   130,   135,   142,   147,   147,   159,   162,
+     165,   168,   171,   176,   192,   210,   244,   246,   248,   252,
+     265,   285,   290,   329,   350,   355,   417,   421,   432,   445,
+     448,   462,   481,   485,   489,   498
 };
 #endif
 
@@ -536,12 +580,12 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "NUM", "F_NUM", "INT", "FLOAT",
   "BOOLEAN", "IF_WORD", "ELSE", "FOR_WORD", "WHILE_WORD", "SYSTEM_OUT",
-  "ADD_OP", "MUL_OP", "REL_OP", "BOOL_OP", "BOOL", "ID", "SEMI_COLON",
-  "LEFT_BRACKET", "RIGHT_BRACKET", "LEFT_CURLY_BRACKET",
-  "RIGHT_CURLY_BRACKET", "EQUALS", "OTHER", "$accept", "METHOD_BODY",
-  "STATEMENT_LIST", "STATEMENT", "DECLARATION", "PRIMITIVE_TYPE", "IF",
-  "WHILE", "ASSIGNMENT", "EXPRESSION", "SIMPLE_EXPRESSION", "TERM",
-  "FACTOR", "SIGN", 0
+  "REL_OP", "BOOL_OP", "BOOL", "ID", "SEMI_COLON", "LEFT_BRACKET",
+  "RIGHT_BRACKET", "LEFT_CURLY_BRACKET", "RIGHT_CURLY_BRACKET", "EQUALS",
+  "OTHER", "NOT", "ADD_OP", "MUL_OP", "$accept", "METHOD_BODY",
+  "STATEMENT_LIST", "BLOCK", "@1", "STATEMENT", "SYSTEM_PRINT",
+  "DECLARATION", "PRIMITIVE_TYPE", "IF", "WHILE", "ASSIGNMENT",
+  "BOOLEAN_CONDITION", "EXPRESSION", "SIMPLE_EXPRESSION", "TERM", "FACTOR", 0
 };
 #endif
 
@@ -552,24 +596,26 @@ static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280
+     275,   276,   277,   278,   279,   280,   281
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    26,    27,    28,    28,    29,    29,    29,    29,    30,
-      31,    31,    32,    33,    34,    35,    35,    36,    36,    36,
-      37,    37,    38,    38,    38,    38,    39
+       0,    27,    28,    29,    29,    29,    31,    30,    32,    32,
+      32,    32,    32,    33,    34,    34,    35,    35,    35,    36,
+      36,    37,    38,    39,    40,    40,    41,    41,    41,    42,
+      42,    43,    43,    43,    43,    43
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     1,     2,     1,     1,     1,     1,     3,
-       1,     1,    11,     7,     4,     1,     3,     1,     2,     3,
-       1,     3,     1,     1,     1,     3,     1
+       0,     2,     1,     1,     2,     0,     0,     4,     1,     1,
+       1,     1,     1,     5,     3,     5,     1,     1,     1,     5,
+       7,     5,     4,     1,     1,     3,     1,     2,     3,     1,
+       3,     1,     1,     1,     1,     3
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -577,39 +623,41 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,    10,    11,     0,     0,     0,     0,     2,     3,     5,
-       0,     6,     7,     8,     0,     0,     0,     1,     4,     0,
-      23,    24,    26,    22,     0,     0,    15,    17,    20,     0,
-       0,     0,     9,     0,     0,     0,     0,     0,    18,     0,
-      14,    25,     0,    19,    16,    21,     0,     0,     0,     0,
-      13,     0,     0,     0,    12
+       5,    16,    17,    18,     0,     0,     0,     0,     0,     2,
+       3,    12,     8,     0,     9,    10,    11,     0,     0,     0,
+       0,     1,     4,     0,    32,    33,    34,    31,     0,     0,
+       0,    23,    24,    26,    29,     0,     0,     0,    14,     0,
+       0,    27,     6,     0,     0,     0,     6,     0,    22,     0,
+      35,    19,     0,    25,    28,    30,    21,    13,    15,     6,
+       5,    20,     0,     7
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     6,     7,     8,     9,    10,    11,    12,    13,    25,
-      26,    27,    28,    29
+      -1,     8,     9,    51,    52,    10,    11,    12,    13,    14,
+      15,    16,    30,    31,    32,    33,    34
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -27
+#define YYPACT_NINF -38
 static const yytype_int8 yypact[] =
 {
-       2,   -27,   -27,   -14,    -8,     3,    17,     2,   -27,   -27,
-       7,   -27,   -27,   -27,    -2,    -2,    -2,   -27,   -27,    10,
-     -27,   -27,   -27,   -27,    -2,     5,     9,    14,   -27,     1,
-      11,    12,   -27,    13,     8,     1,    -2,     1,    14,    15,
-     -27,   -27,     2,    14,    20,   -27,     2,    18,    19,    27,
-     -27,    16,     2,    21,   -27
+      39,   -38,   -38,   -38,    -8,    -7,    -6,   -18,     5,    39,
+     -38,   -38,   -38,    14,   -38,   -38,   -38,    -2,    -2,    -2,
+      -2,   -38,   -38,   -14,   -38,   -38,   -38,   -38,    -2,    24,
+      16,   -38,    18,     7,   -38,    17,    19,    20,   -38,    -2,
+      22,     7,   -38,    -2,    24,    24,   -38,    31,   -38,    32,
+     -38,    43,    34,    33,     7,   -38,   -38,   -38,   -38,   -38,
+      39,   -38,    13,   -38
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -27,   -27,   -27,    -7,   -27,   -27,   -27,   -27,   -27,    -1,
-       4,   -26,     6,   -27
+     -38,   -38,    -4,   -37,   -38,    -9,   -38,   -38,   -38,   -38,
+     -38,   -38,    41,   -13,    21,   -12,    12
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -619,32 +667,37 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      18,    20,    21,    38,    20,    21,    14,     1,     2,    43,
-       3,    22,    15,     4,    30,    31,    23,    17,    24,    23,
-       5,    24,    35,    33,    36,    19,    34,    16,    37,    32,
-      42,    40,    39,    35,    41,    47,    51,    46,    52,    48,
-      44,    49,    50,    45,    54,    53
+      22,    24,    25,    38,    20,    21,    36,    37,    39,    56,
+      17,    18,    19,    26,    27,    40,    28,    41,     1,     2,
+       3,     4,    61,    29,     5,     6,    49,    24,    25,     7,
+      23,    43,    54,    45,    63,    42,    46,    48,    47,    26,
+      27,    50,    28,    44,     1,     2,     3,     4,    57,    58,
+       5,     6,    59,    22,    60,     7,    62,    55,    44,    35,
+       0,     0,     0,     0,    53
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int8 yycheck[] =
 {
-       7,     3,     4,    29,     3,     4,    20,     5,     6,    35,
-       8,    13,    20,    11,    15,    16,    18,     0,    20,    18,
-      18,    20,    13,    24,    15,    18,    21,    24,    14,    19,
-      22,    19,    21,    13,    21,    42,     9,    22,    22,    46,
-      36,    23,    23,    37,    23,    52
+       9,     3,     4,    17,    22,     0,    19,    20,    22,    46,
+      18,    18,    18,    15,    16,    28,    18,    29,     5,     6,
+       7,     8,    59,    25,    11,    12,    39,     3,     4,    16,
+      16,    13,    44,    26,    21,    19,    19,    17,    19,    15,
+      16,    19,    18,    25,     5,     6,     7,     8,    17,    17,
+      11,    12,     9,    62,    20,    16,    60,    45,    25,    18,
+      -1,    -1,    -1,    -1,    43
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     5,     6,     8,    11,    18,    27,    28,    29,    30,
-      31,    32,    33,    34,    20,    20,    24,     0,    29,    18,
-       3,     4,    13,    18,    20,    35,    36,    37,    38,    39,
-      35,    35,    19,    35,    21,    13,    15,    14,    37,    21,
-      19,    21,    22,    37,    36,    38,    22,    29,    29,    23,
-      23,     9,    22,    29,    23
+       0,     5,     6,     7,     8,    11,    12,    16,    28,    29,
+      32,    33,    34,    35,    36,    37,    38,    18,    18,    18,
+      22,     0,    32,    16,     3,     4,    15,    16,    18,    25,
+      39,    40,    41,    42,    43,    39,    40,    40,    17,    22,
+      40,    42,    19,    13,    25,    26,    19,    19,    17,    40,
+      19,    30,    31,    41,    42,    43,    30,    17,    17,     9,
+      20,    30,    29,    21
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1458,73 +1511,74 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 79 "SYN.y"
+#line 122 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+		perform_label_adding((yyval.block).code, &(yyvsp[(1) - (1)].block).next);
+		clear_scope(1);
         // print
-				print_code((yyval.block).code);
+		print_code((yyval.block).code);
     }
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 85 "SYN.y"
+#line 130 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         (yyval.block).next = (yyvsp[(1) - (1)].block).next;
-				/* $$.l_id = block_id;
-				block_id++; */
+		
     }
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 91 "SYN.y"
+#line 135 "SYN.y"
     {
-        vector<string *> *currentcode = new vector<string *>();
-        currentcode->insert(currentcode->begin(), (yyvsp[(1) - (2)].block).code->begin(), (yyvsp[(1) - (2)].block).code->end());
-        currentcode->insert(currentcode->end(), (yyvsp[(2) - (2)].block).code->begin(), (yyvsp[(2) - (2)].block).code->end());
-        (yyval.block).code = currentcode;
-        (yyval.block).next = (yyvsp[(2) - (2)].block).next;
+        (yyval.block).code = new vector<string *>();
+		(yyval.block).next = (yyvsp[(2) - (2)].block).next;
+        (yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(1) - (2)].block).code->begin(), (yyvsp[(1) - (2)].block).code->end());
+		perform_label_adding((yyval.block).code, &(yyvsp[(1) - (2)].block).next);
+        (yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(2) - (2)].block).code->begin(), (yyvsp[(2) - (2)].block).code->end());
     }
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 99 "SYN.y"
+#line 142 "SYN.y"
     {
-        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
-        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
-    }
+	    (yyval.block).code = nullptr;
+        (yyval.block).next = nullptr;
+}
     break;
 
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 102 "SYN.y"
-    {
-        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
-        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
-    }
+#line 147 "SYN.y"
+    {(yyval.block).l_id = sym_num;}
     break;
 
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 105 "SYN.y"
+#line 151 "SYN.y"
     {
-        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
-        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
-    }
+		//clear scope
+		clear_scope((yyval.block).l_id);
+        (yyval.block).code = (yyvsp[(3) - (4)].block).code;
+        (yyval.block).next = (yyvsp[(3) - (4)].block).next;
+		
+	}
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 108 "SYN.y"
+#line 159 "SYN.y"
     {
         (yyval.block).code = (yyvsp[(1) - (1)].block).code;
         (yyval.block).next = (yyvsp[(1) - (1)].block).next;
@@ -1534,31 +1588,82 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 113 "SYN.y"
+#line 162 "SYN.y"
     {
-        unordered_map<string, tuple<int, int, int>>::iterator it;
-        it = symbol_table.find((yyvsp[(2) - (3)].val));
-        if (it != symbol_table.end()){
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
+    }
+    break;
+
+  case 10:
+
+/* Line 1455 of yacc.c  */
+#line 165 "SYN.y"
+    {
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
+    }
+    break;
+
+  case 11:
+
+/* Line 1455 of yacc.c  */
+#line 168 "SYN.y"
+    {
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;
+    }
+    break;
+
+  case 12:
+
+/* Line 1455 of yacc.c  */
+#line 171 "SYN.y"
+    {
+        (yyval.block).code = (yyvsp[(1) - (1)].block).code;
+        (yyval.block).next = (yyvsp[(1) - (1)].block).next;	
+	}
+    break;
+
+  case 13:
+
+/* Line 1455 of yacc.c  */
+#line 176 "SYN.y"
+    {
+		if((yyvsp[(3) - (5)].exp).type != ERROR_T){
+			(yyval.block).code = new vector<string*>();
+			(yyval.block).next = new vector<string*>();
+			(yyval.block).code->push_back(new string("getstatic java/lang/System/out Ljava/io/PrintStream;"));
+			(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(3) - (5)].exp).code->begin(), (yyvsp[(3) - (5)].exp).code->end());
+			perform_label_adding((yyval.block).code, &(yyvsp[(3) - (5)].exp).next);
+			(yyval.block).code->push_back(new string(string("invokevirtual   java/io/PrintStream/println(") 
+				+ ((yyvsp[(3) - (5)].exp).type ==  FLOAT_T ? "F" : "I")
+			 	+")V"));
+		}else{
+			(yyval.block).code = nullptr;
+			(yyval.block).next = nullptr;
+		}
+	}
+    break;
+
+  case 14:
+
+/* Line 1455 of yacc.c  */
+#line 192 "SYN.y"
+    {
+		string id((yyvsp[(2) - (3)].val));
+        if (symbol_table.find(id) != symbol_table.end()){
             (yyval.block).code = nullptr;
-						string str((yyvsp[(2) - (3)].val));
-            yyerror(("ERROR EXIST BEFORE!! --> "+str).c_str());
+            yyerror(("ERROR EXIST BEFORE!! --> "+id).c_str());
         } else {
             // add in symbol table int/float
-						string str((yyvsp[(2) - (3)].val));
-            string key = str;
-						string t1;
-						if ((yyvsp[(1) - (3)].pt) == INT_T){
-							 t1.push_back('i');
-						} else if ((yyvsp[(1) - (3)].pt) == FLOAT_T){
-					  	 t1.push_back('f');
-			  		} else if ((yyvsp[(1) - (3)].pt) == BOOL_T){
-					  	 t1.push_back('b');
-						}
-            tuple<int, int, int> element (make_tuple(sym_num, 0, (yyvsp[(1) - (3)].pt)));
-            symbol_table.insert({key, element});
+			string t1 = type_map[(yyvsp[(1) - (3)].pt)];
+            pair<int, int> element (make_pair(sym_num, (yyvsp[(1) - (3)].pt)));
+            symbol_table.insert({id, element});
+			memory_table.insert({sym_num, id});
             vector<string *> *currentcode = new vector<string *>();
             currentcode->push_back(new string(t1 + "const_0"));
-            currentcode->push_back(new string(t1 + "store" + to_string(sym_num)));
+            currentcode->push_back(new string(t1 + "store " + to_string(sym_num)));
             sym_num++;
             (yyval.block).code = currentcode;
         }
@@ -1566,151 +1671,291 @@ yyreduce:
     }
     break;
 
-  case 10:
-
-/* Line 1455 of yacc.c  */
-#line 143 "SYN.y"
-    {
-        (yyval.pt) = INT_T;
-    }
-    break;
-
-  case 11:
-
-/* Line 1455 of yacc.c  */
-#line 145 "SYN.y"
-    {
-        (yyval.pt) = FLOAT_T;
-    }
-    break;
-
-  case 12:
-
-/* Line 1455 of yacc.c  */
-#line 151 "SYN.y"
-    {
-        if ((yyvsp[(3) - (11)].exp).type == BOOL_T){
-					/// if true add its code
-                (yyval.block).code = (yyvsp[(6) - (11)].block).code;
-                (yyval.block).next = (yyvsp[(6) - (11)].block).next;
-					/// if false
-                (yyval.block).code = (yyvsp[(10) - (11)].block).code;
-                (yyval.block).next = (yyvsp[(10) - (11)].block).next;
-        } else {
-            yyerror("ERROR: Expression incorrect");
-        }
-    }
-    break;
-
-  case 13:
-
-/* Line 1455 of yacc.c  */
-#line 166 "SYN.y"
-    {
-        // optional
-    }
-    break;
-
-  case 14:
-
-/* Line 1455 of yacc.c  */
-#line 169 "SYN.y"
-    {
-        unordered_map<string, tuple<int, int, int>>::iterator it;
-				string str((yyvsp[(1) - (4)].val));
-        it = symbol_table.find(str);
-        if (it != symbol_table.end()){
-            // bytecode of assignment
-						int t = std::get<2>(it->second);
-						int i = std::get<0>(it->second);
-							string t1;
-							if (t == INT_T){
-								 t1.push_back('i');
-							} else if (t == FLOAT_T){
-								 t1.push_back('f');
-							} else if (t == BOOL_T){
-								 t1.push_back('b');
-							}
-							vector<string *> *currentcode = new vector<string *>();
-								currentcode->push_back(new string("bipush      " )); // + value of exp
-								currentcode->push_back(new string(t1 + "store_" + to_string(i)));
-								(yyval.block).code = currentcode;
-        } else {
-            yyerror(("ERROR WASN'T DECLARED!! --> "+str).c_str());
-        }
-    }
-    break;
-
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 193 "SYN.y"
+#line 210 "SYN.y"
     {
-        (yyval.exp).type = (yyvsp[(1) - (1)].exp).type;
-        (yyval.exp).code = (yyvsp[(1) - (1)].exp).code;
-        (yyval.exp).next = (yyval.exp).next;
-    }
+		
+		string id((yyvsp[(2) - (5)].val));
+        if (symbol_table.find(id) != symbol_table.end()){
+            (yyval.block).code = nullptr;
+            yyerror(("ERROR EXIST BEFORE!! --> "+id).c_str());
+        } else {
+            // add in symbol table int/float
+			int id_type = (yyvsp[(1) - (5)].pt);
+			bool casting = ((yyvsp[(4) - (5)].exp).type == INT_T) && (id_type == FLOAT_T);
+			bool can_assign = ((yyvsp[(4) - (5)].exp).type == id_type) || casting;
+			if(can_assign){
+				(yyval.block).code = new vector <string*>();
+				(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(4) - (5)].exp).code->begin(), (yyvsp[(4) - (5)].exp).code->end());
+				perform_label_adding((yyval.block).code, &(yyvsp[(4) - (5)].exp).next);
+				if(casting){
+					(yyval.block).code->push_back(new string("i2f"));
+				}
+				(yyval.block).code->push_back(new string(type_map[id_type] + "store " + to_string(sym_num)));
+				pair<int, int> element (make_pair(sym_num, id_type));
+				symbol_table.insert({id, element});
+				memory_table.insert({sym_num, id});	
+				sym_num++;
+				(yyval.block).next = nullptr;
+			}else{
+				(yyval.block).code = nullptr;
+				(yyval.block).next = nullptr;
+				yyerror(("ERROR CAN'T CASTING!! --> "+id).c_str());					
+			}
+        }
+        (yyval.block).next = nullptr;
+		
+	}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 197 "SYN.y"
+#line 244 "SYN.y"
     {
-    if ((yyvsp[(1) - (3)].exp).type == (yyvsp[(3) - (3)].exp).type) {
-        (yyval.exp).type = BOOL_T;
-				string t1;
-				if ((yyvsp[(1) - (3)].exp).type == INT_T){
-					 t1.push_back('i');
-				} else if ((yyvsp[(1) - (3)].exp).type == FLOAT_T){
-					 t1.push_back('f');
-				} else if ((yyvsp[(1) - (3)].exp).type == BOOL_T){
-					 t1.push_back('b');
-				}
-				(yyval.exp).code->push_back(new string(t1 + "load_1")); // EXPRESSION MEM_NUMBER?
-				(yyval.exp).code->push_back(new string(t1 + "load_2"));
-				string str((yyvsp[(2) - (3)].val), (yyvsp[(2) - (3)].val) + 2);
-        if(str == "==") {
-              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpe"));
-						} else if (str == "!="){
-              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpne"));
-						} else if (str == ">="){
-              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpge"));
-          	} else if (str == "<="){
-              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmple"));
-          	} else if (str == ">"){
-              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpg"));
-          	} else if (str == "<"){
-              (yyval.exp).code->push_back(new string ("if_" + t1 + "cmpl"));
-						}
-        	} else {
-            (yyval.exp).type = ERROR_T;
-            yyerror("Can't do this operation for two diffrent types");
-        }
+        (yyval.pt) = INT_T;
     }
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 230 "SYN.y"
+#line 246 "SYN.y"
     {
-        (yyval.exp).type = (yyvsp[(1) - (1)].factor).type;
-        (yyval.exp).code = (yyvsp[(1) - (1)].factor).code;
+        (yyval.pt) = FLOAT_T;
     }
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 233 "SYN.y"
+#line 248 "SYN.y"
     {
-        if ((yyvsp[(2) - (2)].factor).type == INT_T || (yyvsp[(2) - (2)].factor).type == FLOAT_T){
+		(yyval.pt) = BOOL_T;
+	}
+    break;
+
+  case 19:
+
+/* Line 1455 of yacc.c  */
+#line 253 "SYN.y"
+    {
+		(yyval.block).code = new vector<string*>();
+		(yyval.block).next = new vector<string*>();
+		Label Btrue;
+		back_patching(&(yyvsp[(3) - (5)].block).next, Btrue.getName());
+		(yyval.block).next->insert((yyval.block).next->end(), (yyvsp[(5) - (5)].block).next->begin(), (yyvsp[(5) - (5)].block).next->end());
+		
+		(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(3) - (5)].block).code->begin(), (yyvsp[(3) - (5)].block).code->end());
+		(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(5) - (5)].block).code->begin(), (yyvsp[(5) - (5)].block).code->end());
+
+		add_label_to_code((yyval.block).code, Btrue);
+	}
+    break;
+
+  case 20:
+
+/* Line 1455 of yacc.c  */
+#line 267 "SYN.y"
+    {
+		
+		(yyval.block).code = new vector<string*>();
+		(yyval.block).next = new vector<string*>();
+		Label Bfalse;
+		back_patching(&(yyvsp[(3) - (7)].block).next, Bfalse.getName());
+		string * gotoW = new string("goto ");
+		(yyval.block).next->insert((yyval.block).next->end(), (yyvsp[(5) - (7)].block).next->begin(), (yyvsp[(5) - (7)].block).next->end());
+		(yyval.block).next->insert((yyval.block).next->end(), (yyvsp[(7) - (7)].block).next->begin(), (yyvsp[(7) - (7)].block).next->end());
+		(yyval.block).next->push_back(gotoW);
+				
+		(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(3) - (7)].block).code->begin(), (yyvsp[(3) - (7)].block).code->end());
+		(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(5) - (7)].block).code->begin(), (yyvsp[(5) - (7)].block).code->end());
+		(yyval.block).code->push_back(gotoW);
+		add_label_to_code((yyval.block).code, Bfalse);
+		(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(7) - (7)].block).code->begin(), (yyvsp[(7) - (7)].block).code->end());
+    }
+    break;
+
+  case 21:
+
+/* Line 1455 of yacc.c  */
+#line 287 "SYN.y"
+    {
+        // optional
+    }
+    break;
+
+  case 22:
+
+/* Line 1455 of yacc.c  */
+#line 290 "SYN.y"
+    {
+	
+		string id((yyvsp[(1) - (4)].val));
+		if(symbol_table.find(id) != symbol_table.end()){
+			if((yyvsp[(3) - (4)].exp).type != ERROR_T){
+				pair<unsigned, int> p= symbol_table[id];
+				int id_type  = p.second;
+				unsigned id_num = p.first;
+				
+				bool casting = ((yyvsp[(3) - (4)].exp).type == INT_T) && (id_type == FLOAT_T);
+				bool can_assign = ((yyvsp[(3) - (4)].exp).type == id_type) || casting;
+				
+				if(can_assign){
+					(yyval.block).code = new vector <string*>();
+					(yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(3) - (4)].exp).code->begin(), (yyvsp[(3) - (4)].exp).code->end());
+					perform_label_adding((yyval.block).code, &(yyvsp[(3) - (4)].exp).next);
+					
+					if(casting){
+						(yyval.block).code->push_back(new string("i2f"));
+					}
+					
+					(yyval.block).code->push_back(new string(type_map[id_type] + "store " + to_string(id_num)));
+					(yyval.block).next = nullptr;
+				}else{
+					(yyval.block).code = nullptr;
+					(yyval.block).next = nullptr;
+					yyerror(("ERROR CAN'T CASTING!! --> "+id).c_str());					
+				}
+				
+			}
+		}else{
+			(yyval.block).code = nullptr;
+			(yyval.block).next = nullptr;
+			yyerror(("ERROR WASN'T DECLARED!! --> "+id).c_str());
+		}
+		
+    }
+    break;
+
+  case 23:
+
+/* Line 1455 of yacc.c  */
+#line 330 "SYN.y"
+    {
+    if ((yyvsp[(1) - (1)].exp).type != ERROR_T) {
+      if ((yyvsp[(1) - (1)].exp).type != BOOL_T) {
+        (yyval.block).code = nullptr;
+        (yyval.block).next = nullptr;
+        yyerror("Condition doesn't evaluate to boolean");
+      } else {
+        (yyval.block).next = new vector<string*>();
+        (yyval.block).code = new vector<string*>();
+		string * ifeq = new string("ifeq ");
+        (yyval.block).next->push_back(ifeq);
+        (yyval.block).code->insert((yyval.block).code->end(), (yyvsp[(1) - (1)].exp).code->begin(), (yyvsp[(1) - (1)].exp).code->end());
+        perform_label_adding((yyval.block).code, &(yyvsp[(1) - (1)].exp).next);
+        (yyval.block).code->push_back(ifeq);
+      }
+    } else {
+      (yyval.block).code = nullptr;
+      (yyval.block).next = nullptr;
+    }
+  }
+    break;
+
+  case 24:
+
+/* Line 1455 of yacc.c  */
+#line 350 "SYN.y"
+    {
+        (yyval.exp).type = (yyvsp[(1) - (1)].exp).type;
+        (yyval.exp).code = (yyvsp[(1) - (1)].exp).code;
+        (yyval.exp).next = nullptr;
+		perform_label_adding((yyval.exp).code, &(yyvsp[(1) - (1)].exp).next);
+    }
+    break;
+
+  case 25:
+
+/* Line 1455 of yacc.c  */
+#line 355 "SYN.y"
+    {
+		string rel_op((yyvsp[(2) - (3)].val));
+		if ((yyvsp[(1) - (3)].exp).type != ERROR_T && (yyvsp[(3) - (3)].exp).type != ERROR_T) {                                          // != == (bool, int, float)      >= ... (int, float)
+			// if two operants are booleans.
+			if((yyvsp[(1) - (3)].exp).type == BOOL_T || (yyvsp[(3) - (3)].exp).type == BOOL_T){
+				if((yyvsp[(1) - (3)].exp).type != (yyvsp[(3) - (3)].exp).type){
+					(yyval.exp).type = ERROR_T;
+					(yyval.exp).code = nullptr;
+					yyerror("Can't do this operation < "+ rel_op +" > for two diffrent types");					
+				}else if(rel_op == "==" || rel_op == "!="){
+					(yyval.exp).type = BOOL_T;
+					(yyval.exp).code = new vector<string*>();
+					(yyval.exp).code->insert((yyval.exp).code->begin(), (yyvsp[(1) - (3)].exp).code->begin(), (yyvsp[(1) - (3)].exp).code->end());
+					(yyval.exp).code->insert((yyval.exp).code->end(), (yyvsp[(3) - (3)].exp).code->begin(), (yyvsp[(3) - (3)].exp).code->end());
+					Label Btrue, next;
+					(yyval.exp).code->push_back(new string ("if_icmp" + real_ops[rel_op] + " " + Btrue.getName()));
+					(yyval.exp).code->push_back(new string ("iconst_0"));
+					(yyval.exp).code->push_back(new string ("goto " + next.getName()));
+					add_label_to_code((yyval.exp).code, Btrue);
+					(yyval.exp).code->push_back(new string ("iconst_1"));
+					add_label_to_code((yyval.exp).code, next);
+				}else{
+					(yyval.exp).type = ERROR_T;
+					(yyval.exp).code = nullptr;
+					yyerror("Can't do this operation < "+ rel_op +" > between booleans");					
+				}
+			}else {
+				// if two operants are int or float.
+				bool casting = ((yyvsp[(1) - (3)].exp).type != (yyvsp[(3) - (3)].exp).type);
+				(yyval.exp).type = BOOL_T;
+				(yyval.exp).code = new vector<string*>();
+				(yyval.exp).code->insert((yyval.exp).code->begin(), (yyvsp[(1) - (3)].exp).code->begin(), (yyvsp[(1) - (3)].exp).code->end());
+				if (casting && (yyvsp[(1) - (3)].exp).type == INT_T){
+					(yyval.exp).code->push_back(new string ("i2f"));
+				}
+				(yyval.exp).code->insert((yyval.exp).code->end(), (yyvsp[(3) - (3)].exp).code->begin(), (yyvsp[(3) - (3)].exp).code->end());
+				if (casting && (yyvsp[(3) - (3)].exp).type == INT_T){
+					(yyval.exp).code->push_back(new string ("i2f"));
+				}
+				Label Btrue, next;
+				if(!casting && (yyvsp[(1) - (3)].exp).type == INT_T){
+					(yyval.exp).code->push_back(new string ("if_icmp" + real_ops[rel_op] + " " + Btrue.getName()));
+					
+				}else {
+					(yyval.exp).code->push_back(new string ("fcmpl"));
+					(yyval.exp).code->push_back(new string ("if" + real_ops[rel_op] + " " + Btrue.getName()));
+				}
+				(yyval.exp).code->push_back(new string ("iconst_0"));
+				(yyval.exp).code->push_back(new string ("goto " + next.getName()));
+				add_label_to_code((yyval.exp).code, Btrue);
+				(yyval.exp).code->push_back(new string ("iconst_1"));
+				add_label_to_code((yyval.exp).code, next);
+				
+			}
+						
+		} else {
+				(yyval.exp).type = ERROR_T;
+				(yyval.exp).code = nullptr;
+				yyerror("Can't do this operation for two diffrent types");
+			}
+	}
+    break;
+
+  case 26:
+
+/* Line 1455 of yacc.c  */
+#line 417 "SYN.y"
+    {
+        (yyval.exp).type = (yyvsp[(1) - (1)].factor).type;
+        (yyval.exp).code = (yyvsp[(1) - (1)].factor).code;
+		(yyval.exp).next = nullptr;
+    }
+    break;
+
+  case 27:
+
+/* Line 1455 of yacc.c  */
+#line 421 "SYN.y"
+    {
+        if ((yyvsp[(2) - (2)].factor).type != BOOL_T){
             (yyval.exp).type = (yyvsp[(2) - (2)].factor).type;
-            if ((yyvsp[(1) - (2)].val) == "-"){
-                (yyval.exp).code = (yyvsp[(2) - (2)].factor).code; /// is there a change in bytecode?!
-            } else {
-                (yyval.exp).code = (yyvsp[(2) - (2)].factor).code;
+			(yyval.exp).code = (yyvsp[(2) - (2)].factor).code;
+            if ((yyvsp[(1) - (2)].cval) == '-'){
+                (yyval.exp).code->push_back(new string(type_map[(yyvsp[(2) - (2)].factor).type] + "neg"));
             }
         } else {
             (yyval.exp).type = ERROR_T;
@@ -1719,104 +1964,73 @@ yyreduce:
     }
     break;
 
-  case 19:
+  case 28:
 
 /* Line 1455 of yacc.c  */
-#line 245 "SYN.y"
+#line 432 "SYN.y"
     {
         if ((yyvsp[(1) - (3)].exp).type == (yyvsp[(3) - (3)].factor).type && ((yyvsp[(3) - (3)].factor).type == INT_T || (yyvsp[(3) - (3)].factor).type == FLOAT_T)){
             (yyval.exp).type = (yyvsp[(3) - (3)].factor).type;
-						vector<string *> *currentcode = new vector<string *>();
-		        currentcode->insert(currentcode->begin(), (yyvsp[(1) - (3)].exp).code->begin(), (yyvsp[(1) - (3)].exp).code->end());
-		        currentcode->insert(currentcode->end(), (yyvsp[(3) - (3)].factor).code->begin(), (yyvsp[(3) - (3)].factor).code->end());
-						string t1;
-						if ((yyvsp[(1) - (3)].exp).type == INT_T){
-							 t1.push_back('i');
-						} else if ((yyvsp[(1) - (3)].exp).type == FLOAT_T){
-							 t1.push_back('f');
-						} else if ((yyvsp[(1) - (3)].exp).type == BOOL_T){
-							 t1.push_back('b');
-						}
-            if ((yyvsp[(2) - (3)].val) == "-"){
-                currentcode->push_back(new string(t1 + "sub"));
-            } else {
-                currentcode->push_back(new string(t1 + "add"));
-            }
-						(yyval.exp).code = currentcode;
+			(yyval.exp).code = new vector<string *>();
+		    (yyval.exp).code->insert((yyval.exp).code->begin(), (yyvsp[(1) - (3)].exp).code->begin(), (yyvsp[(1) - (3)].exp).code->end());
+		    (yyval.exp).code->insert((yyval.exp).code->end(), (yyvsp[(3) - (3)].factor).code->begin(), (yyvsp[(3) - (3)].factor).code->end());
+			(yyval.exp).code->push_back(new string(type_map[(yyvsp[(1) - (3)].exp).type] + op_map[(yyvsp[(2) - (3)].cval)]));
         } else {
             (yyval.exp).type = ERROR_T;
+			(yyval.exp).code = nullptr;
             yyerror("Can't add two diffrent types nether int nor float");
         }
     }
     break;
 
-  case 20:
+  case 29:
 
 /* Line 1455 of yacc.c  */
-#line 270 "SYN.y"
+#line 445 "SYN.y"
     {
         (yyval.factor).code = (yyvsp[(1) - (1)].factor).code;
         (yyval.factor).type = (yyvsp[(1) - (1)].factor).type;
     }
     break;
 
-  case 21:
+  case 30:
 
 /* Line 1455 of yacc.c  */
-#line 273 "SYN.y"
+#line 448 "SYN.y"
     {
         if ((yyvsp[(1) - (3)].factor).type == (yyvsp[(3) - (3)].factor).type && ((yyvsp[(3) - (3)].factor).type == INT_T || (yyvsp[(3) - (3)].factor).type == FLOAT_T)){
             (yyval.factor).type = (yyvsp[(3) - (3)].factor).type;
-						vector<string *> *currentcode = new vector<string *>();
-		        currentcode->insert(currentcode->begin(), (yyvsp[(1) - (3)].factor).code->begin(), (yyvsp[(1) - (3)].factor).code->end());
-		        currentcode->insert(currentcode->end(), (yyvsp[(3) - (3)].factor).code->begin(), (yyvsp[(3) - (3)].factor).code->end());
-						string t1;
-						if ((yyvsp[(1) - (3)].factor).type == INT_T){
-							 t1.push_back('i');
-						} else if ((yyvsp[(1) - (3)].factor).type == FLOAT_T){
-							 t1.push_back('f');
-						} else if ((yyvsp[(1) - (3)].factor).type == BOOL_T){
-							 t1.push_back('b');
-						}
-            if ((yyvsp[(2) - (3)].val) == "*"){
-                currentcode->push_back(new string(t1 + "mul"));
-            } else if ((yyvsp[(2) - (3)].val) == "/"){
-                currentcode->push_back(new string(t1 + "div"));
-            } else {
-                currentcode->push_back(new string(t1 + "mod"));
-            }
-						(yyval.factor).code = currentcode;
+			(yyval.factor).code = new vector<string *>();
+		    (yyval.factor).code->insert((yyval.factor).code->begin(), (yyvsp[(1) - (3)].factor).code->begin(), (yyvsp[(1) - (3)].factor).code->end());
+		    (yyval.factor).code->insert((yyval.factor).code->end(), (yyvsp[(3) - (3)].factor).code->begin(), (yyvsp[(3) - (3)].factor).code->end());
+			(yyval.factor).code->push_back(new string(type_map[(yyvsp[(1) - (3)].factor).type] + op_map[(yyvsp[(2) - (3)].cval)]));
+
         } else {
             (yyval.factor).type = ERROR_T;
+			(yyval.factor).code = nullptr;
             yyerror("Can't add two diffrent types nether int nor float");
         }
     }
     break;
 
-  case 22:
+  case 31:
 
 /* Line 1455 of yacc.c  */
-#line 300 "SYN.y"
+#line 462 "SYN.y"
     {
-        unordered_map<string, tuple<int, int, int>>::iterator it;
+        unordered_map<string, pair<unsigned, int>>::iterator it;
         it = symbol_table.find((yyvsp[(1) - (1)].val));
         if (it != symbol_table.end()){
-					int t = std::get<2>(it->second);
-					string t1;
-					if (t == INT_T){
-						 t1.push_back('i');
-					} else if (t == FLOAT_T){
-						 t1.push_back('f');
-					} else if (t == BOOL_T){
-						 t1.push_back('b');
-					}
-            (yyval.factor).type = INT_T; /// change it to right type
-            vector<string *> *currentcode = new vector<string *>();
-						string str((yyvsp[(1) - (1)].val), (yyvsp[(1) - (1)].val) + maxid);
-            currentcode->push_back(new string((yyval.factor).type + "load_" + str));
-            (yyval.factor).code = currentcode;
+			int id_type = it->second.second;
+			int id_num = it->second.first;
+            (yyval.factor).type = id_type;
+            (yyval.factor).code = new vector<string *>();
+            (yyval.factor).code->push_back(new string(type_map[id_type] + "load " + to_string(id_num)));
+            
         } else {
-					string str((yyvsp[(1) - (1)].val), (yyvsp[(1) - (1)].val) + maxid);
+			(yyval.factor).type = ERROR_T;
+			(yyval.factor).code = nullptr;
+					string str((yyvsp[(1) - (1)].val));
 					string msg = "\n ERROR";
 					msg +=" WASN'T DECLARED!! -->";
 					msg += str;
@@ -1825,54 +2039,59 @@ yyreduce:
     }
     break;
 
-  case 23:
+  case 32:
 
 /* Line 1455 of yacc.c  */
-#line 325 "SYN.y"
+#line 481 "SYN.y"
     {
         (yyval.factor).code = new vector<string *>();
         (yyval.factor).type = INT_T;
-				string str((yyvsp[(1) - (1)].ival), (yyvsp[(1) - (1)].ival) + maxid);
-        (yyval.factor).code->push_back(new string("ldc " + str));
+        (yyval.factor).code->push_back(new string("ldc " + to_string((yyvsp[(1) - (1)].ival))));
     }
     break;
 
-  case 24:
+  case 33:
 
 /* Line 1455 of yacc.c  */
-#line 330 "SYN.y"
+#line 485 "SYN.y"
     {
-			(yyval.factor).code = new vector<string *>();
-			(yyval.factor).type = FLOAT_T;
-			string str((yyvsp[(1) - (1)].fval), (yyvsp[(1) - (1)].fval) + maxid);
-			(yyval.factor).code->push_back(new string("ldc " + str));
+		(yyval.factor).code = new vector<string *>();
+		(yyval.factor).type = FLOAT_T;
+		(yyval.factor).code->push_back(new string("ldc " + to_string((yyvsp[(1) - (1)].fval))));
     }
     break;
 
-  case 25:
+  case 34:
 
 /* Line 1455 of yacc.c  */
-#line 335 "SYN.y"
+#line 489 "SYN.y"
+    {
+		(yyval.factor).code = new vector<string *>();
+		(yyval.factor).type = BOOL_T;
+		string str ((yyvsp[(1) - (1)].val));
+		if(str == "true"){
+			(yyval.factor).code->push_back(new string("iconst_1"));
+		}else{
+			(yyval.factor).code->push_back(new string("iconst_0"));
+		}
+	}
+    break;
+
+  case 35:
+
+/* Line 1455 of yacc.c  */
+#line 498 "SYN.y"
     {
         (yyval.factor).type = (yyvsp[(2) - (3)].exp).type;
         (yyval.factor).code = (yyvsp[(2) - (3)].exp).code;
-    }
-    break;
-
-  case 26:
-
-/* Line 1455 of yacc.c  */
-#line 339 "SYN.y"
-    {
-	    char * v = (yyvsp[(1) - (1)].val);
-	 		(yyval.val) = v;
+		perform_label_adding((yyval.factor).code, &(yyvsp[(2) - (3)].exp).next);
     }
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1876 "y.tab.c"
+#line 2095 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2084,7 +2303,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 343 "SYN.y"
+#line 503 "SYN.y"
 
 /* MAIN */
 main ()
@@ -2102,14 +2321,25 @@ main ()
 		getchar();
 		return -1;
 	}
+	{ fileOut << ".class public " + string("out") + "\n.super java/lang/Object\n"
+    + ".method public <init>()V\naload_0"
+    + "\ninvokespecial java/lang/Object/<init>()V\nreturn\n.end"
+    + " method\n.method public static main([Ljava/lang/String;)V\n.limit locals 1000\n.limit stack 1000" << endl;
+	}
 	yyin = myfile;
     yyparse();
+	
+	fileOut << "return\n.end method" << endl;
+	
+	system("java -jar jasmin.jar out.j");
+	system("java out");
+	system("pause");
 }
 
 void yyerror(string s)
 {
 printf(s.c_str());
-exit(1);
+fileOut << s << endl;
 }
 
 void print_code(vector<string *> * code) {
@@ -2121,4 +2351,42 @@ void print_code(vector<string *> * code) {
     }
   }
 }
+
+// -------------Michael Said----------------
+void add_label_to_code(vector<string *> *code, Label label){
+	string *s = new string(label.getName() + ":");
+	code->push_back(s);
+}
+
+void perform_label_adding(vector<string *> *code, vector<string *> **next){
+	
+	if (*next != nullptr && !(*next)->empty()){
+		Label label;
+		back_patching(next, label.getName());
+		add_label_to_code(code, label);
+	}
+}
+
+void back_patching(vector<string *> **list, string label_name){
+	if(*list != nullptr){
+		for (unsigned i=0; i < (*list)->size(); i++){
+			(*((*(*list))[i])) += label_name;
+		}
+		// free memory
+		delete *list;
+		*list = nullptr;
+	}
+}
+
+void clear_scope(unsigned l_id){
+	while(sym_num > l_id){
+		sym_num--;
+		//remove from tables
+		string s = memory_table[sym_num];
+		symbol_table.erase(symbol_table.find(s));
+		memory_table.erase(memory_table.find(sym_num));
+	}
+}
+
+//------------------------------------------
 

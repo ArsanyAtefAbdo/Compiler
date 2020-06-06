@@ -8,7 +8,7 @@ g++ -Wno-write-strings -std=gnu++11 lex.yy.c y.tab.c */
     #include <string>
     #include <string.h>
     #include "y.tab.h"
-     extern "C" int yyparse (void);
+    extern "C" int yyparse (void);
     void yyerror(const char*);
      void showError();
 %}
@@ -40,13 +40,14 @@ bool     "true"|"false"
 ")"                     {return RIGHT_BRACKET;}
 "{"                     {return LEFT_CURLY_BRACKET;}
 "}"                     {return RIGHT_CURLY_BRACKET;}
+"!"                     {return NOT;}
 {fnum}                  {yylval.fval = atof(yytext); return F_NUM;}
-{relop}                 {yylval.val = yytext;return REL_OP;}
-{boolop}                {yylval.val = yytext;return BOOL_OP;}
-{bool}                  {yylval.val = yytext;return BOOL;}
+{relop}                 {yylval.val = strdup(yytext);return REL_OP;}
+{boolop}                {yylval.val = strdup(yytext);return BOOL_OP;}
+{bool}                  {yylval.val = strdup(yytext);return BOOL;}
 {id}                    {yylval.val = strdup(yytext);return ID;}
-{addop}                 {yylval.val = yytext;return ADD_OP;}
-{mulop}                 {yylval.val = yytext;return MUL_OP;}
+{addop}                 {yylval.cval = yytext[0];return ADD_OP;}
+{mulop}                 {yylval.cval = yytext[0];return MUL_OP;}
 {num}                   {yylval.ival = atoi(yytext); return NUM;}
 {assign}                {return EQUALS;}
 \n                      {;}
