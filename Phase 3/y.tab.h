@@ -64,19 +64,20 @@
      WHILE_WORD = 266,
      SYSTEM_OUT = 267,
      REL_OP = 268,
-     BOOL_OP = 269,
-     BOOL = 270,
-     ID = 271,
-     SEMI_COLON = 272,
-     LEFT_BRACKET = 273,
-     RIGHT_BRACKET = 274,
-     LEFT_CURLY_BRACKET = 275,
-     RIGHT_CURLY_BRACKET = 276,
-     EQUALS = 277,
-     OTHER = 278,
-     NOT = 279,
-     ADD_OP = 280,
-     MUL_OP = 281
+     BOOL = 269,
+     ID = 270,
+     SEMI_COLON = 271,
+     LEFT_BRACKET = 272,
+     RIGHT_BRACKET = 273,
+     LEFT_CURLY_BRACKET = 274,
+     RIGHT_CURLY_BRACKET = 275,
+     EQUALS = 276,
+     OTHER = 277,
+     NOT = 278,
+     OR = 279,
+     AND = 280,
+     ADD_OP = 281,
+     MUL_OP = 282
    };
 #endif
 /* Tokens.  */
@@ -91,19 +92,20 @@
 #define WHILE_WORD 266
 #define SYSTEM_OUT 267
 #define REL_OP 268
-#define BOOL_OP 269
-#define BOOL 270
-#define ID 271
-#define SEMI_COLON 272
-#define LEFT_BRACKET 273
-#define RIGHT_BRACKET 274
-#define LEFT_CURLY_BRACKET 275
-#define RIGHT_CURLY_BRACKET 276
-#define EQUALS 277
-#define OTHER 278
-#define NOT 279
-#define ADD_OP 280
-#define MUL_OP 281
+#define BOOL 269
+#define ID 270
+#define SEMI_COLON 271
+#define LEFT_BRACKET 272
+#define RIGHT_BRACKET 273
+#define LEFT_CURLY_BRACKET 274
+#define RIGHT_CURLY_BRACKET 275
+#define EQUALS 276
+#define OTHER 277
+#define NOT 278
+#define OR 279
+#define AND 280
+#define ADD_OP 281
+#define MUL_OP 282
 
 
 
@@ -140,7 +142,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 144 "y.tab.h"
+#line 146 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

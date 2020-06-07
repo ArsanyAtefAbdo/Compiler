@@ -39,7 +39,7 @@ unordered_map<char, string> op_map = {
   pair<char,string>('-', "sub"),
   pair<char,string>('*', "mul"),
   pair<char,string>('/', "div"),
-  pair<char,string>('%', "mod")
+  pair<char,string>('%', "rem")
 };
 
 unordered_map<string, string> real_ops = {
@@ -93,8 +93,8 @@ unordered_map<int, string> type_map = {
 %token <ival> NUM
 %token <fval> F_NUM
 %token INT FLOAT BOOLEAN IF_WORD ELSE FOR_WORD WHILE_WORD SYSTEM_OUT
-%token <val>  REL_OP BOOL_OP BOOL ID
-%token SEMI_COLON LEFT_BRACKET RIGHT_BRACKET LEFT_CURLY_BRACKET RIGHT_CURLY_BRACKET EQUALS OTHER NOT
+%token <val>  REL_OP BOOL ID
+%token SEMI_COLON LEFT_BRACKET RIGHT_BRACKET LEFT_CURLY_BRACKET RIGHT_CURLY_BRACKET EQUALS OTHER NOT OR AND
 %token <cval> ADD_OP MUL_OP
 
  /* %type */
@@ -111,11 +111,16 @@ unordered_map<int, string> type_map = {
 %type <block> BOOLEAN_CONDITION
 %type <pt> PRIMITIVE_TYPE
 %type <exp> EXPRESSION
-//%type <exp> SIMPLE_BOOLEAN_EXPRESSION
-//%type <exp> BOOLEAN_TERM
 %type <exp> SIMPLE_EXPRESSION
 %type <factor> TERM
 %type <factor> FACTOR
+
+%type <block> OPTIONAL_DECLARATION
+%type <block> OPTIONAL_ASSIGNMENT
+
+%type <exp> SIMPLE_BOOLEAN_EXPRESSION
+%type <exp> BOOLEAN_EXPRESSION
+%type <factor> BOOLEAN_TERM
 
 %%
 
@@ -131,16 +136,17 @@ STATEMENT_LIST:
     STATEMENT {
         $$.code = $1.code;
         $$.next = $1.next;
-		
+
     }
     | STATEMENT_LIST STATEMENT{
+
         $$.code = new vector<string *>();
 		$$.next = $2.next;
         $$.code->insert($$.code->end(), $1.code->begin(), $1.code->end());
 		perform_label_adding($$.code, &$1.next);
         $$.code->insert($$.code->end(), $2.code->begin(), $2.code->end());
     };
-BLOCK : 
+BLOCK :
 	{$<block>$.l_id = sym_num;}
 	LEFT_CURLY_BRACKET
 	STATEMENT_LIST
@@ -150,10 +156,10 @@ BLOCK :
 		clear_scope($$.l_id);
         $$.code = $3.code;
         $$.next = $3.next;
-		
+
 	};
-STATEMENT : 
- DECLARATION {
+STATEMENT :
+ DECLARATION SEMI_COLON{
         $$.code = $1.code;
         $$.next = $1.next;
     } | IF {
@@ -162,22 +168,25 @@ STATEMENT :
     } | WHILE {
         $$.code = $1.code;
         $$.next = $1.next;
-    } | ASSIGNMENT{
+    } | FOR{
+		$$.code = $1.code;
+        $$.next = $1.next;
+	} | ASSIGNMENT SEMI_COLON{
         $$.code = $1.code;
         $$.next = $1.next;
     } | SYSTEM_PRINT{
         $$.code = $1.code;
-        $$.next = $1.next;	
+        $$.next = $1.next;
 	};
 SYSTEM_PRINT:
-	SYSTEM_OUT LEFT_BRACKET EXPRESSION RIGHT_BRACKET SEMI_COLON {
+	SYSTEM_OUT LEFT_BRACKET BOOLEAN_EXPRESSION RIGHT_BRACKET SEMI_COLON {
 		if($3.type != ERROR_T){
 			$$.code = new vector<string*>();
 			$$.next = new vector<string*>();
 			$$.code->push_back(new string("getstatic java/lang/System/out Ljava/io/PrintStream;"));
 			$$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
 			perform_label_adding($$.code, &$3.next);
-			$$.code->push_back(new string(string("invokevirtual   java/io/PrintStream/println(") 
+			$$.code->push_back(new string(string("invokevirtual   java/io/PrintStream/println(")
 				+ ($3.type ==  FLOAT_T ? "F" : "I")
 			 	+")V"));
 		}else{
@@ -186,7 +195,7 @@ SYSTEM_PRINT:
 		}
 	};
 DECLARATION :
-    PRIMITIVE_TYPE ID SEMI_COLON {
+    PRIMITIVE_TYPE ID  {
 		string id($2);
         if (symbol_table.find(id) != symbol_table.end()){
             $$.code = nullptr;
@@ -204,8 +213,8 @@ DECLARATION :
             $$.code = currentcode;
         }
         $$.next = nullptr;
-    } | PRIMITIVE_TYPE ID EQUALS EXPRESSION SEMI_COLON {
-		
+    } | PRIMITIVE_TYPE ID EQUALS BOOLEAN_EXPRESSION  {
+
 		string id($2);
         if (symbol_table.find(id) != symbol_table.end()){
             $$.code = nullptr;
@@ -225,18 +234,29 @@ DECLARATION :
 				$$.code->push_back(new string(type_map[id_type] + "store " + to_string(sym_num)));
 				pair<int, int> element (make_pair(sym_num, id_type));
 				symbol_table.insert({id, element});
-				memory_table.insert({sym_num, id});	
+				memory_table.insert({sym_num, id});
 				sym_num++;
 				$$.next = nullptr;
 			}else{
 				$$.code = nullptr;
 				$$.next = nullptr;
-				yyerror(("ERROR CAN'T CASTING!! --> "+id).c_str());					
+				yyerror(("ERROR CAN'T CASTING!! --> "+id).c_str());
 			}
         }
         $$.next = nullptr;
-		
+
 	};
+
+OPTIONAL_DECLARATION : {
+	$$.code = nullptr;
+	$$.next = nullptr;
+} | DECLARATION {
+	$$.code = $1.code;
+    $$.next = $1.next;
+} | ASSIGNMENT {
+	$$.code = $1.code;
+    $$.next = $1.next;
+};
 PRIMITIVE_TYPE :
     INT {
         $$ = INT_T;
@@ -253,16 +273,16 @@ IF :
 		Label Btrue;
 		back_patching(&$3.next, Btrue.getName());
 		$$.next->insert($$.next->end(), $5.next->begin(), $5.next->end());
-		
+
 		$$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
 		$$.code->insert($$.code->end(), $5.code->begin(), $5.code->end());
 
 		add_label_to_code($$.code, Btrue);
-	} | 
+	} |
 	IF_WORD LEFT_BRACKET BOOLEAN_CONDITION RIGHT_BRACKET
     BLOCK
     ELSE BLOCK {
-		
+
 		$$.code = new vector<string*>();
 		$$.next = new vector<string*>();
 		Label Bfalse;
@@ -271,7 +291,7 @@ IF :
 		$$.next->insert($$.next->end(), $5.next->begin(), $5.next->end());
 		$$.next->insert($$.next->end(), $7.next->begin(), $7.next->end());
 		$$.next->push_back(gotoW);
-				
+
 		$$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
 		$$.code->insert($$.code->end(), $5.code->begin(), $5.code->end());
 		$$.code->push_back(gotoW);
@@ -292,69 +312,81 @@ WHILE :
         $$.code->push_back(new string("goto " + Begin.getName()));
     };
 FOR :
-    FOR_WORD LEFT_BRACKET STATEMENT SEMI_COLON BOOLEAN_CONDITION SEMI_COLON STATEMENT RIGHT_BRACKET
+    FOR_WORD LEFT_BRACKET OPTIONAL_DECLARATION SEMI_COLON BOOLEAN_CONDITION SEMI_COLON OPTIONAL_ASSIGNMENT RIGHT_BRACKET
     BLOCK
     {
         $$.code = new vector<string*>();
         $$.next = $5.next;
         Label Begin;
         //Label $8.next;
-        back_patching($8.next, Begin.getName());
+        //back_patching($8.next, Begin.getName());
+		if ($3.code != nullptr){
+			$$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
+		}
         add_label_to_code($$.code, Begin);
-        $$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
         $$.code->insert($$.code->end(), $5.code->begin(), $5.code->end());
         $$.code->insert($$.code->end(), $9.code->begin(), $9.code->end());
-        //add_label_to_code($$.code, $8.next);
-        $$.code->insert($$.code->end(), $7.code->begin(), $7.code->end());
+        perform_label_adding($$.code, &$9.next);
+		if ($7.code != nullptr){
+			$$.code->insert($$.code->end(), $7.code->begin(), $7.code->end());
+		}
         $$.code->push_back(new string("goto " + Begin.getName()));
     };
 
-ASSIGNMENT : ID EQUALS EXPRESSION SEMI_COLON {
-	
+ASSIGNMENT : ID EQUALS BOOLEAN_EXPRESSION  {
+
 		string id($1);
 		if(symbol_table.find(id) != symbol_table.end()){
 			if($3.type != ERROR_T){
 				pair<unsigned, int> p= symbol_table[id];
 				int id_type  = p.second;
 				unsigned id_num = p.first;
-				
+
 				bool casting = ($3.type == INT_T) && (id_type == FLOAT_T);
 				bool can_assign = ($3.type == id_type) || casting;
-				
+
 				if(can_assign){
 					$$.code = new vector <string*>();
 					$$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
 					perform_label_adding($$.code, &$3.next);
-					
+
 					if(casting){
 						$$.code->push_back(new string("i2f"));
 					}
-					
+
 					$$.code->push_back(new string(type_map[id_type] + "store " + to_string(id_num)));
 					$$.next = nullptr;
 				}else{
 					$$.code = nullptr;
 					$$.next = nullptr;
-					yyerror(("ERROR CAN'T CASTING!! --> "+id).c_str());					
+					yyerror(("ERROR CAN'T CASTING!! --> "+id).c_str());
 				}
-				
+
 			}
 		}else{
 			$$.code = nullptr;
 			$$.next = nullptr;
 			yyerror(("ERROR WASN'T DECLARED!! --> "+id).c_str());
 		}
-		
+
     };
-	
+
+OPTIONAL_ASSIGNMENT : {
+	$$.code = nullptr;
+	$$.next = nullptr;
+} | ASSIGNMENT {
+	$$.code = $1.code;
+    $$.next = $1.next;
+};
+
 BOOLEAN_CONDITION:
-  EXPRESSION
+  BOOLEAN_EXPRESSION
   {
     if ($1.type != ERROR_T) {
       if ($1.type != BOOL_T) {
         $$.code = nullptr;
         $$.next = nullptr;
-        yyerror("Condition doesn't evaluate to boolean");
+        yyerror("Condition doesn't evaluate to boolean ");
       } else {
         $$.next = new vector<string*>();
         $$.code = new vector<string*>();
@@ -369,6 +401,120 @@ BOOLEAN_CONDITION:
       $$.next = nullptr;
     }
   };
+
+BOOLEAN_EXPRESSION : SIMPLE_BOOLEAN_EXPRESSION {
+	$$.code = $1.code;
+	$$.type = $1.type;
+	$$.next = nullptr;
+	perform_label_adding($$.code, &$1.next);
+} | BOOLEAN_EXPRESSION AND SIMPLE_BOOLEAN_EXPRESSION{
+	if($1.type == $3.type && $1.type == BOOL_T){
+
+		$$.type = BOOL_T;
+		Label BFalse;
+		$$.code = new vector<string*>();
+		$$.next = new vector<string*>();
+		string * gotoW = new string("goto ");
+
+		if($1.next != nullptr){
+			$$.next->insert($$.next->end(), $1.next->begin(), $1.next->end());
+		}
+		$$.next->push_back(gotoW);
+
+		$$.code->insert($$.code->end(), $1.code->begin(), $1.code->end());
+		$$.code->push_back(new string("ifne " + BFalse.getName())); // not equal zero
+		$$.code->push_back(new string("iconst_0"));
+
+		$$.code->push_back(gotoW);
+		add_label_to_code($$.code, BFalse);
+		$$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
+		perform_label_adding($$.code, &$3.next);
+
+	}else if ($1.type == $3.type && $1.type != ERROR_T){
+
+		$$.type = ERROR_T;
+		$$.code = nullptr;
+		$$.next = nullptr;
+		yyerror("Invalid logical not on operands");
+
+	}else {
+		$$.type = ERROR_T;
+		$$.code = nullptr;
+		$$.next = nullptr;
+	}
+
+};
+SIMPLE_BOOLEAN_EXPRESSION : BOOLEAN_TERM {
+	$$.code = $1.code;
+	$$.type = $1.type;
+	$$.next = nullptr;
+} | SIMPLE_BOOLEAN_EXPRESSION OR BOOLEAN_TERM {
+
+	if($1.type == $3.type && $1.type == BOOL_T){
+
+		$$.type = BOOL_T;
+		Label BFalse;
+		$$.code = new vector<string*>();
+		$$.next = new vector<string*>();
+		string * gotoW = new string("goto ");
+
+		if($1.next != nullptr){
+			$$.next->insert($$.next->end(), $1.next->begin(), $1.next->end());
+
+		}
+		$$.next->push_back(gotoW);
+
+		$$.code->insert($$.code->end(), $1.code->begin(), $1.code->end());
+		$$.code->push_back(new string("ifeq " + BFalse.getName())); // equal zero
+		$$.code->push_back(new string("iconst_1"));
+		$$.code->push_back(gotoW);
+		add_label_to_code($$.code, BFalse);
+		$$.code->insert($$.code->end(), $3.code->begin(), $3.code->end());
+
+	}else if ($1.type == $3.type && $1.type != ERROR_T){
+
+		$$.type = ERROR_T;
+		$$.code = nullptr;
+		$$.next = nullptr;
+		yyerror("Invalid logical not on operands");
+
+	}else {
+		$$.type = ERROR_T;
+		$$.code = nullptr;
+		$$.next = nullptr;
+	}
+};
+BOOLEAN_TERM : EXPRESSION {
+	$$.code = $1.code;
+	$$.type = $1.type;
+
+} | NOT BOOLEAN_TERM {
+	if ($2.type != ERROR_T){
+		if ($2.type != BOOL_T){
+			$$.type = ERROR_T;
+			$$.code = nullptr;
+			yyerror("Invalid logical not on operands");
+		}else {
+			$$.type = BOOL_T;
+			$$.code = $2.code;
+			Label BTrue, BFalse;
+			$$.code->push_back(new string("ifeq " + BTrue.getName())); // equal zero
+			$$.code->push_back(new string("iconst_0"));
+			$$.code->push_back(new string("goto " + BFalse.getName()));
+			add_label_to_code($$.code, BTrue);
+			$$.code->push_back(new string("iconst_1"));
+			add_label_to_code($$.code, BFalse);
+		}
+	}else {
+
+		$$.type = ERROR_T;
+		$$.code = nullptr;
+	}
+}| LEFT_BRACKET BOOLEAN_EXPRESSION RIGHT_BRACKET {
+        $$.type = $2.type;
+        $$.code = $2.code;
+		perform_label_adding($$.code, &$2.next);
+};
 EXPRESSION : SIMPLE_EXPRESSION {
         $$.type = $1.type;
         $$.code = $1.code;

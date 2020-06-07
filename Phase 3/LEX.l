@@ -21,7 +21,6 @@ num      "-"?{digits}
 fnum     "-"?{digits}.{digits}("E"{digits}+)?
 relop    "=="|"!="|">"|">="|"<"|"<="
 assign   "="
-boolop   "&&"|"||"
 addop    "+"|"-"
 mulop    "*"|"/"|"%"
 bool     "true"|"false"
@@ -41,9 +40,10 @@ bool     "true"|"false"
 "{"                     {return LEFT_CURLY_BRACKET;}
 "}"                     {return RIGHT_CURLY_BRACKET;}
 "!"                     {return NOT;}
+"||"                    {return OR;}
+"&&"                    {return AND;}
 {fnum}                  {yylval.fval = atof(yytext); return F_NUM;}
 {relop}                 {yylval.val = strdup(yytext);return REL_OP;}
-{boolop}                {yylval.val = strdup(yytext);return BOOL_OP;}
 {bool}                  {yylval.val = strdup(yytext);return BOOL;}
 {id}                    {yylval.val = strdup(yytext);return ID;}
 {addop}                 {yylval.cval = yytext[0];return ADD_OP;}
